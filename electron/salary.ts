@@ -226,7 +226,7 @@ export function salaryPeriodFromText(raw: string): SalaryPeriod | null {
   const periods: Array<[SalaryPeriod, RegExp]> = [
     ['monthly', /\b(mensual(?:es|mente)?|mensal(?:mente|es)?|mensais|por\s+mes|al\s+mes|mes\s+a\s+mes|monthly|per\s+month|per\s+mo\.?|every\s+month|months?)\b|\/\s*(?:month|mes)\b/u],
     ['annual', /\b(anual(?:es)?|por\s+ano|al\s+ano|yearly|annually|annual|per\s+(?:year|annum))\b|\/\s*(?:year|yr|ano)\b|\bp\/a\b/u],
-    ['weekly', /\b(semanal(?:es|mente)?|por\s+semana|weekly|per\s+week)\b|\/\s*(?:week|wk)\b/u],
+    ['weekly', /\b(semanal(?:es|mente)?|por\s+semanas?|weekly|per\s+week)\b|\/\s*(?:week|wk)\b/u],
     ['daily', /\b(diari(?:o|a|os|as|amente)?|por\s+dias?|al\s+dia|daily|per\s+day|per\s+diem)\b|\/\s*(?:day|d)\b/u],
     ['hourly', /\b(hourly|per\s+hours?|per\s+hrs?|por\s+horas?|cada\s+hora)\b|\/\s*(?:hour|hr|h)\b/u],
   ]

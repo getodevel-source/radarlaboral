@@ -140,6 +140,7 @@ function createApplicationMenu() {
 function createWindow(showWhenReady = true) {
   followUpReminderListenerReady = false
   searchCompletionListenerReady = false
+  searchFailureListenerReady = false
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
@@ -171,6 +172,7 @@ function createWindow(showWhenReady = true) {
   mainWindow.webContents.on('did-start-loading', () => {
     followUpReminderListenerReady = false
     searchCompletionListenerReady = false
+    searchFailureListenerReady = false
   })
   mainWindow.webContents.on('did-finish-load', () => {
     flushPendingSearchFailure()

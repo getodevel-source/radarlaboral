@@ -3125,6 +3125,28 @@ test('maps user-configured JSON sources, requires opt-in, and keeps private netw
   database.close()
 })
 
+test('runSearch exposes per-source truncation without counting it as a failure', async (context) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'radar-laboral-truncation-'))
+  context.after(() => fs.rmSync(directory, { recursive: true, force: true }))
+  const database = new RadarDatabase(directory)
+  database.addSource({
+    name: 'Feed largo autorizado',
+    url: 'https://example.org/long-jobs.xml',
+    kind: 'rss',
+    profileId: null,
+    enabled: true,
+    customAutomationApproved: true,
+    automationEvidenceUrl: '',
+  })
+  const items = Array.from({ length: 105 }, (_, index) => ({ title: `Aviso ${index + 1}`, link: `https://example.org/job/${index + 1}` }))
+  const result = await runSearch(database, { fetchSource: async () => items })
+  assert.equal(result.checkedSources, 1)
+  assert.deepEqual(result.errors, [])
+  assert.equal(result.truncated.length, 1)
+  assert.match(result.truncated[0].message, /Se conservaron 100 de 105 avisos/u)
+  database.close()
+})
+
 test('keeps multiple profiles and PDF copies locally without changing the selected originals', (context) => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'radar-laboral-multiple-data-'))
   context.after(() => fs.rmSync(directory, { recursive: true, force: true }))

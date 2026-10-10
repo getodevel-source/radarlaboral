@@ -315,7 +315,7 @@ async function fetchJsonFeed(url: string, config: JsonSourceConfig) {
       payload = response
     }
   }
-  return mapJsonFeed(payload, config, policy?.connector === 'lever-public-jobs' ? LEVER_MAX_POSTINGS : 100)
+  return mapJsonFeed(payload, config, LEVER_MAX_POSTINGS)
 }
 
 export async function testJsonFeed(url: string, rawConfig: unknown): Promise<FeedTestResult> {
@@ -331,7 +331,7 @@ async function fetchCsvFeed(url: string, config: CsvSourceConfig) {
   const target = await resolvePublicHttpsTarget(url)
   const raw = await fetchPinnedBytes(target, 'text/csv, text/plain')
   const csv = decodeCsvBytes(raw).contents
-  return mapCsvFeed(csv, config)
+  return mapCsvFeed(csv, config, 1000)
 }
 
 export async function testCsvFeed(url: string, rawConfig: unknown): Promise<FeedTestResult> {
