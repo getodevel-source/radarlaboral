@@ -47,6 +47,7 @@ const api: RadarApi = {
     remove: (id) => ipcRenderer.invoke('drafts:remove', id),
   },
   app: {
+    version: () => ipcRenderer.invoke('app:version'),
     summary: () => ipcRenderer.invoke('app:summary'),
     settings: () => ipcRenderer.invoke('app:settings'),
     saveSettings: (settings) => ipcRenderer.invoke('app:save-settings', settings),

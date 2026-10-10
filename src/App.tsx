@@ -404,7 +404,9 @@ function App() {
   const [statusFilter, setStatusFilter] = useState<'todas' | OpportunityStatus>('todas')
   const [profileFilter, setProfileFilter] = useState('todas')
   const [query, setQuery] = useState('')
+  const [appVersion, setAppVersion] = useState('')
   const [toast, setToast] = useState({ id: 0, text: '' })
+
   const toastSeq = useRef(0)
   const [followUpReminderQueue, setFollowUpReminderQueue] = useState<Array<{ deliveryId: string; text: string }>>([])
   const [loading, setLoading] = useState(true)
@@ -412,7 +414,7 @@ function App() {
   const [testingSource, setTestingSource] = useState(false)
 
   const refresh = useCallback(async () => {
-    const [nextProfiles, nextOpportunities, nextResumes, nextSources, nextDrafts, nextSummary, nextSettings, nextCandidate] = await Promise.all([
+    const [nextProfiles, nextOpportunities, nextResumes, nextSources, nextDrafts, nextSummary, nextSettings, nextCandidate, nextVersion] = await Promise.all([
       window.radar.profiles.list(),
       window.radar.opportunities.list(),
       window.radar.resumes.list(),
@@ -421,6 +423,7 @@ function App() {
       window.radar.app.summary(),
       window.radar.app.settings(),
       window.radar.candidate.get(),
+      window.radar.app.version().catch(() => ''),
     ])
     setProfiles(nextProfiles)
     setOpportunities(nextOpportunities)
@@ -430,6 +433,7 @@ function App() {
     setSummary(nextSummary)
     setSettings(nextSettings)
     setCandidateProfile(nextCandidate)
+    setAppVersion(nextVersion)
   }, [])
 
   useEffect(() => {
@@ -1573,7 +1577,7 @@ function App() {
               />}
               {page === 'cv' && <ResumesPage resumes={resumes} busy={busy} onUpload={importResumes} onDelete={removeResume} />}
               {page === 'fuentes' && <SourcesPage sources={sources} profiles={profiles} onAdd={openSource} onAddRecommended={addFindjobitFeed} onAddDespegar={addDespegarJobs} onAddLeverSources={addAdditionalLeverSources} onAddSmartRecruitersSources={addSmartRecruitersArgentinaSources} onAddWorkableSur={addWorkableSurJobs} onAddGreenhouseSources={addGreenhouseArgentinaSources} onAddAshbySources={addAshbyArgentinaSources} onToggle={toggleSource} onCustomAutomationApproval={updateCustomAutomationApproval} onDelete={removeSource} onSearch={runSearch} onOpen={(url) => void window.radar.app.openExternal(url)} busy={busy} />}
-              {page === 'ajustes' && <SettingsPage settings={settings} setSettings={setSettings} candidate={candidateProfile} setCandidate={setCandidateProfile} onSaveCandidate={saveCandidateProfile} aiApiKeyDraft={aiApiKeyDraft} setAiApiKeyDraft={setAiApiKeyDraft} onClearAiApiKey={clearAiApiKey} onCreateBackup={createBackup} onRestoreBackup={restoreBackup} onRefreshSalaryExchangeRates={refreshSalaryExchangeRates} onSave={saveSettings} busy={busy} />}
+              {page === 'ajustes' && <SettingsPage settings={settings} setSettings={setSettings} candidate={candidateProfile} setCandidate={setCandidateProfile} onSaveCandidate={saveCandidateProfile} aiApiKeyDraft={aiApiKeyDraft} setAiApiKeyDraft={setAiApiKeyDraft} onClearAiApiKey={clearAiApiKey} onCreateBackup={createBackup} onRestoreBackup={restoreBackup} onRefreshSalaryExchangeRates={refreshSalaryExchangeRates} onSave={saveSettings} busy={busy} appVersion={appVersion} />}
             </>
           )}
         </div>
@@ -1965,7 +1969,7 @@ function SourceHealth({ source, onOpen, onCustomAutomationApproval }: { source: 
   </>
 }
 
-function SettingsPage({ settings, setSettings, candidate, setCandidate, onSaveCandidate, aiApiKeyDraft, setAiApiKeyDraft, onClearAiApiKey, onCreateBackup, onRestoreBackup, onRefreshSalaryExchangeRates, onSave, busy }: {
+function SettingsPage({ settings, setSettings, candidate, setCandidate, onSaveCandidate, aiApiKeyDraft, setAiApiKeyDraft, onClearAiApiKey, onCreateBackup, onRestoreBackup, onRefreshSalaryExchangeRates, onSave, busy, appVersion }: {
   settings: AppSettings
   setSettings: (settings: AppSettings) => void
   candidate: CandidateProfile
@@ -1979,6 +1983,7 @@ function SettingsPage({ settings, setSettings, candidate, setCandidate, onSaveCa
   onRefreshSalaryExchangeRates: () => void
   onSave: (event: FormEvent<HTMLFormElement>) => void
   busy: boolean
+  appVersion: string
 }) {
   const salaryRateCount = settings.salaryExchangeRates
     ? Object.keys(settings.salaryExchangeRates.arsPerUnit).filter((currency) => currency !== 'ARS').length
@@ -2018,6 +2023,7 @@ function SettingsPage({ settings, setSettings, candidate, setCandidate, onSaveCa
       <div className="privacy-banner"><span className="privacy-banner-dot" /><p><strong>La clave se cifra en Windows.</strong> Al generar un mensaje, el aviso, el CV elegido y los datos confirmados de Mi perfil se envían al proveedor. Puede haber cargos según tu cuenta; revisá el resultado antes de usarlo.</p></div>
     </section>
     <div className="settings-save-row"><span>Los cambios se aplican a esta computadora.</span><button className="button button-dark" disabled={busy}>{busy ? 'Guardando…' : 'Guardar preferencias'} <span className="button-end"><Icon name="check" size={16} /></span></button></div>
+    <p className="version-line">Radar Laboral {appVersion || '…'}</p>
   </form>
 }
 

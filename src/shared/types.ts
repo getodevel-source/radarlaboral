@@ -321,6 +321,7 @@ export interface RadarApi {
     remove(id: string): Promise<void>
   }
   app: {
+    version(): Promise<string>
     summary(): Promise<DashboardSummary>
     settings(): Promise<AppSettings>
     saveSettings(settings: AppSettingsInput): Promise<AppSettings>

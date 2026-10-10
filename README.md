@@ -42,6 +42,7 @@ Aplicación de escritorio para Windows que ayuda a reunir vacantes, comparar avi
 - El estado de compatibilidad, las fuentes revisadas y sus motivos están documentados en [Revisión de fuentes e integraciones](docs/source-policy-review.md).
 - El avance requisito por requisito y los límites pendientes están en la [Auditoría del MVP](docs/mvp-audit.md) y la [Auditoría de dependencias](docs/dependency-audit.md).
 - La [Guía de uso](docs/guia-de-uso.md) explica la configuración inicial, el flujo de seguimiento y los límites de datos.
+- La [Instalación y publicación](docs/instalacion.md) explica cómo instalar el paquete Windows y qué falta para firmarlo y distribuirlo.
 - [Copias de seguridad](docs/copia-de-seguridad.md) explica qué se guarda, cómo restaurar y cómo proteger la carpeta.
 - El conjunto reducido de localidades censales está atribuido al Servicio Georef y distribuido bajo CC BY 4.0; consultá [la atribución y los cambios realizados](docs/datos-geograficos.md).
 - La app no inicia sesión en portales, no guarda sus contraseñas o cookies y no envía postulaciones. La persona revisa el aviso, el CV y el mensaje, y realiza el envío en el sitio de empleo. Por ejemplo, [LinkedIn prohíbe la automatización no autorizada](https://www.linkedin.com/legal/user-agreement) y [Indeed no permite bots de terceros para postular](https://support.indeed.com/hc/en-us/articles/360028540531-Indeed-Job-Seeker-Guidelines); las fuentes solo se automatizarán con autorización y una integración documentada.

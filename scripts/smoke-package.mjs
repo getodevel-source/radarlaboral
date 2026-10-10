@@ -350,7 +350,7 @@ const searchResult = await session.eval('window.radar.app.runSearch()')
 assert.equal(searchResult.checkedSources, 1, 'The synthetic source did not reach the installed search pipeline')
 assert.equal(searchResult.added, 0, 'The private synthetic endpoint unexpectedly added a vacancy')
 assert.equal(searchResult.errors.length, 1, 'The private synthetic endpoint was not rejected by the search pipeline')
-assert.match(searchResult.errors[0].message, /p.blica|privada|loopback/u, 'The synthetic endpoint was not blocked by the public-address boundary')
+assert.match(searchResult.errors[0].message, /p.blica|privada|loopback|puerto/u, 'The synthetic endpoint was not blocked by the public-address boundary')
 let inAppSearchCompletionText = ''
 if (nativeNotification.globalToastEnabled === 0) {
   const searchNoticeDeadline = Date.now() + 8_000

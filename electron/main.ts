@@ -51,6 +51,13 @@ const followUpReminderAcknowledgements = new Map<string, () => void>()
 app.setName('Radar Laboral')
 app.commandLine.appendSwitch('lang', 'es-AR')
 
+process.on('uncaughtException', (error) => {
+  console.error('Radar Laboral encontró un error inesperado:', error)
+})
+process.on('unhandledRejection', (reason) => {
+  console.error('Radar Laboral encontró un error inesperado en una promesa:', reason)
+})
+
 if (!appLock) {
   app.quit()
 } else {

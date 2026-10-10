@@ -537,6 +537,7 @@ export function registerIpc(
   ipcMain.handle('drafts:save', (_event, input: unknown) => database.saveDraft(validateDraft(input)))
   ipcMain.handle('drafts:remove', (_event, id: unknown) => database.removeDraft(assertId(id)))
 
+  ipcMain.handle('app:version', () => app.getVersion())
   ipcMain.handle('app:summary', () => database.summary())
   ipcMain.handle('app:settings', () => database.settings())
   ipcMain.handle('app:refresh-salary-exchange-rates', async () => {

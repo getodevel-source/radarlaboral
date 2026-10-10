@@ -928,6 +928,12 @@ test('announces transient app notices through one persistent polite status regio
   assert.match(appSource, /<div key=\{toast\.id\} className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">\{toast\.text\}<\/div>/u)
   assert.match(appSource, /<div className="toast-message" aria-hidden="true">/u)
 })
+test('dialogs expose their title to assistive readers and preferences show the app version', () => {
+  const appSource = fs.readFileSync(new URL('../src/App.tsx', import.meta.url), 'utf8')
+  assert.match(appSource, /aria-labelledby=\{titleId\}/u)
+  assert.match(appSource, /<h2 id=\{titleId\}>/u)
+  assert.match(appSource, /Radar Laboral \{appVersion/u)
+})
 
 test('removes Vite development hosts from the packaged Content Security Policy', () => {
   const html = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8')
