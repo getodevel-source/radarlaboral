@@ -17,6 +17,7 @@ import { urlCarriesSecret } from '../src/shared/source-url-secrets.ts'
 
 import { validateOpportunityTracking } from '../src/shared/opportunity-tracking.ts'
 import { SALARY_CURRENCIES } from '../src/shared/types'
+import type { AppUpdateState } from './app-updates.ts'
 import type {
   AppSettingsInput,
   ApplicationDraftInput,
@@ -333,6 +334,11 @@ export function registerIpc(
   onRestoreFailed: () => void = () => {},
   testPdfExportDirectory: string | null = null,
   onBackgroundScheduleChanged: (enabled: boolean, intervalHours: number) => Promise<void> = async () => {},
+  appUpdates: {
+    status: () => AppUpdateState
+    check: (manual?: boolean) => Promise<AppUpdateState>
+    quitAndInstall: () => void
+  } | null = null,
 ) {
   ipcMain.handle('geography:search-localities', (_event, rawQuery: unknown) => {
     if (typeof rawQuery !== 'string' || rawQuery.length > 120) return []
@@ -538,6 +544,24 @@ export function registerIpc(
   ipcMain.handle('drafts:remove', (_event, id: unknown) => database.removeDraft(assertId(id)))
 
   ipcMain.handle('app:version', () => app.getVersion())
+  ipcMain.handle('app:update-status', () => appUpdates?.status() ?? {
+    status: 'disabled',
+    version: null,
+    percent: null,
+    message: 'Las actualizaciones automáticas no están configuradas todavía.',
+    detail: null,
+  })
+  ipcMain.handle('app:check-for-updates', () => appUpdates?.check(true) ?? {
+    status: 'disabled',
+    version: null,
+    percent: null,
+    message: 'Las actualizaciones automáticas no están configuradas todavía.',
+    detail: null,
+  })
+  ipcMain.handle('app:quit-and-install-update', () => {
+    if (!appUpdates) throw new Error('Las actualizaciones automáticas no están configuradas.')
+    appUpdates.quitAndInstall()
+  })
   ipcMain.handle('app:summary', () => database.summary())
   ipcMain.handle('app:settings', () => database.settings())
   ipcMain.handle('app:refresh-salary-exchange-rates', async () => {

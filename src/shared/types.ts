@@ -263,6 +263,24 @@ export interface AppSettings {
 
 export type AppSettingsInput = Omit<AppSettings, 'aiApiKeyConfigured' | 'salaryExchangeRates'> & { aiApiKey?: string }
 
+export type AppUpdateStatus =
+  | 'disabled'
+  | 'idle'
+  | 'checking'
+  | 'available'
+  | 'downloading'
+  | 'downloaded'
+  | 'up-to-date'
+  | 'error'
+
+export interface AppUpdateState {
+  status: AppUpdateStatus
+  version: string | null
+  percent: number | null
+  message: string
+  detail: string | null
+}
+
 export interface GenerateMessageInput {
   opportunityId: string
   resumeId: string | null
@@ -322,6 +340,10 @@ export interface RadarApi {
   }
   app: {
     version(): Promise<string>
+    updateStatus(): Promise<AppUpdateState>
+    checkForUpdates(): Promise<AppUpdateState>
+    quitAndInstallUpdate(): Promise<void>
+    onUpdateState(callback: (state: AppUpdateState) => void): () => void
     summary(): Promise<DashboardSummary>
     settings(): Promise<AppSettings>
     saveSettings(settings: AppSettingsInput): Promise<AppSettings>

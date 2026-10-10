@@ -300,6 +300,8 @@
 .privacy-banner p { margin: 0; color: #848c80; font-size: 8px; line-height: 1.6; }
 .privacy-banner strong { color: #627b64; }
 .version-line { margin: 2px 0 0; color: #9a9c91; font-size: 9px; text-align: right; }
+.update-progress { height: 8px; margin: 4px 0 10px; overflow: hidden; border-radius: 999px; background: #e6eae2; }
+.update-progress-bar { height: 100%; border-radius: 999px; background: #365947; transition: width 300ms ease; }
 
 .modal-backdrop { position: fixed; z-index: 10; inset: 0; display: grid; place-items: start center; overflow: auto; padding: 22px; background: #14271f91; backdrop-filter: blur(5px); animation: veil-in 240ms ease-out both; }
 .modal-card { width: min(100%, 570px); max-height: min(92vh, 820px); overflow: hidden; margin: auto; border: 1px solid #ffffffaa; border-radius: 22px; background: #fbfaf6; box-shadow: 0 28px 90px #091c1670, inset 0 1px 0 #fff; animation: modal-in 440ms cubic-bezier(.2,.8,.2,1) both; }

@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, Notification, shell, Tray } from 'electron'
 import { execFileSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { RadarDatabase } from './database'
@@ -15,6 +15,7 @@ import { testPdfExportDirectoryFromArgs, userDataPathFromArgs } from './user-dat
 import { localDateString } from '../src/shared/local-date.ts'
 import { urlCarriesSecret } from '../src/shared/source-url-secrets.ts'
 import type { SearchRunResult } from '../src/shared/types'
+import type { AppUpdateService } from './app-updates.ts'
 
 const requireFile = fileURLToPath(import.meta.url)
 const electronDirectory = path.dirname(requireFile)
@@ -31,6 +32,7 @@ if (customUserDataPath) app.setPath('userData', customUserDataPath)
 const appLock = app.requestSingleInstanceLock()
 
 let mainWindow: BrowserWindow | null = null
+let appUpdateService: AppUpdateService | null = null
 let tray: Tray | null = null
 let database: RadarDatabase | null = null
 let quitting = false
@@ -95,9 +97,15 @@ if (!appLock) {
         }
       }
     }
+    appUpdateService = await startAppUpdateService()
+    const updateHooks = appUpdateService ? {
+      status: () => (appUpdateService as AppUpdateService).state,
+      check: (manual?: boolean) => (appUpdateService as AppUpdateService).checkForUpdates(manual),
+      quitAndInstall: () => (appUpdateService as AppUpdateService).quitAndInstall(),
+    } : null
     registerIpc(database, () => {
       startSearchTimer()
-    }, () => runSearchNow(false), beginDataRestore, cancelDataRestore, testPdfExportDirectory, updateBackgroundSchedule)
+    }, () => runSearchNow(false), beginDataRestore, cancelDataRestore, testPdfExportDirectory, updateBackgroundSchedule, updateHooks)
     const trayReady = createTray()
     createWindow(!startHidden || !trayReady)
     startFollowUpReminderTimer()
@@ -106,6 +114,65 @@ if (!appLock) {
     // is off; backgroundSearchEnabled only governs the Windows task.
     void runSearchNow().catch(() => {})
   })
+}
+
+async function startAppUpdateService(): Promise<AppUpdateService> {
+  const { createAppUpdateService } = await import('./app-updates.ts')
+  // electron-updater lee owner/repo/clave de resources/app-update.yml (embutido
+  // por electron-builder). Las env RADAR_UPDATE_* solo existen en build-time y
+  // NUNCA llegan a la app instalada: no usarlas para el gating de runtime.
+  const { feedConfigured, source } = readUpdateFeed()
+  if (app.isPackaged && !feedConfigured) {
+    console.error('Actualizaciones automáticas desactivadas: el build no embutió un feed real (revisá publish/owner/repo en electron-builder.json5).')
+  }
+  // Sin feed real o en dev, el servicio queda en estado `disabled`
+  // (ver electron/app-updates.ts); el import de electron-updater solo se carga
+  // cuando hay feed real y la app está empaquetada.
+  const updater = feedConfigured && app.isPackaged
+    ? (await import('electron-updater')).autoUpdater
+    : nullUpdater()
+  const service = createAppUpdateService({
+    updater,
+    isPackaged: app.isPackaged,
+    source,
+    updateFeedConfigured: feedConfigured,
+    log: (message, detail) => console.error(message, detail),
+    getWindows: () => (mainWindow && !mainWindow.isDestroyed() ? [mainWindow] : []),
+  })
+  service.start()
+  return service
+}
+
+function readUpdateFeed(): { feedConfigured: boolean; source: { owner: string | null; repo: string | null; configured: boolean } } {
+  const placeholder = { owner: null, repo: null, configured: false }
+  if (!app.isPackaged) return { feedConfigured: false, source: placeholder }
+  try {
+    // process.resourcesPath = <install>/resources ; app-update.yml vive ahí.
+    const feed = readFileSync(path.join(process.resourcesPath, 'app-update.yml'), 'utf8')
+    const owner = /\bowner:\s*(\S+)/u.exec(feed)?.[1]?.trim() ?? null
+    const repo = /\brepo:\s*(\S+)/u.exec(feed)?.[1]?.trim() ?? null
+    const real = Boolean(owner && repo && owner !== 'TU_USUARIO')
+    return { feedConfigured: real, source: { owner, repo, configured: real } }
+  } catch {
+    return { feedConfigured: false, source: placeholder }
+  }
+}
+
+function nullUpdater() {
+  const listeners = new Map<string, Array<(...args: never[]) => void>>()
+  return {
+    autoDownload: true,
+    autoInstallOnAppQuit: true,
+    async checkForUpdates(): Promise<null> { return null },
+    async downloadUpdate(): Promise<null> { return null },
+    quitAndInstall(): void {},
+    on(event: string, listener: (...args: never[]) => void): unknown {
+      const current = listeners.get(event) ?? []
+      current.push(listener)
+      listeners.set(event, current)
+      return undefined
+    },
+  }
 }
 
 function createApplicationMenu() {

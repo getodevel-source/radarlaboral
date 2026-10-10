@@ -18,7 +18,7 @@ const version = manifest.version
 const release = process.env.RADAR_PACKAGE_OUTPUT_DIR
   ? path.resolve(root, process.env.RADAR_PACKAGE_OUTPUT_DIR)
   : path.join(root, 'release', version)
-const installer = path.join(release, `Radar Laboral-Windows-${version}-Setup.exe`)
+const installer = path.join(release, `radarlaboral-Windows-${version}-Setup.exe`)
 const unpacked = path.join(release, 'win-unpacked')
 const executable = path.join(unpacked, 'Radar Laboral.exe')
 const archive = path.join(unpacked, 'resources', 'app.asar')
@@ -236,6 +236,14 @@ assert.match(archivedMain, /token:\s*"dept"/u)
 assert.match(archivedMain, /company:\s*"DEPT®"/u)
 assert.match(archivedMain, /evidenceUrl:\s*"https:\/\/www\.dept\.global\/latam\/trabajar-en-dept\/empleos\/"/u)
 assert.ok(archivedMain.includes('split(/[/?#]/u, 1)[0].includes("@")'))
+assert.ok(entries.some((entry) => entry.includes('/electron-updater/')), 'Package omits electron-updater')
+assert.match(archivedMain, /app:update-status/u)
+assert.match(archivedMain, /app:check-for-updates/u)
+assert.match(archivedMain, /app:quit-and-install-update/u)
+const archivedUpdateChunks = entries.filter((entry) => entry.includes('/dist-electron/app-updates-') && entry.endsWith('.js'))
+assert.ok(archivedUpdateChunks.length >= 1, 'Package omits the app-updates chunk')
+const archivedUpdateService = archivedUpdateChunks.map((entry) => asar.extractFile(archive, entry.slice(1)).toString('utf8')).join('\n')
+assert.match(archivedUpdateService, /app:update-state/u)
 const cookUnityPolicyIncluded = true
 const deptPolicyIncluded = true
 const greenhouseUserinfoGuardIncluded = true
@@ -252,6 +260,12 @@ assert.ok(Object.values(toolchainModulesExcluded).every(Boolean), 'Package inclu
 const html = asar.extractFile(archive, 'dist/index.html').toString('utf8')
 assert.match(html, /connect-src 'self'/u)
 assert.doesNotMatch(html, /127\.0\.0\.1:5173/u)
+const rendererBundleFiles = listFiles(path.join(root, 'dist', 'assets')).filter((file) => file.endsWith('.js'))
+assert.ok(rendererBundleFiles.length >= 1, 'Missing renderer bundles in dist/assets')
+const rendererSources = rendererBundleFiles.map((file) => fs.readFileSync(file, 'utf8')).join('\n')
+assert.match(rendererSources, /Buscar actualizaciones/u)
+assert.match(rendererSources, /Versi\u00f3n de la app/u)
+assert.ok(entries.some((entry) => entry.includes('/dist/assets/') && entry.endsWith('.js')), 'Package omits renderer bundles')
 
 const documentationFiles = listFiles(path.join(root, 'docs'))
 for (const sourceFile of documentationFiles) {

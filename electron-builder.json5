@@ -7,6 +7,16 @@
   "directories": {
     "output": "release/${version}"
   },
+  // Actualizaciones automaticas: el owner/repo se resuelve en build
+  // desde RADAR_UPDATE_GITHUB_OWNER/RADAR_UPDATE_GITHUB_REPO (ver docs/instalacion.md).
+  // Sin esas variables, electron-builder usa el placeholder y el build NO publica.
+  "publish": {
+    "provider": "github",
+    "owner": "TU_USUARIO",
+    "repo": "radarlaboral",
+    "private": false,
+    "releaseType": "release"
+  },
   "files": [
     "dist/**",
     "dist-electron/**",

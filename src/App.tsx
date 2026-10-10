@@ -30,6 +30,7 @@ import type {
   ResumeRecord,
   SearchProfile,
   SearchProfileInput,
+  AppUpdateState,
   SourceKind,
   UserSource,
 } from './shared/types'
@@ -405,6 +406,8 @@ function App() {
   const [profileFilter, setProfileFilter] = useState('todas')
   const [query, setQuery] = useState('')
   const [appVersion, setAppVersion] = useState('')
+  const [updateState, setUpdateState] = useState<AppUpdateState | null>(null)
+  const [checkingUpdates, setCheckingUpdates] = useState(false)
   const [toast, setToast] = useState({ id: 0, text: '' })
 
   const toastSeq = useRef(0)
@@ -434,6 +437,9 @@ function App() {
     setSettings(nextSettings)
     setCandidateProfile(nextCandidate)
     setAppVersion(nextVersion)
+    const [nextProfiles2, nextOpportunities2, nextResumes2, nextSources2, nextDrafts2, nextSummary2, nextSettings2, nextCandidate2, nextVersion2, nextUpdate] = [nextProfiles, nextOpportunities, nextResumes, nextSources, nextDrafts, nextSummary, nextSettings, nextCandidate, nextVersion, null] as unknown as [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, string, AppUpdateState | null]
+    void nextProfiles2; void nextOpportunities2; void nextResumes2; void nextSources2; void nextDrafts2; void nextSummary2; void nextSettings2; void nextCandidate2; void nextVersion2
+    setUpdateState(nextUpdate)
   }, [])
 
   useEffect(() => {
@@ -466,6 +472,16 @@ function App() {
     })
     return off
   }, [refresh])
+
+  useEffect(() => {
+    const off = window.radar.app.onUpdateState((next) => {
+      setUpdateState(next)
+      if (next.status === 'downloaded') {
+        showToast(next.message)
+      }
+    })
+    return off
+  }, [])
 
   useEffect(() => {
     const off = window.radar.app.onSearchCompletionNotice(({ added, errors, truncated }) => {
@@ -1379,6 +1395,30 @@ function App() {
     }
   }
 
+  async function checkForAppUpdates() {
+    if (checkingUpdates) return
+    setCheckingUpdates(true)
+    try {
+      const next = await window.radar.app.checkForUpdates()
+      setUpdateState(next)
+      if (next.status !== 'checking' && next.status !== 'downloading' && next.status !== 'available') {
+        showToast(next.message)
+      }
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'No se pudo buscar la actualización.')
+    } finally {
+      setCheckingUpdates(false)
+    }
+  }
+
+  async function quitAndInstallUpdate() {
+    try {
+      await window.radar.app.quitAndInstallUpdate()
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Todavía no hay una actualización lista para instalar.')
+    }
+  }
+
   async function clearAiApiKey() {
     if (busy) return
     setBusy(true)
@@ -1577,7 +1617,7 @@ function App() {
               />}
               {page === 'cv' && <ResumesPage resumes={resumes} busy={busy} onUpload={importResumes} onDelete={removeResume} />}
               {page === 'fuentes' && <SourcesPage sources={sources} profiles={profiles} onAdd={openSource} onAddRecommended={addFindjobitFeed} onAddDespegar={addDespegarJobs} onAddLeverSources={addAdditionalLeverSources} onAddSmartRecruitersSources={addSmartRecruitersArgentinaSources} onAddWorkableSur={addWorkableSurJobs} onAddGreenhouseSources={addGreenhouseArgentinaSources} onAddAshbySources={addAshbyArgentinaSources} onToggle={toggleSource} onCustomAutomationApproval={updateCustomAutomationApproval} onDelete={removeSource} onSearch={runSearch} onOpen={(url) => void window.radar.app.openExternal(url)} busy={busy} />}
-              {page === 'ajustes' && <SettingsPage settings={settings} setSettings={setSettings} candidate={candidateProfile} setCandidate={setCandidateProfile} onSaveCandidate={saveCandidateProfile} aiApiKeyDraft={aiApiKeyDraft} setAiApiKeyDraft={setAiApiKeyDraft} onClearAiApiKey={clearAiApiKey} onCreateBackup={createBackup} onRestoreBackup={restoreBackup} onRefreshSalaryExchangeRates={refreshSalaryExchangeRates} onSave={saveSettings} busy={busy} appVersion={appVersion} />}
+              {page === 'ajustes' && <SettingsPage settings={settings} setSettings={setSettings} candidate={candidateProfile} setCandidate={setCandidateProfile} onSaveCandidate={saveCandidateProfile} aiApiKeyDraft={aiApiKeyDraft} setAiApiKeyDraft={setAiApiKeyDraft} onClearAiApiKey={clearAiApiKey} onCreateBackup={createBackup} onRestoreBackup={restoreBackup} onRefreshSalaryExchangeRates={refreshSalaryExchangeRates} onSave={saveSettings} busy={busy} appVersion={appVersion} updateState={updateState} checkingUpdates={checkingUpdates} onCheckForUpdates={() => void checkForAppUpdates()} onQuitAndInstallUpdate={() => void quitAndInstallUpdate()} />}
             </>
           )}
         </div>
@@ -1969,7 +2009,7 @@ function SourceHealth({ source, onOpen, onCustomAutomationApproval }: { source: 
   </>
 }
 
-function SettingsPage({ settings, setSettings, candidate, setCandidate, onSaveCandidate, aiApiKeyDraft, setAiApiKeyDraft, onClearAiApiKey, onCreateBackup, onRestoreBackup, onRefreshSalaryExchangeRates, onSave, busy, appVersion }: {
+function SettingsPage({ settings, setSettings, candidate, setCandidate, onSaveCandidate, aiApiKeyDraft, setAiApiKeyDraft, onClearAiApiKey, onCreateBackup, onRestoreBackup, onRefreshSalaryExchangeRates, onSave, busy, appVersion, updateState, checkingUpdates, onCheckForUpdates, onQuitAndInstallUpdate }: {
   settings: AppSettings
   setSettings: (settings: AppSettings) => void
   candidate: CandidateProfile
@@ -1984,6 +2024,10 @@ function SettingsPage({ settings, setSettings, candidate, setCandidate, onSaveCa
   onSave: (event: FormEvent<HTMLFormElement>) => void
   busy: boolean
   appVersion: string
+  updateState: AppUpdateState | null
+  checkingUpdates: boolean
+  onCheckForUpdates: () => void
+  onQuitAndInstallUpdate: () => void
 }) {
   const salaryRateCount = settings.salaryExchangeRates
     ? Object.keys(settings.salaryExchangeRates.arsPerUnit).filter((currency) => currency !== 'ARS').length
@@ -2021,6 +2065,11 @@ function SettingsPage({ settings, setSettings, candidate, setCandidate, onSaveCa
         {settings.aiApiKeyConfigured && <button type="button" className="text-button danger-text-button" onClick={onClearAiApiKey}>Eliminar clave guardada</button>}
       </div>}
       <div className="privacy-banner"><span className="privacy-banner-dot" /><p><strong>La clave se cifra en Windows.</strong> Al generar un mensaje, el aviso, el CV elegido y los datos confirmados de Mi perfil se envían al proveedor. Puede haber cargos según tu cuenta; revisá el resultado antes de usarlo.</p></div>
+    </section>
+    <section className="content-card settings-card"><div className="section-heading"><div><div className="eyebrow">ACTUALIZACIÓN</div><h2>Versión de la app</h2></div><span className="settings-section-icon"><Icon name="arrow" /></span></div><p className="settings-lead">Radar Laboral busca actualizaciones publicadas en GitHub Releases. Si hay una nueva versión, la descarga y la instala al salir, sin interrumpir tu trabajo.</p>
+      <div className="form-row"><button type="button" className="button button-soft" disabled={busy || checkingUpdates || updateState?.status === "downloading"} onClick={onCheckForUpdates}>{checkingUpdates || updateState?.status === "checking" ? "Buscando…" : "Buscar actualizaciones"}</button>{updateState?.status === "downloaded" && <button type="button" className="button button-dark" disabled={busy} onClick={onQuitAndInstallUpdate}>Instalar y salir <span className="button-end"><Icon name="check" size={16} /></span></button>}</div>
+      <p className="settings-lead" role="status">{updateState ? updateState.message : "Consultando el estado de actualización…"}</p>
+      {updateState?.status === "downloading" && <div className="update-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={updateState.percent ?? 0}><div className="update-progress-bar" style={{ width: `${updateState.percent ?? 0}%` }} /></div>}
     </section>
     <div className="settings-save-row"><span>Los cambios se aplican a esta computadora.</span><button className="button button-dark" disabled={busy}>{busy ? 'Guardando…' : 'Guardar preferencias'} <span className="button-end"><Icon name="check" size={16} /></span></button></div>
     <p className="version-line">Radar Laboral {appVersion || '…'}</p>

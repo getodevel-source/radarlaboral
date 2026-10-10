@@ -34,6 +34,7 @@ import { reportSearchCompletion, reportSearchFailure, searchCompletionNotice, se
 import { deliverDueFollowUpReminders, followUpReminderNotice, reportFollowUpReminder, windowsToastSettingAllowsNotifications } from '../electron/follow-up-notifications.ts'
 import { createContentSecurityPolicyPlugin } from '../build/content-security-policy.mjs'
 import { configureWindowsNotificationIdentity, WINDOWS_APP_USER_MODEL_ID, WINDOWS_TOAST_ACTIVATOR_CLSID } from '../electron/windows-notification-identity.ts'
+import { createAppUpdateService, disabledAppUpdateState, initialAppUpdateState, reduceAppUpdateEvent, resolveAppUpdateSource } from '../electron/app-updates.ts'
 
 function createModalFocusFixture(elementTypes = ['button', 'input', 'button']) {
   const listeners = new Map()
@@ -3452,3 +3453,197 @@ test('saves settings and AI key atomically and guards vacancies with drafts', (c
   database.close()
 })
 
+test('app updates stay disabled without a configured GitHub repo', () => {
+  const source = resolveAppUpdateSource({})
+  assert.equal(source.configured, false)
+  assert.equal(resolveAppUpdateSource({ RADAR_UPDATE_GITHUB_OWNER: 'acme' }).configured, false)
+  const real = resolveAppUpdateSource({ RADAR_UPDATE_GITHUB_OWNER: 'acme', RADAR_UPDATE_GITHUB_REPO: 'radar' })
+  assert.deepEqual(real, { owner: 'acme', repo: 'radar', configured: true })
+
+  const disabled = disabledAppUpdateState('falta repo')
+  assert.equal(disabled.status, 'disabled')
+  // disabled es terminal: ningún evento lo mueve.
+  for (const event of [
+    { type: 'check-started' },
+    { type: 'update-available', version: '9.9.9' },
+    { type: 'download-progress', percent: 50 },
+    { type: 'update-downloaded', version: '9.9.9' },
+    { type: 'up-to-date' },
+    { type: 'error', detail: 'boom' },
+  ]) {
+    assert.equal(reduceAppUpdateEvent(disabled, event).status, 'disabled', JSON.stringify(event))
+  }
+})
+
+test('app update reducer walks the download lifecycle in Spanish', () => {
+  let state = initialAppUpdateState()
+  assert.equal(state.status, 'idle')
+
+  state = reduceAppUpdateEvent(state, { type: 'check-started' })
+  assert.equal(state.status, 'checking')
+  assert.match(state.message, /Buscando/u)
+
+  state = reduceAppUpdateEvent(state, { type: 'update-available', version: '0.5.0' })
+  assert.equal(state.status, 'available')
+  assert.equal(state.version, '0.5.0')
+  assert.match(state.message, /0\.5\.0/u)
+
+  state = reduceAppUpdateEvent(state, { type: 'download-progress', percent: 42.6 })
+  assert.equal(state.status, 'downloading')
+  assert.equal(state.percent, 43)
+  assert.match(state.message, /43%/u)
+
+  state = reduceAppUpdateEvent(state, { type: 'update-downloaded', version: '0.5.0' })
+  assert.equal(state.status, 'downloaded')
+  assert.equal(state.percent, 100)
+  assert.match(state.message, /al salir/u)
+
+  // La descarga ganada se conserva: ni checking ni up-to-date la pisan.
+  assert.equal(reduceAppUpdateEvent(state, { type: 'check-started' }).status, 'downloaded')
+  assert.equal(reduceAppUpdateEvent(state, { type: 'up-to-date' }).status, 'downloaded')
+  assert.equal(reduceAppUpdateEvent(state, { type: 'error', detail: 'x' }).status, 'downloaded')
+})
+
+test('app update reducer reports up-to-date and recoverable errors', () => {
+  let state = reduceAppUpdateEvent(initialAppUpdateState(), { type: 'check-started' })
+  state = reduceAppUpdateEvent(state, { type: 'up-to-date' })
+  assert.equal(state.status, 'up-to-date')
+  assert.match(state.message, /actualizado/u)
+
+  // up-to-date no pisa una descarga en curso ni una disponible.
+  const downloading = reduceAppUpdateEvent(
+    reduceAppUpdateEvent(initialAppUpdateState(), { type: 'download-progress', percent: 10 }),
+    { type: 'up-to-date' },
+  )
+  assert.equal(downloading.status, 'downloading')
+
+  // Error recuperable: conserva la versión y permite reintentar.
+  let failed = reduceAppUpdateEvent(initialAppUpdateState(), { type: 'error', detail: new Error('net down') })
+  assert.equal(failed.status, 'error')
+  assert.equal(failed.detail, 'net down')
+  assert.match(failed.message, /conexi/u)
+  failed = reduceAppUpdateEvent(failed, { type: 'check-started' })
+  assert.equal(failed.status, 'checking')
+
+  // Progreso inválido no rompe el estado.
+  const weird = reduceAppUpdateEvent(initialAppUpdateState(), { type: 'download-progress', percent: Number.NaN })
+  assert.equal(weird.status, 'downloading')
+  assert.equal(weird.percent, null)
+
+  // reset vuelve a idle.
+  assert.equal(reduceAppUpdateEvent(failed, { type: 'reset' }).status, 'idle')
+})
+
+function createUpdateTestHarness({ packaged = true, feed = true, checkBehavior = 'available' } = {}) {
+  const listeners = new Map()
+  const sent = []
+  const calls = { checks: 0, quits: 0 }
+  const updater = {
+    autoDownload: false,
+    autoInstallOnAppQuit: false,
+    async checkForUpdates() {
+      calls.checks += 1
+      if (checkBehavior === 'throw') throw new Error('offline')
+      return null
+    },
+    async downloadUpdate() { return null },
+    quitAndInstall() { calls.quits += 1 },
+    on(event, listener) {
+      listeners.set(event, [...(listeners.get(event) ?? []), listener])
+      return undefined
+    },
+    emit(event, payload) {
+      for (const listener of listeners.get(event) ?? []) listener(payload)
+    },
+  }
+  const source = { owner: feed ? 'acme' : null, repo: feed ? 'radar' : null, configured: feed }
+  const service = createAppUpdateService({
+    updater,
+    isPackaged: packaged,
+    source,
+    updateFeedConfigured: feed,
+    log: () => {},
+    getWindows: () => [{ isDestroyed: () => false, webContents: { send: (channel, state) => sent.push([channel, state]) } }],
+  })
+  return { service, updater, sent, calls }
+}
+
+test('app update service broadcasts states and installs only when downloaded', async () => {
+  const { service, updater, sent, calls } = createUpdateTestHarness({
+    feed: true,
+  })
+  assert.equal(service.state.status, 'idle')
+  service.start()
+  assert.equal(updater.autoDownload, true)
+  assert.equal(updater.autoInstallOnAppQuit, true)
+
+  updater.emit('checking-for-update')
+  assert.equal(service.state.status, 'checking')
+  updater.emit('update-available', { version: '0.5.0' })
+  assert.equal(service.state.status, 'available')
+  updater.emit('download-progress', { percent: 25 })
+  assert.equal(service.state.status, 'downloading')
+  assert.equal(service.state.percent, 25)
+  updater.emit('update-downloaded', { version: '0.5.0' })
+  assert.equal(service.state.status, 'downloaded')
+
+  // Cada transición emite por el canal documentado.
+  assert.ok(sent.length >= 4)
+  for (const [channel, state] of sent) {
+    assert.equal(channel, 'app:update-state')
+    assert.ok(state && typeof state.message === 'string' && state.message.length > 0)
+  }
+
+  service.quitAndInstall()
+  assert.equal(calls.quits, 1)
+
+  // checkForUpdates manual con descarga lista no regresa el estado.
+  await service.checkForUpdates(true)
+  assert.equal(service.state.status, 'downloaded')
+})
+
+test('app update service guards quitAndInstall and throttles error retries', async () => {
+  const { service, updater, calls } = createUpdateTestHarness({
+    feed: true,
+    checkBehavior: 'throw',
+  })
+  assert.throws(() => service.quitAndInstall(), /descargada/u)
+
+  let now = 1_000_000
+  const timed = createAppUpdateService({
+    updater,
+    isPackaged: true,
+    source: { owner: 'acme', repo: 'radar', configured: true },
+    updateFeedConfigured: true,
+    log: () => {},
+    getWindows: () => [],
+    now: () => now,
+  })
+  await timed.checkForUpdates(true)
+  assert.equal(timed.state.status, 'error')
+  assert.equal(calls.checks, 1)
+
+  // Reintento automático dentro de la hora: no pega a la red.
+  await timed.checkForUpdates(false)
+  assert.equal(calls.checks, 1)
+
+  // Manual sí reintenta; automático tras una hora también.
+  await timed.checkForUpdates(true)
+  assert.equal(calls.checks, 2)
+  now += 61 * 60 * 1000
+  await timed.checkForUpdates(false)
+  assert.equal(calls.checks, 3)
+})
+
+test('app update service disables itself in dev or without a repo', () => {
+  const noRepo = createUpdateTestHarness({ feed: false })
+  assert.equal(noRepo.service.state.status, 'disabled')
+  assert.match(noRepo.service.state.message, /GitHub Releases/u)
+  noRepo.service.start()
+
+  const dev = createUpdateTestHarness({ packaged: false, feed: true })
+  assert.equal(dev.service.state.status, 'disabled')
+  const placeholderBuild = createUpdateTestHarness({ packaged: true, feed: false })
+  assert.equal(placeholderBuild.service.state.status, 'disabled')
+  assert.match(placeholderBuild.service.state.message, /GitHub Releases/u)
+})

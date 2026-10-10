@@ -53,3 +53,29 @@ etapas de prueba internas y no afecta el funcionamiento.
 Sin firma configurada, `electron-builder` informa `signing skipped`
 y el smoke registra `NotSigned` en ambas firmas. No se distribuye
 públicamente sin completar este paso.
+
+## Actualizaciones automáticas (GitHub Releases)
+
+La app busca actualizaciones en GitHub Releases con `electron-updater`,
+las descarga en segundo plano y las instala al salir (**Preferencias →
+Versión de la app → Buscar actualizaciones**; si ya está lista,
+**Instalar y salir**). El chequeo también corre solo al abrir la app.
+
+1. Creá el repo GitHub que alojará los releases y anotá `owner` y `repo`.
+2. Generá la clave Ed25519 de manifiestos con `npx electron-builder create-update-key` (escribe `update-private-key.pem`): guardá el PEM fuera del repo y exportá `ELECTRON_BUILDER_UPDATE_SIGN_KEY_FILE` con su ruta (o el contenido en `ELECTRON_BUILDER_UPDATE_SIGN_KEY`). Sin esta clave, `build:publish` se niega a continuar porque electron-builder 27 exige `latest.yml` firmado.
+3. Exportá en la máquina de build:
+   `RADAR_UPDATE_GITHUB_OWNER=<owner>`,
+   `RADAR_UPDATE_GITHUB_REPO=<repo>` y `GH_TOKEN` (token con permiso
+   `contents:write`).
+4. Publicá con `npm run build:publish`: typecheck + lint + tests +
+   evidencia + `vite build` + resolución del bloque `publish` (falla sin clave Ed25519) +
+   `electron-builder --win nsis --publish always`. El release incluye el
+   instalador `radarlaboral-Windows-<versión>-Setup.exe` (sin espacios: el updater pide el asset con guiones) y `latest.yml` firmado,
+   que la app instalada usa para detectar y verificar la descarga.
+5. Subí la versión en `package.json` en cada release: el updater compara
+   semver y solo ofrece versiones mayores.
+
+Sin `owner`/`repo` configurados, el build local genera el instalador sin
+publicar y la app muestra en Preferencias que las actualizaciones automáticas
+no están configuradas todavía. En desarrollo (`npm run dev`, sin empaquetar)
+el estado es el mismo a propósito: el updater solo corre empaquetado.

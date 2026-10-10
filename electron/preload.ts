@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { RadarApi } from '../src/shared/types'
+import type { AppUpdateState, RadarApi } from '../src/shared/types'
 
 const api: RadarApi = {
   geography: {
@@ -48,6 +48,27 @@ const api: RadarApi = {
   },
   app: {
     version: () => ipcRenderer.invoke('app:version'),
+    updateStatus: () => ipcRenderer.invoke('app:update-status'),
+    checkForUpdates: () => ipcRenderer.invoke('app:check-for-updates'),
+    quitAndInstallUpdate: () => ipcRenderer.invoke('app:quit-and-install-update'),
+    onUpdateState: (callback) => {
+      const listener = (_event: Electron.IpcRendererEvent, payload: unknown) => {
+        if (!payload || typeof payload !== 'object') return
+        const value = payload as Partial<AppUpdateState>
+        if (typeof value.status !== 'string' || typeof value.message !== 'string') return
+        const valid = ['disabled', 'idle', 'checking', 'available', 'downloading', 'downloaded', 'up-to-date', 'error']
+        if (!valid.includes(value.status)) return
+        callback({
+          status: value.status as AppUpdateState['status'],
+          version: typeof value.version === 'string' ? value.version : null,
+          percent: typeof value.percent === 'number' ? value.percent : null,
+          message: value.message,
+          detail: typeof value.detail === 'string' ? value.detail : null,
+        })
+      }
+      ipcRenderer.on('app:update-state', listener)
+      return () => ipcRenderer.removeListener('app:update-state', listener)
+    },
     summary: () => ipcRenderer.invoke('app:summary'),
     settings: () => ipcRenderer.invoke('app:settings'),
     saveSettings: (settings) => ipcRenderer.invoke('app:save-settings', settings),
