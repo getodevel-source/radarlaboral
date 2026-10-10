@@ -1,0 +1,112 @@
+{
+  "version": "0.4.79",
+  "method": "Chromium CDP forced-colors/prefers-contrast emulation on packaged renderer",
+  "media": {
+    "forced": true,
+    "contrast": true
+  },
+  "screenAccessibility": [
+    {
+      "label": "Resumen",
+      "title": "Tu búsqueda, en marcha.",
+      "unnamedInteractiveNodes": 0
+    },
+    {
+      "label": "Búsquedas",
+      "title": "Perfiles de búsqueda",
+      "unnamedInteractiveNodes": 0
+    },
+    {
+      "label": "Vacantes",
+      "title": "Vacantes",
+      "unnamedInteractiveNodes": 0
+    },
+    {
+      "label": "Mis CV",
+      "title": "Tus CV",
+      "unnamedInteractiveNodes": 0
+    },
+    {
+      "label": "Fuentes",
+      "title": "Fuentes de empleo",
+      "unnamedInteractiveNodes": 0
+    },
+    {
+      "label": "Preferencias",
+      "title": "Preferencias",
+      "unnamedInteractiveNodes": 0
+    }
+  ],
+  "primaryStyles": {
+    "primaryText": "rgb(255, 255, 255)",
+    "primaryBackground": "rgb(0, 0, 0)",
+    "primaryBorder": "rgb(255, 255, 255)",
+    "focusVisible": true,
+    "focusOutline": "solid",
+    "focusWidth": "2px",
+    "focusColor": "rgb(26, 235, 255)",
+    "selectedText": "rgb(0, 0, 0)",
+    "selectedBackground": "rgb(26, 235, 255)",
+    "selectedShadow": "none",
+    "selectedClass": "nav-item active",
+    "selectedLabel": "Resumen",
+    "selectedHover": false,
+    "selectedTransition": "none",
+    "selectedAnimations": [],
+    "matchingRules": [
+      {
+        "selector": ".nav-item.active",
+        "background": "rgba(255, 255, 255, 0.08)",
+        "color": "rgb(255, 255, 255)",
+        "media": ""
+      },
+      {
+        "selector": ".nav-item.active::before",
+        "background": "rgb(237, 139, 104)",
+        "color": "",
+        "media": ""
+      },
+      {
+        "selector": ".nav-item.active > svg",
+        "background": "",
+        "color": "rgb(239, 160, 127)",
+        "media": ""
+      },
+      {
+        "selector": ".nav-item.active::before",
+        "background": "",
+        "color": "",
+        "media": "(width <= 920px)"
+      },
+      {
+        "selector": ".nav-item.active, .filter-tabs button.selected",
+        "background": "highlight",
+        "color": "highlighttext",
+        "media": "(forced-colors: active)"
+      },
+      {
+        "selector": ".nav-item.active",
+        "background": "",
+        "color": "",
+        "media": "(forced-colors: active)"
+      }
+    ]
+  },
+  "dialogStyles": {
+    "role": "dialog",
+    "foreground": "rgb(255, 255, 255)",
+    "background": "rgb(0, 0, 0)",
+    "border": "rgb(255, 255, 255)",
+    "shadow": "none",
+    "backdrop": "rgb(0, 0, 0)"
+  },
+  "unnamedInteractiveNodes": 0,
+  "dialogEscape": true,
+  "focusRestored": true,
+  "sqliteIntegrity": "ok",
+  "sqliteTables": 7,
+  "uninstallExit": 0,
+  "userDataPreserved": true,
+  "scheduledTaskUnchanged": true,
+  "note": "Emulation confirms system-color rules in the renderer; it does not replace a visual review in the actual Windows high-contrast settings."
+}

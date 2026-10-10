@@ -1,0 +1,31 @@
+{
+  "version": "0.4.138",
+  "reviewedAt": "2026-10-09T23:22:52.368Z",
+  "nodeVersion": "v24.13.0",
+  "npmVersion": "11.6.2",
+  "lockfileSha256": "f35240588a84fc2334886c586c266a09c738bd952c0d889d4bdbb8ec00361ba8",
+  "fullAudit": {
+    "command": "npm audit",
+    "exitCode": 0,
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "productionAudit": {
+    "command": "npm audit --omit=dev",
+    "exitCode": 0,
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "version": "0.4.120",
+  "method": "Temporary per-user Windows Task Scheduler task, on-demand launch, synthetic profile, native window visibility probe",
+  "taskName": "RadarLaboral-QA-BackgroundSearch-1791557252042-17896",
+  "result": "passed",
+  "task": {
+    "created": true,
+    "startedOnDemand": true,
+    "logonTrigger": true,
+    "intervalHours": 4,
+    "logonType": "Interactive",
+    "xmlLogonType": "InteractiveToken",
+    "principalMatchesCurrentUser": true,
+    "runLevel": "Limited",
+    "exportedXmlRunLevel": null,
+    "interactiveToken": true,
+    "leastPrivilege": true,
+    "startWhenAvailable": true
+  },
+  "application": {
+    "started": true,
+    "mainWindowCreated": true,
+    "mainWindowVisible": false,
+    "syntheticProfile": true
+  },
+  "notification": {
+    "syntheticReminderSeeded": true,
+    "processedByApp": true,
+    "markedForCurrentDate": true,
+    "nativeToastObserved": false,
+    "inAppFallbackObserved": false,
+    "windowVisibleDuringReminder": false,
+    "outcome": "no-visible-notification-surface-observed"
+  },
+  "cleanup": {
+    "taskRemoved": true,
+    "applicationStopped": true,
+    "syntheticProfileRemoved": true
+  },
+  "error": null
+}

@@ -1,0 +1,235 @@
+{
+  "reviewDate": "2026-10-09",
+  "observedAt": "2026-10-09T09:56:26.512Z",
+  "method": "Lever public postings API via production pagination and mapping adapters",
+  "officialCareers": {
+    "url": "https://www.ryzlabs.com/careers",
+    "sampleOfficialRole": "https://www.ryzlabs.com/jobs/product-manager-argentina",
+    "applicationHost": "jobs.lever.co"
+  },
+  "endpoint": {
+    "url": "https://api.lever.co/v0/postings/RyzLabs?mode=json&limit=100",
+    "status": 200,
+    "total": 41,
+    "uniqueIds": 41,
+    "countryCounts": {
+      "AR": 33,
+      "US": 8
+    },
+    "responseBytes": 747698,
+    "requests": [
+      {
+        "skip": 0,
+        "status": 200,
+        "bytes": 747698
+      }
+    ]
+  },
+  "adapter": {
+    "mappedCountry": "AR",
+    "mappedArgentinaCount": 33,
+    "uniqueDirectLinks": 33,
+    "allLinksUnderRyzLabsBoard": true,
+    "applicationsSubmitted": false,
+    "postings": [
+      {
+        "title": "Accountant - AR & Collections",
+        "url": "https://jobs.lever.co/RyzLabs/24ec30b7-722a-4c55-ac02-4ebb080e69ff",
+        "location": "Argentina",
+        "publishedAt": "2026-08-04T18:39:49.461Z"
+      },
+      {
+        "title": "Accounting Project Manager",
+        "url": "https://jobs.lever.co/RyzLabs/3ce9f30a-f45d-46aa-9d31-23a8229b2da5",
+        "location": "Argentina",
+        "publishedAt": "2026-10-08T20:03:53.757Z"
+      },
+      {
+        "title": "Accounts Receivable & Refunds Specialist",
+        "url": "https://jobs.lever.co/RyzLabs/0fcd245b-e0d6-431f-928d-fe58099ee063",
+        "location": "Argentina",
+        "publishedAt": "2026-10-09T03:40:23.903Z"
+      },
+      {
+        "title": "Asset Titler",
+        "url": "https://jobs.lever.co/RyzLabs/0f25b9f8-f952-4a17-ad90-d2e1bbcd738b",
+        "location": "Argentina",
+        "publishedAt": "2026-09-23T15:09:02.707Z"
+      },
+      {
+        "title": "Asset Titler",
+        "url": "https://jobs.lever.co/RyzLabs/f5554384-d875-4243-914e-8b73f45ce504",
+        "location": "Buenos Aires",
+        "publishedAt": "2026-10-07T20:26:24.690Z"
+      },
+      {
+        "title": "Billing & Refunds Coordinator",
+        "url": "https://jobs.lever.co/RyzLabs/6a71707c-b90f-41fa-b319-2d3ecd89193f",
+        "location": "Argentina",
+        "publishedAt": "2026-10-07T14:44:17.810Z"
+      },
+      {
+        "title": "Client Service Engineer Lead",
+        "url": "https://jobs.lever.co/RyzLabs/40e42bef-5c8f-4535-9fd0-6b04fb942266",
+        "location": "Argentina",
+        "publishedAt": "2026-09-14T20:52:05.455Z"
+      },
+      {
+        "title": "Computer Vision Engineer",
+        "url": "https://jobs.lever.co/RyzLabs/6552a869-7f1f-4281-b598-503bddb3d0be",
+        "location": "Buenos Aires",
+        "publishedAt": "2026-09-25T20:57:56.972Z"
+      },
+      {
+        "title": "Data Analyst (Strategic Finance and Operations)",
+        "url": "https://jobs.lever.co/RyzLabs/a0fcf03c-996e-4549-9ca5-742ce636e24e",
+        "location": "Argentina",
+        "publishedAt": "2026-09-09T17:41:03.443Z"
+      },
+      {
+        "title": "Financial Data Analyst",
+        "url": "https://jobs.lever.co/RyzLabs/731a204e-7197-41ea-8f9a-06f722740feb",
+        "location": "Argentina",
+        "publishedAt": "2026-10-07T19:34:04.912Z"
+      },
+      {
+        "title": "Full Stack AI Engineer",
+        "url": "https://jobs.lever.co/RyzLabs/8660eb6d-8f82-4602-8e04-de8cd3a4fd44",
+        "location": "Argentina",
+        "publishedAt": "2026-02-20T14:49:23.627Z"
+      },
+      {
+        "title": "Full Stack Engineer",
+        "url": "https://jobs.lever.co/RyzLabs/330ef898-53ef-4e26-9b00-3204d62da43a",
+        "location": "Argentina",
+        "publishedAt": "2025-01-27T19:25:45.667Z"
+      },
+      {
+        "title": "Imaging Operator",
+        "url": "https://jobs.lever.co/RyzLabs/043fb0ac-b5c0-4b2b-98f6-d47d04b9d516",
+        "location": "Buenos Aires",
+        "publishedAt": "2026-09-29T17:32:44.720Z"
+      },
+      {
+        "title": "Marketing Project Manager",
+        "url": "https://jobs.lever.co/RyzLabs/37f6c0b2-1d03-4ad4-a49c-410a2d5d78e9",
+        "location": "Buenos Aires",
+        "publishedAt": "2026-09-04T14:42:40.276Z"
+      },
+      {
+        "title": "Motion Designer",
+        "url": "https://jobs.lever.co/RyzLabs/80761f32-b1bc-4d0b-93d9-2530f4266d84",
+        "location": "Argentina",
+        "publishedAt": "2026-09-25T20:35:11.724Z"
+      },
+      {
+        "title": "Multimedia Designer",
+        "url": "https://jobs.lever.co/RyzLabs/853f6ec6-e3c6-42b6-a3b6-a6ee51193bf8",
+        "location": "Argentina",
+        "publishedAt": "2026-10-07T19:37:25.066Z"
+      },
+      {
+        "title": "National Project Accountant",
+        "url": "https://jobs.lever.co/RyzLabs/77c80db5-9647-42ae-be9d-897cf49997ac",
+        "location": "Argentina",
+        "publishedAt": "2026-09-23T18:38:43.435Z"
+      },
+      {
+        "title": "NetSuite Project Manager",
+        "url": "https://jobs.lever.co/RyzLabs/c0c4753d-098b-466e-ad15-c02133f58035",
+        "location": "Argentina",
+        "publishedAt": "2026-09-30T13:25:08.909Z"
+      },
+      {
+        "title": "Principal AI Engineer",
+        "url": "https://jobs.lever.co/RyzLabs/5318e96e-f58b-439c-8172-a812def9e38f",
+        "location": "Argentina",
+        "publishedAt": "2026-07-23T21:19:45.496Z"
+      },
+      {
+        "title": "Principal Engineer",
+        "url": "https://jobs.lever.co/RyzLabs/62da8ccd-99b1-4c6a-9adb-d0d001331daa",
+        "location": "Argentina",
+        "publishedAt": "2026-07-23T21:25:31.094Z"
+      },
+      {
+        "title": "Principal ML Engineer",
+        "url": "https://jobs.lever.co/RyzLabs/48269002-6399-4154-8f93-0dcbb04cb7d0",
+        "location": "Argentina",
+        "publishedAt": "2026-10-09T03:57:18.027Z"
+      },
+      {
+        "title": "Principal Software Architect",
+        "url": "https://jobs.lever.co/RyzLabs/61225d0c-0b44-44c0-b3ec-d19a7d83bf25",
+        "location": "Argentina",
+        "publishedAt": "2026-10-09T04:06:02.613Z"
+      },
+      {
+        "title": "Product Support Engineer",
+        "url": "https://jobs.lever.co/RyzLabs/a5906268-6f3e-4a49-b992-bc3806c59f97",
+        "location": "Buenos Aires",
+        "publishedAt": "2026-09-25T20:59:41.863Z"
+      },
+      {
+        "title": "Senior Engineer (geospatial experience)",
+        "url": "https://jobs.lever.co/RyzLabs/a617007d-07e4-43ca-af84-dc9b739c0acc",
+        "location": "Argentina",
+        "publishedAt": "2026-09-28T13:22:06.590Z"
+      },
+      {
+        "title": "Senior Geospatial Software Engineer",
+        "url": "https://jobs.lever.co/RyzLabs/43f7bf38-763e-44b9-a59c-0f0989dfc2fd",
+        "location": "Argentina",
+        "publishedAt": "2026-10-07T20:38:03.259Z"
+      },
+      {
+        "title": "Senior NetSuite Consultant | FSM",
+        "url": "https://jobs.lever.co/RyzLabs/b93dd028-7607-41ec-b5cc-bcb9d14e3f00",
+        "location": "Argentina",
+        "publishedAt": "2026-08-11T15:27:21.162Z"
+      },
+      {
+        "title": "Senior NetSuite Consultant | Products",
+        "url": "https://jobs.lever.co/RyzLabs/21bfb6bf-9b64-40d7-96ea-15b0f1646bda",
+        "location": "Argentina",
+        "publishedAt": "2026-08-11T15:29:40.535Z"
+      },
+      {
+        "title": "Senior NetSuite Consultant | SaaS & PS",
+        "url": "https://jobs.lever.co/RyzLabs/9359ca33-b506-47f5-8af7-094d50017458",
+        "location": "Argentina",
+        "publishedAt": "2026-08-11T15:28:28.216Z"
+      },
+      {
+        "title": "Senior NetSuite Developer (FSM)",
+        "url": "https://jobs.lever.co/RyzLabs/2c8dd07d-a31d-4e18-b0d4-b97b06fd3c7f",
+        "location": "Argentina",
+        "publishedAt": "2026-07-22T17:58:02.944Z"
+      },
+      {
+        "title": "Software Engineer",
+        "url": "https://jobs.lever.co/RyzLabs/2ef91178-571b-4695-8c1b-2752344f9355",
+        "location": "Argentina",
+        "publishedAt": "2026-08-11T15:18:20.712Z"
+      },
+      {
+        "title": "Sr Data Analyst",
+        "url": "https://jobs.lever.co/RyzLabs/cbaf203b-d6bd-4408-84e1-02b44d9dc88f",
+        "location": "Buenos Aires",
+        "publishedAt": "2026-09-08T14:50:07.658Z"
+      },
+      {
+        "title": "Staff/Senior Product Designer",
+        "url": "https://jobs.lever.co/RyzLabs/f2afd25b-9eb2-4dd0-b946-899e5f29b85d",
+        "location": "Argentina",
+        "publishedAt": "2026-08-25T13:24:54.941Z"
+      },
+      {
+        "title": "Technical Solutions Engineer",
+        "url": "https://jobs.lever.co/RyzLabs/15a4f08d-305f-46fd-9289-e025bebc7ecb",
+        "location": "Argentina",
+        "publishedAt": "2026-10-07T15:15:55.415Z"
+      }
+    ]
+  }
+}

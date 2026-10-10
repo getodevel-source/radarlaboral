@@ -1,0 +1,84 @@
+{
+  "projectVersion": "0.4.138",
+  "testedAtUtc": "2026-10-09T23:22:52.368Z",
+  "registry": "https://registry.npmjs.org/electron-builder",
+  "registryDistTags": {
+    "latest": "26.15.3",
+    "v26": "26.17.0",
+    "next": "27.0.0-alpha.10"
+  },
+  "currentProject": {
+    "electronBuilder": "27.0.0-alpha.10",
+    "lockfileSha256": "f35240588a84fc2334886c586c266a09c738bd952c0d889d4bdbb8ec00361ba8",
+    "fullAudit": {
+      "exitCode": 0,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      }
+    },
+    "productionAudit": {
+      "exitCode": 0,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      }
+    }
+  },
+  "stableCandidate": {
+    "version": "26.17.0",
+    "lockfileSha256": "ca35868743175ef34d3177945abee4475ac3ac8bf6c68f8a37d2c5bae4fb9d59",
+    "audit": {
+      "command": "npm audit --json in isolated .qa-stable-builder-26.17.0-compat",
+      "exitCode": 1,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 8,
+        "high": 0,
+        "critical": 0,
+        "total": 8
+      },
+      "affectedPackages": [
+        "@electron/get",
+        "app-builder-lib",
+        "dmg-builder",
+        "electron-builder",
+        "electron-builder-squirrel-windows",
+        "global-agent",
+        "roarr",
+        "sprintf-js"
+      ]
+    },
+    "buildCompatibility": "An earlier isolated NSIS x64 build and installed-package smoke passed; see package-evidence/0.4.124/QA-BUILDER-COMPATIBILITY.json."
+  },
+  "rejectedDowngrade": {
+    "version": "26.5.0",
+    "audit": {
+      "exitCode": 1,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 8,
+        "critical": 1,
+        "total": 9
+      }
+    }
+  },
+  "sprintfJsAdvisory": {
+    "url": "https://github.com/advisories/GHSA-hp3w-g68c-fv3c",
+    "affectedRange": "<=1.1.3",
+    "patchedVersions": [],
+    "severity": "moderate"
+  },
+  "decision": "Keep electron-builder 27.0.0-alpha.10 pinned. Registry tags still have no stable 27 release; stable 26.17.0 has eight moderate findings, and the suggested downgrade to 26.5.0 has eight high and one critical finding. The current 27 alpha project lockfile has zero findings in both audits."
+}

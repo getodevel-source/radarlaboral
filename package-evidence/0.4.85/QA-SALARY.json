@@ -1,0 +1,63 @@
+{
+  "version": "0.4.85",
+  "method": "Parser de producción; período y moneda explícitos",
+  "samples": [
+    {
+      "input": "ARS 18.000.000 a 24.000.000 por año",
+      "result": {
+        "currency": "ARS",
+        "lowerBound": 1500000,
+        "sourcePeriod": "annual"
+      },
+      "expected": {
+        "currency": "ARS",
+        "lowerBound": 1500000,
+        "sourcePeriod": "annual"
+      }
+    },
+    {
+      "input": "USD 60K–72K annually",
+      "result": {
+        "currency": "USD",
+        "lowerBound": 5000,
+        "sourcePeriod": "annual"
+      },
+      "expected": {
+        "currency": "USD",
+        "lowerBound": 5000,
+        "sourcePeriod": "annual"
+      }
+    },
+    {
+      "input": "ARS 18,000,000 per annum",
+      "result": {
+        "currency": "ARS",
+        "lowerBound": 1500000,
+        "sourcePeriod": "annual"
+      },
+      "expected": {
+        "currency": "ARS",
+        "lowerBound": 1500000,
+        "sourcePeriod": "annual"
+      }
+    },
+    {
+      "input": "ARS 1.500.000 mensuales; 3 years of experience",
+      "result": {
+        "currency": "ARS",
+        "lowerBound": 1500000,
+        "sourcePeriod": "monthly"
+      },
+      "expected": {
+        "currency": "ARS",
+        "lowerBound": 1500000,
+        "sourcePeriod": "monthly"
+      }
+    },
+    {
+      "input": "USD 30 hourly",
+      "result": null,
+      "expected": null
+    }
+  ]
+}

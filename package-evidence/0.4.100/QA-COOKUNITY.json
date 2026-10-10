@@ -1,0 +1,169 @@
+{
+  "reviewDate": "2026-10-09",
+  "observedAt": "2026-10-09T10:31:27.158Z",
+  "method": "Greenhouse public Job Board API, official CookUnity careers URL, and Radar production source adapter",
+  "officialCareers": {
+    "openRoles": "https://careers.cookunity.com/open-roles",
+    "queryUrl": "https://careers.cookunity.com/open-roles?gh_jid=8015034003",
+    "queryStatus": 200,
+    "finalRoleUrl": "https://careers.cookunity.com/jobs/8015034003",
+    "roleId": "8015034003",
+    "roleTitle": "Recruiting Operations Specialist",
+    "roleLocation": "Buenos Aires, Buenos Aires, Argentina",
+    "roleTitleFoundInPage": true,
+    "locationFoundInPage": true
+  },
+  "policy": {
+    "id": "greenhouse-cookunity-argentina-json-2026-10-09",
+    "endpoint": "https://boards-api.greenhouse.io/v1/boards/cookunity/jobs?content=true",
+    "boardToken": "cookunity",
+    "company": "CookUnity",
+    "reviewedOn": "2026-10-09",
+    "customCareerUrlPatterns": [
+      {
+        "hostname": "careers.cookunity.com",
+        "pathname": "/open-roles",
+        "jobIdQueryParam": "gh_jid"
+      }
+    ]
+  },
+  "endpoint": {
+    "url": "https://boards-api.greenhouse.io/v1/boards/cookunity/jobs?content=true",
+    "status": 200,
+    "total": 157,
+    "metaTotal": 157,
+    "uniqueIds": 157,
+    "duplicateIds": 0,
+    "argentinaLocationCount": 18,
+    "responseBytes": 2745906
+  },
+  "adapter": {
+    "mappedArgentinaCount": 18,
+    "uniqueDirectLinks": 18,
+    "allLinksUnderReviewedPattern": true,
+    "applicationsSubmitted": false,
+    "postings": [
+      {
+        "id": "7712141003",
+        "title": "AI Native Engineer, Growth Marketing",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7712141003",
+        "updatedAt": "2026-08-21T16:44:07-04:00"
+      },
+      {
+        "id": "7826957003",
+        "title": "Business Analytics Manager",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7826957003",
+        "updatedAt": "2026-10-08T14:12:40-04:00"
+      },
+      {
+        "id": "7996423003",
+        "title": "CRM Marketing Associate  – Lifecycle Marketing & Retention",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7996423003",
+        "updatedAt": "2026-09-15T15:37:16-04:00"
+      },
+      {
+        "id": "7982574003",
+        "title": "CRM Specialist – Lifecycle Marketing & Retention",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7982574003",
+        "updatedAt": "2026-09-15T09:59:16-04:00"
+      },
+      {
+        "id": "8004373003",
+        "title": "Food Specialist",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=8004373003",
+        "updatedAt": "2026-09-24T14:41:08-04:00"
+      },
+      {
+        "id": "5594557003",
+        "title": "Join our Talent Community!",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=5594557003",
+        "updatedAt": "2026-07-22T15:37:44-04:00"
+      },
+      {
+        "id": "7824059003",
+        "title": "Product Manager, Your Private Chef",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7824059003",
+        "updatedAt": "2026-09-29T13:34:44-04:00"
+      },
+      {
+        "id": "8015034003",
+        "title": "Recruiting Operations Specialist",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=8015034003",
+        "updatedAt": "2026-10-06T17:20:36-04:00"
+      },
+      {
+        "id": "7794736003",
+        "title": "Senior Growth Designer, Acquisition & Offers",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7794736003",
+        "updatedAt": "2026-07-22T15:37:44-04:00"
+      },
+      {
+        "id": "7979188003",
+        "title": "Senior Product Designer, OpsUnity  <Freelance>",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7979188003",
+        "updatedAt": "2026-09-01T14:05:00-04:00"
+      },
+      {
+        "id": "7728833003",
+        "title": "Senior Supply Chain Analyst",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7728833003",
+        "updatedAt": "2026-10-07T18:12:20-04:00"
+      },
+      {
+        "id": "7992495003",
+        "title": "Senior Talent Acquisition Specialist",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7992495003",
+        "updatedAt": "2026-10-06T10:03:44-04:00"
+      },
+      {
+        "id": "8011419003",
+        "title": "Sr. Accounting Analyst",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=8011419003",
+        "updatedAt": "2026-10-05T10:55:37-04:00"
+      },
+      {
+        "id": "7723959003",
+        "title": "Sr Brand Design Manager",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7723959003",
+        "updatedAt": "2026-07-22T15:37:44-04:00"
+      },
+      {
+        "id": "7824444003",
+        "title": "Sr. Product Manager, Shopping Experience",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7824444003",
+        "updatedAt": "2026-08-06T11:07:13-04:00"
+      },
+      {
+        "id": "7786216003",
+        "title": "Staff Full Stack Engineer, B2B",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7786216003",
+        "updatedAt": "2026-07-22T15:37:44-04:00"
+      },
+      {
+        "id": "7925731003",
+        "title": "Staff Product Manager, ChefTech",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7925731003",
+        "updatedAt": "2026-08-21T13:04:27-04:00"
+      },
+      {
+        "id": "7991399003",
+        "title": "Treasury Analyst",
+        "url": "https://careers.cookunity.com/open-roles?gh_jid=7991399003",
+        "updatedAt": "2026-09-18T14:04:58-04:00"
+      }
+    ]
+  },
+  "packageVerification": {
+    "version": "0.4.100",
+    "installerSha256": "d91d97cb4619cff1db4dc227fb3867dfe969111bdd1126417b05125899a1ae24",
+    "asarPolicy": {
+      "boardTokenIncluded": true,
+      "customHostIncluded": true,
+      "customPathIncluded": true,
+      "jobIdParameterIncluded": true
+    },
+    "markdownFilesCompared": 8,
+    "markdownFilesMatch": true,
+    "smokeReport": "QA-PACKAGE.json"
+  }
+}

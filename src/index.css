@@ -1,0 +1,80 @@
+:root {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #273d32;
+  background: #f4f3ef;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --paper: #f4f3ef;
+  --forest: #18382f;
+  --moss: #668b70;
+  --clay: #e77b57;
+  --ink: #273d32;
+}
+
+* { box-sizing: border-box; }
+
+html { min-width: 320px; min-height: 100%; background: var(--paper); }
+
+body { min-width: 320px; min-height: 100vh; margin: 0; }
+
+button, input, textarea, select { font: inherit; }
+
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid #7ba0825c; outline-offset: 2px; }
+
+::selection { color: #fffaf1; background: #527a60; }
+
+@media (forced-colors: active) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  :focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 3px;
+  }
+
+  .nav-item.active,
+  .filter-tabs button.selected {
+    color: HighlightText;
+    background: Highlight;
+    box-shadow: none;
+  }
+
+  .nav-item.active {
+    border: 1px solid Highlight;
+  }
+
+  .button-dark,
+  .button-light {
+    color: ButtonText;
+    background: ButtonFace;
+    border: 1px solid ButtonText;
+    box-shadow: none;
+  }
+
+  .modal-backdrop {
+    background: Canvas;
+    backdrop-filter: none;
+  }
+
+  .modal-card {
+    color: CanvasText;
+    background: Canvas;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  a {
+    color: LinkText;
+  }
+
+  ::selection {
+    color: HighlightText;
+    background: Highlight;
+  }
+}

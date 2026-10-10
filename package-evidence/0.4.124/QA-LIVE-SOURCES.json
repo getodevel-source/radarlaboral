@@ -1,0 +1,95 @@
+{
+  "projectVersion": "0.4.124",
+  "testedAtUtc": "2026-10-09T16:16:59.571Z",
+  "method": "Production RSS/JSON adapter smoke against one exact reviewed policy per connector; sequential requests with a short delay.",
+  "verifiedPolicies": 66,
+  "sampleConnectors": 6,
+  "allSamplesResponded": true,
+  "results": [
+    {
+      "policyId": "findjobit-argentina-rss-2026-10-08",
+      "source": "Feed público de Findjobit para Argentina",
+      "connector": "rss",
+      "reviewedOn": "2026-10-08",
+      "url": "https://findjobit.com/jobs/country/argentina/feed",
+      "status": "ok",
+      "itemCount": 15,
+      "sampleTitles": [
+        "Niuro busca un GTM Engineer at Niuro",
+        "Niuro busca un Senior ServiceNow Developer and Business Systems Analyst",
+        "Niuro busca un GTM Operations Specialist"
+      ]
+    },
+    {
+      "policyId": "lever-despegar-argentina-json-2026-10-08",
+      "source": "Despegar · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.lever.co/v0/postings/despegar?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 29,
+      "sampleTitles": [
+        "¡Sumate a nuestro equipo de Finance - Planning & Control!",
+        "Analista de Operational Excellence",
+        "Associate Product Owner II Loyalty - Buenos Aires"
+      ]
+    },
+    {
+      "policyId": "smartrecruiters-coface-argentina-json-2026-10-09",
+      "source": "Coface · empleos en Argentina",
+      "connector": "smartrecruiters-posting-details",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.smartrecruiters.com/v1/companies/Coface/postings?limit=100&offset=0&country=ar",
+      "status": "ok",
+      "itemCount": 3,
+      "sampleTitles": [
+        "Pasante Comercial",
+        "Risk Underwriting Analyst",
+        "Analista de Riesgo Crediticio"
+      ]
+    },
+    {
+      "policyId": "greenhouse-cookunity-argentina-json-2026-10-09",
+      "source": "CookUnity · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://boards-api.greenhouse.io/v1/boards/cookunity/jobs?content=true",
+      "status": "ok",
+      "itemCount": 18,
+      "sampleTitles": [
+        "AI Native Engineer, Growth Marketing",
+        "Business Analytics Manager",
+        "CRM Marketing Associate  – Lifecycle Marketing & Retention"
+      ]
+    },
+    {
+      "policyId": "ashby-cas-argentina-json-2026-10-09",
+      "source": "Cloud Accountant Staffing · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/cas",
+      "status": "ok",
+      "itemCount": 8,
+      "sampleTitles": [
+        "US Auditor",
+        "US Tax Accountant",
+        "US Controller"
+      ]
+    },
+    {
+      "policyId": "workable-sur-argentina-json-2026-10-08",
+      "source": "Sur · oportunidades en Argentina (empleador final por confirmar)",
+      "connector": "workable-sur-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://apply.workable.com/api/v1/widget/accounts/surglobal?details=true",
+      "status": "ok",
+      "itemCount": 15,
+      "sampleTitles": [
+        "Customer Success Manager",
+        "Demand Generation Marketer",
+        "Demand Generation Marketer"
+      ]
+    }
+  ],
+  "note": "This smoke validates one live example per adapter. It does not revalidate all reviewed boards or replace review of each source policy."
+}

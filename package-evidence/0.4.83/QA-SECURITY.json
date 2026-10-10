@@ -1,0 +1,38 @@
+{
+  "version": "0.4.83",
+  "checkedAt": "2026-10-09T07:56:33.898Z",
+  "installerSha256": "fd43543f05d0044b1a87b3749fc56d8ea6282f3e3abd7d8114cd4e08a51f26e3",
+  "build": {
+    "typecheck": "passed",
+    "lint": "passed",
+    "testsPassed": 53,
+    "testsFailed": 0
+  },
+  "productionDependencies": {
+    "npmAudit": "0 vulnerabilities",
+    "dependencyCount": 25
+  },
+  "developmentTooling": {
+    "npmAudit": "8 moderate vulnerabilities",
+    "path": "electron-builder -> app-builder-lib -> @electron/get -> global-agent -> roarr -> sprintf-js@1.1.3"
+  },
+  "packagedRuntime": {
+    "electron": "44.7.0",
+    "asarEntries": 918,
+    "testsExcluded": true,
+    "sprintfJsExcluded": true,
+    "cspConnectSelfOnly": true,
+    "authenticode": {
+      "installer": "NotSigned",
+      "executable": "NotSigned"
+    }
+  },
+  "isolatedInstallSmoke": {
+    "pageTitle": "Radar Laboral",
+    "recommendedSourceCards": 7,
+    "sqliteIntegrity": "ok",
+    "uninstallExit": 0,
+    "syntheticUserDataPreserved": true,
+    "scheduledTaskUnchanged": true
+  }
+}

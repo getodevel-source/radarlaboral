@@ -1,0 +1,24 @@
+{
+  "version": "0.4.82",
+  "archiveEntries": 918,
+  "electron": "44.7.0",
+  "contentSecurityPolicy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'",
+  "excludesTests": true,
+  "excludesVulnerableSprintfJs": true,
+  "matchingMarkdownCopies": [
+    "README.md",
+    "docs\\copia-de-seguridad.md",
+    "docs\\datos-geograficos.md",
+    "docs\\dependency-audit.md",
+    "docs\\guia-de-uso.md",
+    "docs\\mvp-audit.md",
+    "docs\\source-policy-review.md",
+    "docs\\third-party-notices.md"
+  ],
+  "checksums": {
+    "Radar Laboral-Windows-0.4.82-Setup.exe": "96328211a6130fc5f5008d66ea5907e11f9e68e74342fbc81fec18b81d58d155",
+    "Radar Laboral-Windows-0.4.82-Setup.exe.blockmap": "80ada81a9835567590dae351db2f309446ba086dea74bb808c6e47c52819fc19",
+    "win-unpacked/Radar Laboral.exe": "b4508ae43c8347f1b65656f39fa43ebf901ad7bacc07eb1a78513aa442c0b0e9",
+    "win-unpacked/resources/app.asar": "6488071a3017068210eb073176875e9a5ff7b5c6be296c9954f5c39e39a2c549"
+  }
+}

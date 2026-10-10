@@ -1,0 +1,12 @@
+{
+  "version": "0.4.82",
+  "checkedAt": "2026-10-09T07:35:45.551Z",
+  "method": "testJsonFeed through the production JSON connector in electron/search.ts",
+  "endpoint": "https://api.smartrecruiters.com/v1/companies/Coface/postings?limit=100&offset=0&country=ar",
+  "itemCount": 3,
+  "sampleTitles": [
+    "Pasante Comercial",
+    "Risk Underwriting Analyst",
+    "Analista de Riesgo Crediticio"
+  ]
+}

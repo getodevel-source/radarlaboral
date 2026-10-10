@@ -1,0 +1,41 @@
+{
+  "reviewedOn": "2026-10-09",
+  "capturedAtUtc": "2026-10-09T18:49:55.550Z",
+  "companyCareersPage": "https://www.appen.com/careers?FullSite=1",
+  "leverPostingApiDocumentation": "https://github.com/lever/postings-api",
+  "endpoint": "https://api.lever.co/v0/postings/appen-2?mode=json&limit=100",
+  "responseStatus": 200,
+  "totalPostings": 19,
+  "uniquePostingIds": 19,
+  "exactArgentinaLocationLabel": "Remote - Argentina",
+  "matchingPostings": [
+    {
+      "id": "572f0190-f7e8-4df0-952a-04172f96d775",
+      "title": "Strategic Sourcing Lead – Fulfillment - Argentina",
+      "country": "AR",
+      "location": "Remote - Argentina",
+      "allLocations": [
+        "Remote - Argentina",
+        "Remote, BR",
+        "Remote PH",
+        "Remote, MX"
+      ],
+      "workplaceType": "remote",
+      "hostedUrl": "https://jobs.lever.co/appen-2/572f0190-f7e8-4df0-952a-04172f96d775"
+    }
+  ],
+  "titleMentionsArgentinaButForeignLocation": [
+    {
+      "id": "496346de-24dd-4fce-8811-d2219414f472",
+      "title": "Strategic Sourcer – Fulfillment - Argentina",
+      "country": "BR",
+      "location": "Remote, BR",
+      "allLocations": [
+        "Remote, BR",
+        "Remote PH"
+      ],
+      "hostedUrl": "https://jobs.lever.co/appen-2/496346de-24dd-4fce-8811-d2219414f472"
+    }
+  ],
+  "decision": "Keep Argentina only when country is AR or allLocations contains the exact reviewed label. A title mention alone does not qualify."
+}

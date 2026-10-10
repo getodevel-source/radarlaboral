@@ -1,0 +1,49 @@
+{
+  "reviewDate": "2026-10-09",
+  "observedAt": "2026-10-09T10:13:01.838Z",
+  "method": "Greenhouse public Job Board API and Radar production adapter",
+  "officialCareers": {
+    "url": "https://arize.com/careers/",
+    "officialRole": "https://arize.com/role/?gh_jid=6203648004",
+    "roleId": "6203648004",
+    "roleTitle": "DevOps Support Engineer (Argentina)",
+    "publicPosting": "https://job-boards.greenhouse.io/arizeai/jobs/6203648004"
+  },
+  "endpoint": {
+    "url": "https://boards-api.greenhouse.io/v1/boards/arizeai/jobs?content=true",
+    "status": 200,
+    "total": 24,
+    "metaTotal": 24,
+    "uniqueIds": 24,
+    "duplicateIds": 0,
+    "argentinaLocationCount": 1,
+    "responseBytes": 249493
+  },
+  "adapter": {
+    "mappedArgentinaCount": 1,
+    "uniqueDirectLinks": 1,
+    "allLinksUnderArizeBoard": true,
+    "applicationsSubmitted": false,
+    "postings": [
+      {
+        "id": "6203648004",
+        "title": "DevOps Support Engineer (Argentina)",
+        "url": "https://job-boards.greenhouse.io/arizeai/jobs/6203648004",
+        "location": "Remote (Buenos Aires)",
+        "updatedAt": "2026-09-23T16:45:19-04:00"
+      }
+    ]
+  },
+  "packageVerification": {
+    "version": "0.4.99",
+    "installerSha256": "7571d87a4696cde208fe64f51d29b865de30b2d51417b807078afaa3317b5e2f",
+    "asarPolicy": {
+      "boardTokenIncluded": true,
+      "companyNameIncluded": true,
+      "greenhouseEndpointTemplateIncluded": true,
+      "reviewDateIncluded": true
+    },
+    "markdownFilesCompared": 8,
+    "markdownFilesMatch": true
+  }
+}

@@ -1,0 +1,4 @@
+f6baeea5756baf8741bb0265559d5efbb00cfa24c57c4df3d527dd372a74e04e  Radar Laboral-Windows-0.4.87-Setup.exe
+0e92b4390eda01d08d05f0f14e4855a2a79abb64294120dc17e93a35432378d6  Radar Laboral-Windows-0.4.87-Setup.exe.blockmap
+a335ba28e8c0f1927ac104c21b415f64fe0302cb7539c616818b8a9fdf18edf7  win-unpacked\Radar Laboral.exe
+016bb23ab91b6ee58c7c822d22cc95ec9ff0ce277932d21e61fc84a42de55855  win-unpacked\resources\app.asar

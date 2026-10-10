@@ -1,0 +1,36 @@
+{
+  "version": "0.4.98",
+  "method": "NSIS x64 installation, isolated synthetic profile, CDP source-card check, and uninstall",
+  "installerSha256": "f5000b6903dd5ad67e3dbe63ef86e19597128cda33eb4332336d1ca2132fec56",
+  "package": {
+    "asarEntries": 918,
+    "testsExcluded": true,
+    "sprintfJsExcluded": true,
+    "cspConnectSelfOnly": true,
+    "markdownDocs": 7,
+    "signatures": {
+      "installer": "NotSigned",
+      "executable": "NotSigned"
+    }
+  },
+  "installedApp": {
+    "title": "Radar Laboral",
+    "recommendedSourceCards": 7,
+    "smartRecruitersButton": "Agregar 5 tableros"
+  },
+  "sqlite": {
+    "integrity": "ok",
+    "tables": 7,
+    "syntheticPreferencePreserved": true
+  },
+  "uninstallExit": 0,
+  "syntheticUserDataPreserved": true,
+  "scheduledTaskUnchanged": true,
+  "hashes": {
+    "installer": "f5000b6903dd5ad67e3dbe63ef86e19597128cda33eb4332336d1ca2132fec56",
+    "blockmap": "0fc51899035619fe818a16fbc232bc75b82432b4cd52ca6f08d3191b109b7e16",
+    "executable": "a4adcd36485aa078f62a6b5c3a616aec836544cc75d0082ec43236f7e7caabd4",
+    "appAsar": "05b79c7ba03734a8243faf15194830246969eade5b4a541afcfd9924620178d3"
+  },
+  "qaDirectory": ".qa-package-0.4.98-2026-10-09T09-58-07-695Z"
+}

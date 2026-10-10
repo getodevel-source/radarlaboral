@@ -1,0 +1,20 @@
+{
+  "version": "0.4.79",
+  "archiveEntries": 918,
+  "mainBundle": "dist-electron/main.js",
+  "stylesheet": "dist/assets/index-BUF0Wqxe.css",
+  "containsAbodePolicy": true,
+  "containsForcedColorsMotionRule": true,
+  "excludesTests": true,
+  "excludesVulnerableSprintfJs": true,
+  "matchingMarkdownCopies": [
+    "README.md",
+    "docs\\copia-de-seguridad.md",
+    "docs\\datos-geograficos.md",
+    "docs\\dependency-audit.md",
+    "docs\\guia-de-uso.md",
+    "docs\\mvp-audit.md",
+    "docs\\source-policy-review.md",
+    "docs\\third-party-notices.md"
+  ]
+}

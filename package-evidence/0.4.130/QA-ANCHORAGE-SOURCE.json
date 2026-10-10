@@ -1,0 +1,55 @@
+{
+  "projectVersion": "0.4.130",
+  "reviewedOn": "2026-10-09",
+  "capturedAtUtc": "2026-10-09T19:18:19.176Z",
+  "companyCareersPage": "https://www.anchorage.com/careers",
+  "companyCareersPageLinksToLever": "https://jobs.lever.co/anchorage",
+  "publicLeverBoard": "https://jobs.lever.co/anchorage?location=Argentina",
+  "leverPostingApiDocumentation": "https://github.com/lever/postings-api",
+  "endpoint": "https://api.lever.co/v0/postings/anchorage?mode=json&limit=100",
+  "responseStatus": 200,
+  "totalPostings": 22,
+  "uniquePostingIds": 22,
+  "exactArgentinaLocationLabel": "Argentina",
+  "matchingPostings": [
+    {
+      "id": "9f6d4223-389c-44e3-99b1-50f46c4855da",
+      "title": "Derivatives Trader",
+      "country": "KY",
+      "primaryLocation": "Cayman Islands",
+      "allLocations": [
+        "Cayman Islands",
+        "Singapore",
+        "Brazil",
+        "Argentina"
+      ],
+      "workplaceType": "remote",
+      "hostedUrl": "https://jobs.lever.co/anchorage/9f6d4223-389c-44e3-99b1-50f46c4855da",
+      "inPersonOnboardingRequired": true
+    },
+    {
+      "id": "c2b42959-0a4b-4e85-9901-8a875d586902",
+      "title": "Senior Derivatives Trader",
+      "country": "KY",
+      "primaryLocation": "Cayman Islands",
+      "allLocations": [
+        "Cayman Islands",
+        "Singapore",
+        "Brazil",
+        "Argentina"
+      ],
+      "workplaceType": "remote",
+      "hostedUrl": "https://jobs.lever.co/anchorage/c2b42959-0a4b-4e85-9901-8a875d586902",
+      "inPersonOnboardingRequired": true
+    }
+  ],
+  "productionAdapter": {
+    "itemCount": 2,
+    "sampleTitles": [
+      "Derivatives Trader",
+      "Senior Derivatives Trader"
+    ]
+  },
+  "generalRemoteWorkCaveat": "The careers overview says employees may work remotely anywhere in the U.S. or Portugal; each eligible job posting separately lists Argentina among its locations.",
+  "decision": "Keep country = AR or the exact allLocations label Argentina. Prioritize that location, retain manual applications, and disclose that the current remote postings require mandatory in-person onboarding."
+}

@@ -1,0 +1,107 @@
+{
+  "projectVersion": "0.4.131",
+  "reviewedOn": "2026-10-09",
+  "capturedAtUtc": "2026-10-09T19:42:38.282Z",
+  "companyCareersPage": "https://www.siena.cx/careers",
+  "careersPageStatus": 200,
+  "careersPageLinksToSienaAshby": true,
+  "careersPageEvidence": "The official page lists Argentina roles and describes a globally remote team.",
+  "publicAshbyBoard": "https://jobs.ashbyhq.com/siena",
+  "publicAshbyPostingApiDocumentation": "https://developers.ashbyhq.com/docs/public-job-posting-api",
+  "endpoint": "https://api.ashbyhq.com/posting-api/job-board/siena",
+  "responseStatus": 200,
+  "apiVersion": "1",
+  "totalPostings": 13,
+  "listedPostings": 13,
+  "uniquePostingIds": 13,
+  "matchingPostings": [
+    {
+      "id": "9b020e8d-d953-4e52-b13e-f20397cc9199",
+      "title": "Software Engineer, Platform Experience",
+      "workplaceType": "Remote",
+      "primaryLocation": "Argentina",
+      "secondaryLocations": [
+        {
+          "location": "Buenos Aires",
+          "country": "Argentina"
+        },
+        {
+          "location": "Brazil",
+          "country": "Brazil"
+        },
+        {
+          "location": "Bucharest",
+          "country": "Romania"
+        },
+        {
+          "location": "Mexico City",
+          "country": "Mexico"
+        },
+        {
+          "location": "Rio de Janeiro",
+          "country": "Brazil"
+        },
+        {
+          "location": "Sao Paolo",
+          "country": "Brazil"
+        }
+      ],
+      "displayedLocations": "Argentina; Buenos Aires, Argentina; Brazil; Bucharest, Romania; Mexico City, Mexico; Rio de Janeiro, Brazil; Sao Paolo, Brazil",
+      "jobUrl": "https://jobs.ashbyhq.com/siena/9b020e8d-d953-4e52-b13e-f20397cc9199"
+    },
+    {
+      "id": "91e5e63a-7b02-4176-8b8f-0747042d756f",
+      "title": "Senior Fullstack Engineer",
+      "workplaceType": "Remote",
+      "primaryLocation": "Argentina",
+      "secondaryLocations": [
+        {
+          "location": "Brazil",
+          "country": "Brazil"
+        },
+        {
+          "location": "Helsinki",
+          "country": "Finland"
+        },
+        {
+          "location": "United Kingdom",
+          "country": "United Kingdom"
+        },
+        {
+          "location": "Romania",
+          "country": "Romania"
+        }
+      ],
+      "displayedLocations": "Argentina; Brazil; Helsinki, Finland; London, United Kingdom; Romania",
+      "jobUrl": "https://jobs.ashbyhq.com/siena/91e5e63a-7b02-4176-8b8f-0747042d756f"
+    },
+    {
+      "id": "1216b030-76e0-443e-a7a7-7e826d3b3960",
+      "title": "Product Specialist",
+      "workplaceType": "Remote",
+      "primaryLocation": "Remote - Europe",
+      "secondaryLocations": [
+        {
+          "location": "Buenos Aires",
+          "country": "Argentina"
+        },
+        {
+          "location": "Sao Paolo",
+          "country": "Brazil"
+        }
+      ],
+      "displayedLocations": "Buenos Aires, Argentina; United Kingdom; Sao Paolo, Brazil",
+      "jobUrl": "https://jobs.ashbyhq.com/siena/1216b030-76e0-443e-a7a7-7e826d3b3960"
+    }
+  ],
+  "productionAdapter": {
+    "itemCount": 3,
+    "sampleTitles": [
+      "Software Engineer, Platform Experience",
+      "Senior Fullstack Engineer",
+      "Product Specialist"
+    ]
+  },
+  "locationCaveat": "Product Specialist has primary location Remote - Europe and Buenos Aires as an explicit secondary location. Radar preserves both and puts Buenos Aires first; confirm location eligibility on the original posting before applying.",
+  "decision": "Keep only listed postings whose primary or secondary structured location enables Argentina. Preserve the complete location list, attribute jobs to Siena AI, and leave applications manual."
+}

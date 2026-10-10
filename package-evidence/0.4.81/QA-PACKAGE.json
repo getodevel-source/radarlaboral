@@ -1,0 +1,18 @@
+{
+  "version": "0.4.81",
+  "archiveEntries": 918,
+  "electron": "44.7.0",
+  "contentSecurityPolicy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'",
+  "excludesTests": true,
+  "excludesVulnerableSprintfJs": true,
+  "matchingMarkdownCopies": [
+    "README.md",
+    "docs\\copia-de-seguridad.md",
+    "docs\\datos-geograficos.md",
+    "docs\\dependency-audit.md",
+    "docs\\guia-de-uso.md",
+    "docs\\mvp-audit.md",
+    "docs\\source-policy-review.md",
+    "docs\\third-party-notices.md"
+  ]
+}

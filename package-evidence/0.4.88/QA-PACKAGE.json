@@ -1,0 +1,63 @@
+{
+  "version": "0.4.88",
+  "method": "NSIS x64 installation, isolated synthetic profile, CDP source-card check, and uninstall",
+  "installerSha256": "665cc1428c502c2c960f551ae907c8d6b73da8f6a56d1d8d0fb3dbaed9fd0d63",
+  "package": {
+    "asarEntries": 918,
+    "testsExcluded": true,
+    "sprintfJsExcluded": true,
+    "cspConnectSelfOnly": true,
+    "markdownDocs": 7,
+    "signatures": {
+      "installer": "NotSigned",
+      "executable": "NotSigned"
+    }
+  },
+  "installedApp": {
+    "title": "Radar Laboral",
+    "recommendedSourceCards": 7,
+    "smartRecruitersButton": "Agregar 3 tableros"
+  },
+  "sqlite": {
+    "integrity": "ok",
+    "tables": 7,
+    "syntheticPreferencePreserved": true
+  },
+  "uninstallExit": 0,
+  "syntheticUserDataPreserved": true,
+  "scheduledTaskUnchanged": true,
+  "hashes": {
+    "installer": "665cc1428c502c2c960f551ae907c8d6b73da8f6a56d1d8d0fb3dbaed9fd0d63",
+    "blockmap": "536ccd5804088fd256e4bd5657f832e80db5213886794571103e7411605d41ed",
+    "executable": "c7d17eb217c8aea0a1139e5daec5dec9136eb0b7a2ef495e6937647108c70e35",
+    "appAsar": "2e5f64a3f602f1e794fdd42934747464bf57b092437306c3bd0769027f5621ef"
+  },
+  "qaDirectory": ".qa-package-0.4.88-2026-10-09T08-39-34-115Z",
+  "securityAudit": {
+    "capturedAt": "2026-10-09T08:40:08.004Z",
+    "productionTree": {
+      "dependencies": 25,
+      "vulnerabilities": 0
+    },
+    "fullTree": {
+      "moderate": 8,
+      "high": 0,
+      "critical": 0,
+      "affectedPackages": [
+        "@electron/get",
+        "app-builder-lib",
+        "dmg-builder",
+        "electron-builder",
+        "electron-builder-squirrel-windows",
+        "global-agent",
+        "roarr",
+        "sprintf-js"
+      ]
+    },
+    "packagedRuntime": {
+      "electron": "44.7.0",
+      "asarEntries": 918
+    },
+    "verifiedSourcePolicies": 62
+  }
+}

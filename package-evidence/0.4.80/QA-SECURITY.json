@@ -1,0 +1,14 @@
+{
+  "version": "0.4.80",
+  "method": "CDP inspection of the installed Windows renderer",
+  "installerSha256": "c3be3490189eada24e47d45a95101ea14c9beba030dd83820abb0d4f3434c410",
+  "pageTitle": "Radar Laboral",
+  "headingPresent": true,
+  "productionConnectSource": "'self'",
+  "viteDevelopmentHostAbsent": true,
+  "sqliteIntegrity": "ok",
+  "sqliteTables": 7,
+  "uninstallExit": 0,
+  "userDataPreserved": true,
+  "scheduledTaskUnchanged": true
+}

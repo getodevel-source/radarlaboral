@@ -1,0 +1,46 @@
+{
+    "version":  "0.4.127",
+    "reviewedAt":  "2026-10-09T18:04:48.0159450Z",
+    "nodeVersion":  "v24.13.0",
+    "npmVersion":  "11.6.2",
+    "lockfileSha256":  "80e23e426b30a99d9db6014d9897f6fa2101b695369411385bd5edf20156f80d",
+    "fullAudit":  {
+                      "command":  "npm audit",
+                      "vulnerabilities":  {
+                                              "info":  0,
+                                              "low":  0,
+                                              "moderate":  0,
+                                              "high":  0,
+                                              "critical":  0,
+                                              "total":  0
+                                          },
+                      "dependencies":  {
+                                           "prod":  25,
+                                           "dev":  378,
+                                           "optional":  39,
+                                           "peer":  14,
+                                           "peerOptional":  0,
+                                           "total":  415
+                                       }
+                  },
+    "productionAudit":  {
+                            "command":  "npm audit --omit=dev",
+                            "vulnerabilities":  {
+                                                    "info":  0,
+                                                    "low":  0,
+                                                    "moderate":  0,
+                                                    "high":  0,
+                                                    "critical":  0,
+                                                    "total":  0
+                                                },
+                            "dependencies":  {
+                                                 "prod":  25,
+                                                 "dev":  378,
+                                                 "optional":  39,
+                                                 "peer":  14,
+                                                 "peerOptional":  0,
+                                                 "total":  415
+                                             }
+                        },
+    "zeroVulnerabilitiesInBothAudits":  true
+}

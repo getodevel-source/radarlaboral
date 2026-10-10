@@ -1,0 +1,418 @@
+{
+    "version":  "0.4.108",
+    "method":  "Windows UI Automation API on packaged executable; isolated synthetic profile",
+    "nativeMenuLabels":  [
+                             "Archivo",
+                             "Editar",
+                             "Ver",
+                             "Ventana"
+                         ],
+    "defaultEnglishMenuLabels":  [
+
+                                 ],
+    "cvUploadLabels":  [
+                           "Cargar CV: Sin archivos seleccionados",
+                           "Elegir archivos: Sin archivos seleccionados"
+                       ],
+    "sourceAutomationActions":  {
+                                    "authorize":  [
+                                                      "Autorizar consultas automáticas para QA pending feed"
+                                                  ],
+                                    "revoke":  [
+                                                   "Revocar autorización automática para QA approved paused feed"
+                                               ]
+                                },
+    "screens":  [
+                    {
+                        "screen":  "Resumen",
+                        "interactiveControls":  20,
+                        "unnamedInteractiveControls":  0,
+                        "buttons":  [
+                                        "Archivo",
+                                        "Editar",
+                                        "Ver",
+                                        "Ventana",
+                                        "Ir al resumen",
+                                        "Resumen",
+                                        "Búsquedas",
+                                        "Vacantes",
+                                        "Mis CV",
+                                        "Fuentes 2",
+                                        "Preferencias",
+                                        "Preferencias",
+                                        "Crear búsqueda",
+                                        "Crear mi primera búsqueda",
+                                        "Agregar un aviso manualmente",
+                                        "Administrar fuentes",
+                                        "Ver perfiles",
+                                        "Crear perfil",
+                                        "Ver vacantes",
+                                        "Agregar vacante"
+                                    ],
+                        "fields":  [
+
+                                   ]
+                    },
+                    {
+                        "screen":  "Búsquedas",
+                        "interactiveControls":  14,
+                        "unnamedInteractiveControls":  0,
+                        "buttons":  [
+                                        "Archivo",
+                                        "Editar",
+                                        "Ver",
+                                        "Ventana",
+                                        "Ir al resumen",
+                                        "Resumen",
+                                        "Búsquedas",
+                                        "Vacantes",
+                                        "Mis CV",
+                                        "Fuentes 2",
+                                        "Preferencias",
+                                        "Preferencias",
+                                        "Nuevo perfil",
+                                        "Crear perfil de búsqueda"
+                                    ],
+                        "fields":  [
+
+                                   ]
+                    },
+                    {
+                        "screen":  "Vacantes",
+                        "interactiveControls":  24,
+                        "unnamedInteractiveControls":  0,
+                        "buttons":  [
+                                        "Archivo",
+                                        "Editar",
+                                        "Ver",
+                                        "Ventana",
+                                        "Ir al resumen",
+                                        "Resumen",
+                                        "Búsquedas",
+                                        "Vacantes",
+                                        "Mis CV",
+                                        "Fuentes 2",
+                                        "Preferencias",
+                                        "Preferencias",
+                                        "Importar CSV local",
+                                        "Importar JSON local",
+                                        "Agregar vacante",
+                                        "Todas",
+                                        "Nueva",
+                                        "Revisada",
+                                        "Guardada",
+                                        "Postulada",
+                                        "Descartada",
+                                        "Agregar vacante"
+                                    ],
+                        "fields":  [
+                                       {
+                                           "type":  "ComboBox",
+                                           "name":  "Filtrar por perfil"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "⌕"
+                                       }
+                                   ]
+                    },
+                    {
+                        "screen":  "Mis CV",
+                        "interactiveControls":  15,
+                        "unnamedInteractiveControls":  0,
+                        "buttons":  [
+                                        "Archivo",
+                                        "Editar",
+                                        "Ver",
+                                        "Ventana",
+                                        "Ir al resumen",
+                                        "Resumen",
+                                        "Búsquedas",
+                                        "Vacantes",
+                                        "Mis CV",
+                                        "Fuentes 2",
+                                        "Preferencias",
+                                        "Preferencias",
+                                        "Cargar CV: Sin archivos seleccionados",
+                                        "Elegir archivos: Sin archivos seleccionados",
+                                        "Elegir archivos"
+                                    ],
+                        "fields":  [
+
+                                   ]
+                    },
+                    {
+                        "screen":  "Fuentes",
+                        "interactiveControls":  54,
+                        "unnamedInteractiveControls":  0,
+                        "buttons":  [
+                                        "Archivo",
+                                        "Editar",
+                                        "Ver",
+                                        "Ventana",
+                                        "Ir al resumen",
+                                        "Resumen",
+                                        "Búsquedas",
+                                        "Vacantes",
+                                        "Mis CV",
+                                        "Fuentes 2",
+                                        "Preferencias",
+                                        "Preferencias",
+                                        "Agregar fuente",
+                                        "Ver documentación oficial de la API",
+                                        "Agregar 17 tableros",
+                                        "Ver documentación oficial de la API",
+                                        "Agregar 26 tableros",
+                                        "Ver documentación oficial de la API",
+                                        "Agregar 15 empresas",
+                                        "Ver documentación oficial de la API",
+                                        "Ver empleos de Coface",
+                                        "Ver empleos de PSI CRO",
+                                        "Ver empleos de Miratech",
+                                        "Ver empleos de Cielo",
+                                        "Agregar 5 tableros",
+                                        "Ver documentación oficial de Workable",
+                                        "Ver vacantes de Sur",
+                                        "Agregar fuente",
+                                        "Ver documentación oficial de la API",
+                                        "Agregar fuente",
+                                        "Ver información y condiciones del feed",
+                                        "Agregar feed",
+                                        "Bumeran",
+                                        "Jooble Argentina",
+                                        "ZonaJobs",
+                                        "Computrabajo",
+                                        "Conexiona RRHH · varios rubros",
+                                        "LaburoCerca · empleos en Argentina",
+                                        "Indeed Argentina",
+                                        "LinkedIn Empleos",
+                                        "Portal Empleo",
+                                        "Concursar · empleo público",
+                                        "Assist World · verificar elegibilidad Wise",
+                                        "Remote · revisar requisitos por país",
+                                        "Buscar ahora",
+                                        "Agregar una fuente personalizada",
+                                        "Revocar autorización automática para QA approved paused feed",
+                                        "Activar fuente",
+                                        "Abrir fuente",
+                                        "Eliminar QA approved paused feed",
+                                        "Autorizar consultas automáticas para QA pending feed",
+                                        "Activar fuente",
+                                        "Abrir fuente",
+                                        "Eliminar QA pending feed"
+                                    ],
+                        "fields":  [
+
+                                   ]
+                    },
+                    {
+                        "screen":  "Preferencias",
+                        "interactiveControls":  28,
+                        "unnamedInteractiveControls":  0,
+                        "buttons":  [
+                                        "Archivo",
+                                        "Editar",
+                                        "Ver",
+                                        "Ventana",
+                                        "Ir al resumen",
+                                        "Resumen",
+                                        "Búsquedas",
+                                        "Vacantes",
+                                        "Mis CV",
+                                        "Fuentes 2",
+                                        "Preferencias",
+                                        "Preferencias",
+                                        "Actualizar cotizaciones",
+                                        "Crear copia de seguridad",
+                                        "Restaurar desde una copia",
+                                        "Guardar mi perfil",
+                                        "Guardar preferencias"
+                                    ],
+                        "fields":  [
+                                       {
+                                           "type":  "ComboBox",
+                                           "name":  "Frecuencia de búsqueda Si la computadora está apagada, se retoma al abrir la app."
+                                       },
+                                       {
+                                           "type":  "CheckBox",
+                                           "name":  "Buscar aunque Radar esté cerrado Windows abrirá Radar minimizado al iniciar sesión y lo reactivará según el intervalo. Usa esta cuenta, sin contraseña ni privilegios de administrador; requiere instalar la app."
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Nombre completo"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Correo electrónico"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Teléfono"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Localidad"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Disponibilidad"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Movilidad u otros datos"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Resumen confirmado"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Otros datos confirmados"
+                                       },
+                                       {
+                                           "type":  "CheckBox",
+                                           "name":  "Activar redacción asistida Requiere una API compatible con el formato de chat de OpenAI."
+                                       }
+                                   ]
+                    }
+                ],
+    "dialogs":  [
+                    {
+                        "dialog":  "Nueva búsqueda",
+                        "appearedInWindowsUiAutomation":  true,
+                        "interactiveControls":  17,
+                        "unnamedInteractiveControls":  0,
+                        "fields":  [
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Nombre del perfil Un nombre corto para identificarlo."
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Describí la búsqueda Escribilo con tus palabras; se usa para ordenar y abrir búsquedas web junto con los filtros."
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Puestos o rubros Filtros opcionales; separá varios con comas."
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Localidades Una por línea o separadas por punto y coma. Podés desambiguar, por ejemplo: Rosario, Santa Fe."
+                                       },
+                                       {
+                                           "type":  "ComboBox",
+                                           "name":  "Modalidad"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Jornada u horario"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Palabras deseadas Opcional. Busca palabras o frases completas para ordenar los avisos."
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Palabras para excluir Omite avisos con alguna palabra o frase completa; no coincide con una parte dentro de otra palabra."
+                                       },
+                                       {
+                                           "type":  "ComboBox",
+                                           "name":  "Moneda"
+                                       },
+                                       {
+                                           "type":  "CheckBox",
+                                           "name":  "Convertir otros sueldos con cotización del BCRA Al buscar, Radar usa la última referencia disponible. La fecha se guarda en el resultado; si falta una cotización, conserva el aviso sin aplicar el mínimo."
+                                       }
+                                   ],
+                        "focusOnFormControl":  true,
+                        "cancelButtonAvailable":  true,
+                        "closedWithCancel":  true,
+                        "navigationRestored":  true
+                    },
+                    {
+                        "dialog":  "Guardar una vacante",
+                        "appearedInWindowsUiAutomation":  true,
+                        "interactiveControls":  15,
+                        "unnamedInteractiveControls":  0,
+                        "fields":  [
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Puesto"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Empresa"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Localidad"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Enlace del aviso"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Fuente"
+                                       },
+                                       {
+                                           "type":  "ComboBox",
+                                           "name":  "Perfil relacionado"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Descripción del aviso Pegá el texto si querés conservarlo junto con el enlace."
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Sueldo publicado"
+                                       }
+                                   ],
+                        "focusOnFormControl":  true,
+                        "cancelButtonAvailable":  true,
+                        "closedWithCancel":  true,
+                        "navigationRestored":  true
+                    },
+                    {
+                        "dialog":  "Agregar una fuente",
+                        "appearedInWindowsUiAutomation":  true,
+                        "interactiveControls":  14,
+                        "unnamedInteractiveControls":  0,
+                        "fields":  [
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Nombre"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Enlace"
+                                       },
+                                       {
+                                           "type":  "ComboBox",
+                                           "name":  "Tipo de fuente"
+                                       },
+                                       {
+                                           "type":  "Edit",
+                                           "name":  "Referencia oficial (opcional) Se guarda como nota para vos. Ingresarla no habilita consultas automáticas."
+                                       },
+                                       {
+                                           "type":  "CheckBox",
+                                           "name":  "Confirmo que este endpoint público permite consultas automáticas y autorizo a Radar La app consultará el endpoint al buscar, también según el intervalo programado. Solo se aceptan servidores HTTPS públicos; se rechazan las redirecciones."
+                                       },
+                                       {
+                                           "type":  "ComboBox",
+                                           "name":  "Perfil relacionado"
+                                       }
+                                   ],
+                        "focusOnFormControl":  true,
+                        "cancelButtonAvailable":  true,
+                        "closedWithCancel":  true,
+                        "navigationRestored":  true
+                    }
+                ],
+    "result":  "passed",
+    "failures":  [
+
+                 ],
+    "qaDirectory":  ".qa-accessibility-0.4.108-2026-10-09T12-27-23-462Z"
+}

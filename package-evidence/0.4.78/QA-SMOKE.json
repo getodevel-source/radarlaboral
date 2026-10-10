@@ -1,0 +1,112 @@
+{
+  "version": "0.4.78",
+  "pages": [
+    {
+      "navigation": "Resumen",
+      "heading": "Tu búsqueda, en marcha.",
+      "accessibility": {
+        "nodes": 231,
+        "interactive": 16,
+        "unnamed": 0
+      }
+    },
+    {
+      "navigation": "Búsquedas",
+      "heading": "Perfiles de búsqueda",
+      "accessibility": {
+        "nodes": 108,
+        "interactive": 10,
+        "unnamed": 0
+      }
+    },
+    {
+      "navigation": "Vacantes",
+      "heading": "Vacantes",
+      "accessibility": {
+        "nodes": 148,
+        "interactive": 18,
+        "unnamed": 0
+      }
+    },
+    {
+      "navigation": "Mis CV",
+      "heading": "Tus CV",
+      "accessibility": {
+        "nodes": 159,
+        "interactive": 11,
+        "unnamed": 0
+      }
+    },
+    {
+      "navigation": "Fuentes",
+      "heading": "Fuentes de empleo",
+      "accessibility": {
+        "nodes": 309,
+        "interactive": 37,
+        "unnamed": 0
+      }
+    },
+    {
+      "navigation": "Preferencias",
+      "heading": "Preferencias",
+      "accessibility": {
+        "nodes": 267,
+        "interactive": 14,
+        "unnamed": 0
+      }
+    }
+  ],
+  "dialogs": [
+    {
+      "title": "Nueva búsqueda",
+      "accessibility": {
+        "nodes": 160,
+        "interactive": 3,
+        "unnamed": 0
+      },
+      "focusTrap": true,
+      "escape": true,
+      "openerRestored": true,
+      "backgroundInert": true
+    },
+    {
+      "title": "Guardar una vacante",
+      "accessibility": {
+        "nodes": 95,
+        "interactive": 3,
+        "unnamed": 0
+      },
+      "focusTrap": true,
+      "escape": true,
+      "openerRestored": true,
+      "backgroundInert": true
+    },
+    {
+      "title": "Agregar una fuente",
+      "accessibility": {
+        "nodes": 84,
+        "interactive": 3,
+        "unnamed": 0
+      },
+      "focusTrap": true,
+      "escape": true,
+      "openerRestored": true,
+      "backgroundInert": true
+    }
+  ],
+  "taskBefore": [],
+  "taskAfter": [],
+  "sqliteIntegrity": "ok",
+  "sqliteTables": [
+    "app_settings",
+    "application_drafts",
+    "candidate_profile",
+    "opportunities",
+    "resumes",
+    "search_profiles",
+    "user_sources"
+  ],
+  "uninstallExit": 0,
+  "userDataPreserved": true,
+  "ok": true
+}

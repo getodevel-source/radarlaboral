@@ -1,0 +1,150 @@
+{
+  "reviewedAtUtc": "2026-10-09T20:02:05.628Z",
+  "projectVersion": "0.4.131",
+  "registry": "https://registry.npmjs.org/electron-builder",
+  "registryDistTags": {
+    "latest": "26.15.3",
+    "next": "27.0.0-alpha.10",
+    "v26": "26.17.0"
+  },
+  "currentProjectBuilder": "27.0.0-alpha.10",
+  "currentProjectAudit": {
+    "lockfileSha256": "fe058513bc82aea114c2fa71912b865afd9507bb60c8032acd9d9b107e6025b9",
+    "fullVulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "productionVulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "stableCandidate": {
+    "version": "26.17.0",
+    "lockfileSha256": "ca35868743175ef34d3177945abee4475ac3ac8bf6c68f8a37d2c5bae4fb9d59",
+    "auditExitCode": 1,
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 8,
+      "high": 0,
+      "critical": 0,
+      "total": 8
+    },
+    "affectedPackages": [
+      {
+        "name": "@electron/get",
+        "severity": "moderate",
+        "via": [
+          "global-agent"
+        ],
+        "range": "1.6.0 - 4.0.3",
+        "fixAvailable": {
+          "name": "electron-builder",
+          "version": "26.5.0",
+          "isSemVerMajor": true
+        }
+      },
+      {
+        "name": "app-builder-lib",
+        "severity": "moderate",
+        "via": [
+          "@electron/get",
+          "dmg-builder",
+          "electron-builder-squirrel-windows"
+        ],
+        "range": "26.6.0 - 27.0.0-alpha.2",
+        "fixAvailable": {
+          "name": "electron-builder",
+          "version": "26.5.0",
+          "isSemVerMajor": true
+        }
+      },
+      {
+        "name": "dmg-builder",
+        "severity": "moderate",
+        "via": [
+          "app-builder-lib"
+        ],
+        "range": "26.6.0 - 27.0.0-alpha.2",
+        "fixAvailable": {
+          "name": "electron-builder",
+          "version": "26.5.0",
+          "isSemVerMajor": true
+        }
+      },
+      {
+        "name": "electron-builder",
+        "severity": "moderate",
+        "via": [
+          "app-builder-lib",
+          "dmg-builder"
+        ],
+        "range": "19.25.0 || 26.6.0 - 27.0.0-alpha.2",
+        "fixAvailable": {
+          "name": "electron-builder",
+          "version": "26.5.0",
+          "isSemVerMajor": true
+        }
+      },
+      {
+        "name": "electron-builder-squirrel-windows",
+        "severity": "moderate",
+        "via": [
+          "app-builder-lib"
+        ],
+        "range": "26.6.0 - 27.0.0-alpha.2",
+        "fixAvailable": true
+      },
+      {
+        "name": "global-agent",
+        "severity": "moderate",
+        "via": [
+          "roarr"
+        ],
+        "range": "<=3.0.0",
+        "fixAvailable": {
+          "name": "electron-builder",
+          "version": "26.5.0",
+          "isSemVerMajor": true
+        }
+      },
+      {
+        "name": "roarr",
+        "severity": "moderate",
+        "via": [
+          "sprintf-js"
+        ],
+        "range": "<=2.15.4",
+        "fixAvailable": {
+          "name": "electron-builder",
+          "version": "26.5.0",
+          "isSemVerMajor": true
+        }
+      },
+      {
+        "name": "sprintf-js",
+        "severity": "moderate",
+        "via": [
+          "sprintf-js vulnerable to denial of service through unbounded precision specifiers"
+        ],
+        "range": "*",
+        "fixAvailable": {
+          "name": "electron-builder",
+          "version": "26.5.0",
+          "isSemVerMajor": true
+        }
+      }
+    ],
+    "buildCompatibility": "Previous isolated NSIS x64 build and installed-package smoke passed; see package-evidence/0.4.124/QA-BUILDER-COMPATIBILITY.json."
+  },
+  "decision": "Keep the exact 27.0.0-alpha.10 toolchain pin: the registry still has no stable 27 release; stable 26.17.0 has eight moderate audit findings, and npm suggests 26.5.0, whose isolated audit has eight high and one critical finding."
+}

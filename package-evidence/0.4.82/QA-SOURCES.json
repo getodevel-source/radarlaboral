@@ -1,0 +1,48 @@
+{
+  "version": "0.4.82",
+  "method": "CDP inspection of the installed Windows renderer",
+  "installerSha256": "96328211a6130fc5f5008d66ea5907e11f9e68e74342fbc81fec18b81d58d155",
+  "pageTitle": "Radar Laboral",
+  "sourceCards": [
+    {
+      "heading": "Más sectores · 17 tableros públicos de Ashby",
+      "paragraph": "Rehire, Hire Hangar, ARQ, Profound, Silver.dev, Anyone AI, The Global Talent Co., Mural, Omniscient Digital, Optery, Superhuman, Go Nimbly, Luxor Technology, Cloud Accountant Staffing, Bullpen Talent, LatamCent y Abode Money publican puestos en distintos rubros, incluidos finanzas, operaciones y atención al cliente. Algunas bolsas incluyen roles de sus clientes; Radar atribuye cada aviso al portal de origen, conserva el enlace directo y permite revisar allí el empleador final.",
+      "button": "Agregar 17 tableros"
+    },
+    {
+      "heading": "Más rubros en Argentina · 24 tableros Greenhouse",
+      "paragraph": "Agregá fuentes de tecnología, consumo, marketing, inmobiliario, bienestar, finanzas, operaciones, producto y servicios. Greenhouse conserva la ubicación original; cuando el tablero confirme LATAM, Radar la incluye como elegible para Argentina y aclara si no puede calcular una distancia local.",
+      "button": "Agregar 24 tableros"
+    },
+    {
+      "heading": "Más vacantes argentinas · 15 tableros Lever adicionales",
+      "paragraph": "Incluye Binance, Aleph, redbee, Bluelight Consulting, Handoff, Terra, Minders, RYZ Labs, Yuno, Listo, Wing Assistant, Muttdata, TrueML, doola y Sauce. Sus tableros públicos cubren pagos, finanzas, ventas, atención al cliente, análisis de negocio, diseño, marketing, inteligencia artificial y tecnología; Radar conserva solo los avisos con país Argentina y usa la modalidad estructurada que publica Lever.",
+      "button": "Agregar 15 empresas"
+    },
+    {
+      "heading": "Finanzas y agroindustria · 2 tableros SmartRecruiters",
+      "paragraph": "Incluye Coface y Louis Dreyfus Company. Radar conserva hasta 100 avisos activos que SmartRecruiters declara para Argentina, verifica el tablero de cada publicación y mantiene el enlace original; no envía postulaciones.",
+      "button": "Agregar 2 tableros"
+    },
+    {
+      "heading": "Sur · vacantes para Latinoamérica en varios rubros",
+      "paragraph": "El tablero oficial publica puestos para profesionales de Latinoamérica en finanzas, marketing, ventas, soporte y tecnología. Radar filtra las ubicaciones que Workable marca como Argentina, valida cada enlace directo y atribuye la fuente a Sur; confirmá el empleador final en el aviso.",
+      "button": "Agregar fuente"
+    },
+    {
+      "heading": "Vacantes publicadas de Despegar · varios rubros en Argentina",
+      "paragraph": "La API pública de Lever permite consultar avisos publicados. Radar filtra localmente los registros cuyo país es Argentina y conserva el enlace original de cada vacante.",
+      "button": "Agregar fuente"
+    },
+    {
+      "heading": "Feed público de Findjobit · empleos remotos de IT en Argentina",
+      "paragraph": "Opcional y enfocado en tecnología; no cubre todos los rubros. Su página oficial ofrece el feed público para incluir avisos en otro feed o sitio y pide atribuir la fuente. Al agregarlo, Radar Laboral conserva esa atribución y un vínculo a sus condiciones.",
+      "button": "Agregar feed"
+    }
+  ],
+  "sqliteIntegrity": "ok",
+  "sqliteTables": 7,
+  "uninstallExit": 0,
+  "userDataPreserved": true,
+  "scheduledTaskUnchanged": true
+}

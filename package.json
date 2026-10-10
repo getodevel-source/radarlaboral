@@ -1,0 +1,59 @@
+{
+  "name": "radarlaboral",
+  "private": true,
+  "version": "0.4.139",
+  "description": "Búsqueda laboral local para organizar vacantes y preparar postulaciones.",
+  "author": "Radar Laboral contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc -b",
+    "test": "node --experimental-strip-types --test tests/core.test.mjs",
+    "build": "npm run typecheck && npm run lint && npm run test && npm run stage:package-evidence && vite build && electron-builder --win nsis",
+    "pack:dir": "npm run typecheck && npm run stage:package-evidence && vite build && electron-builder --dir --win",
+    "stage:package-evidence": "node scripts/stage-package-evidence.mjs",
+    "smoke:package": "node --experimental-strip-types scripts/smoke-package.mjs",
+    "refresh:geography": "node scripts/refresh-georef-localities.mjs",
+    "smoke:sources": "node --experimental-strip-types scripts/smoke-live-sources.mjs",
+    "smoke:sources:all": "node --experimental-strip-types scripts/smoke-all-sources.mjs",
+    "smoke:anchorage-source": "node --experimental-strip-types scripts/smoke-anchorage-source.mjs",
+    "smoke:siena-source": "node --experimental-strip-types scripts/smoke-siena-source.mjs",
+    "smoke:bcra": "node --experimental-strip-types scripts/smoke-bcra-exchange-rates.mjs",
+    "smoke:background": "node --experimental-strip-types scripts/smoke-background-schedule.mjs",
+    "lint": "eslint .",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "ipaddr.js": "^2.5.0",
+    "pdfjs-dist": "^6.4.299",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "rss-parser": "^3.13.0",
+    "tesseract.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "@tesseract.js-data/eng": "^1.0.0",
+    "@tesseract.js-data/spa": "^1.0.0",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.71.1",
+    "@typescript-eslint/parser": "^8.71.1",
+    "@vitejs/plugin-react": "^6.1.2",
+    "electron": "^44.7.0",
+    "electron-builder": "27.0.0-alpha.10",
+    "eslint": "^10.12.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.4",
+    "vite-plugin-electron": "^1.1.2"
+  },
+  "main": "dist-electron/main.js"
+}

@@ -1,0 +1,68 @@
+{
+  "version": "0.4.86",
+  "method": "NSIS x64 installation, isolated synthetic profile, CDP source-card check, and uninstall",
+  "installerSha256": "228d62f944d6b06567e38419775f6790a0a4879dd88bfd9ba74bfb28f062905e",
+  "package": {
+    "asarEntries": 918,
+    "testsExcluded": true,
+    "sprintfJsExcluded": true,
+    "cspConnectSelfOnly": true,
+    "markdownDocs": 7,
+    "signatures": {
+      "installer": "NotSigned",
+      "executable": "NotSigned"
+    }
+  },
+  "installedApp": {
+    "title": "Radar Laboral",
+    "recommendedSourceCards": 7,
+    "smartRecruitersButton": "Agregar 3 tableros"
+  },
+  "sqlite": {
+    "integrity": "ok",
+    "tables": 7,
+    "syntheticPreferencePreserved": true
+  },
+  "uninstallExit": 0,
+  "syntheticUserDataPreserved": true,
+  "scheduledTaskUnchanged": true,
+  "radiusFallbackPackaged": true,
+  "hashes": {
+    "installer": "228d62f944d6b06567e38419775f6790a0a4879dd88bfd9ba74bfb28f062905e",
+    "blockmap": "d2b28923b93359d3af342fcb1aa78d84c60d3e1079866d818268a2264d9765bf",
+    "executable": "81cf0cfc7e54a4f5b154c6e44b51b8de11e331cc96856df403672c1b122f1ac0",
+    "appAsar": "6d53ae5e0e42ded7eabe74caea2635a4e43b8efe770d1d9adeb6ca0e0753ad64"
+  },
+  "featureVerification": {
+    "usesResolvedOriginsForConfidentRadiusMatches": true,
+    "retainsPostingsWhenAnUnresolvedOriginCouldMatch": true,
+    "appAsarContainsTheUncertaintyNotice": true
+  },
+  "securityAudit": {
+    "capturedAt": "2026-10-09T08:26:53.740Z",
+    "productionTree": {
+      "dependencies": 25,
+      "vulnerabilities": 0
+    },
+    "fullTree": {
+      "moderate": 8,
+      "high": 0,
+      "critical": 0,
+      "affectedPackages": [
+        "@electron/get",
+        "app-builder-lib",
+        "dmg-builder",
+        "electron-builder",
+        "electron-builder-squirrel-windows",
+        "global-agent",
+        "roarr",
+        "sprintf-js"
+      ]
+    },
+    "packagedRuntime": {
+      "electron": "44.7.0",
+      "asarEntries": 918
+    },
+    "verifiedSourcePolicies": 62
+  }
+}

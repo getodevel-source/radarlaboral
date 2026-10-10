@@ -1,0 +1,989 @@
+{
+  "projectVersion": "0.4.135",
+  "testedAtUtc": "2026-10-09T22:23:13.032Z",
+  "method": "Sequential GET checks for every exact reviewed public policy, through the production RSS/JSON adapter and reviewed field mapping, with a 350 ms delay between policies.",
+  "reviewedPolicies": 70,
+  "checkedPolicies": 70,
+  "passedPolicies": 70,
+  "failedPolicies": 0,
+  "allPoliciesPassed": true,
+  "byConnector": {
+    "ashby-public-jobs": {
+      "policies": 18,
+      "passed": 18,
+      "emptyResponses": 0,
+      "mappedPostings": 267
+    },
+    "rss": {
+      "policies": 1,
+      "passed": 1,
+      "emptyResponses": 0,
+      "mappedPostings": 15
+    },
+    "greenhouse-public-jobs": {
+      "policies": 26,
+      "passed": 26,
+      "emptyResponses": 0,
+      "mappedPostings": 220
+    },
+    "lever-public-jobs": {
+      "policies": 19,
+      "passed": 19,
+      "emptyResponses": 0,
+      "mappedPostings": 210
+    },
+    "smartrecruiters-posting-details": {
+      "policies": 5,
+      "passed": 5,
+      "emptyResponses": 0,
+      "mappedPostings": 41
+    },
+    "workable-sur-public-jobs": {
+      "policies": 1,
+      "passed": 1,
+      "emptyResponses": 0,
+      "mappedPostings": 14
+    }
+  },
+  "note": "Counts reflect each production adapter after its reviewed filters. The same vacancy may appear under more than one policy; totals are not globally deduplicated. This check does not replace policy review or guarantee future availability.",
+  "results": [
+    {
+      "policyId": "ashby-Abode%20Money-argentina-json-2026-10-09",
+      "source": "Abode Money · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/Abode%20Money",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Senior Customer Support Representative"
+      ]
+    },
+    {
+      "policyId": "ashby-anyone-ai-argentina-json-2026-10-08",
+      "source": "Anyone AI (bolsa de empleo) · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/anyone-ai",
+      "status": "ok",
+      "itemCount": 31,
+      "sampleTitles": [
+        "Mathematics Expert (LATAM & Europe)",
+        "Backend Developer (Argentina)",
+        "Human Data Evals Lead (Remote/US/LATAM)"
+      ]
+    },
+    {
+      "policyId": "ashby-arq-argentina-json-2026-10-08",
+      "source": "ARQ · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/arq",
+      "status": "ok",
+      "itemCount": 2,
+      "sampleTitles": [
+        "Recruiter",
+        "Product Owner - ARQ Operating System"
+      ]
+    },
+    {
+      "policyId": "ashby-bullpen-talent-argentina-json-2026-10-09",
+      "source": "Bullpen Talent (reclutador; empleador final por confirmar) · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/bullpen-talent",
+      "status": "ok",
+      "itemCount": 5,
+      "sampleTitles": [
+        "Sales Development Representative (SDR)",
+        "Financial Modeler",
+        "Senior Financial Modeling Interviewer & Reviewer"
+      ]
+    },
+    {
+      "policyId": "ashby-cas-argentina-json-2026-10-09",
+      "source": "Cloud Accountant Staffing · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/cas",
+      "status": "ok",
+      "itemCount": 7,
+      "sampleTitles": [
+        "US Auditor",
+        "US Tax Accountant",
+        "US Controller"
+      ]
+    },
+    {
+      "policyId": "ashby-go-nimbly-argentina-json-2026-10-08",
+      "source": "Go Nimbly · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/go-nimbly",
+      "status": "ok",
+      "itemCount": 3,
+      "sampleTitles": [
+        "Senior RevOps Consultant",
+        "RevOps Solutions Architect",
+        "CPQ Architect"
+      ]
+    },
+    {
+      "policyId": "ashby-hirehangar-argentina-json-2026-10-08",
+      "source": "Hire Hangar · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/hirehangar",
+      "status": "ok",
+      "itemCount": 77,
+      "sampleTitles": [
+        "Senior Multimedia Specialist (YouTube & Podcast)",
+        "Senior Editor",
+        "Copywriter"
+      ]
+    },
+    {
+      "policyId": "ashby-latamcent-argentina-json-2026-10-09",
+      "source": "LatamCent (intermediario; empleador final por confirmar) · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/latamcent",
+      "status": "ok",
+      "itemCount": 6,
+      "sampleTitles": [
+        "Forward Deployed Design Engineer",
+        "Frontend Software Engineer",
+        "Full-Stack Software Engineer"
+      ]
+    },
+    {
+      "policyId": "ashby-luxor-argentina-json-2026-10-08",
+      "source": "Luxor Technology · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/luxor",
+      "status": "ok",
+      "itemCount": 2,
+      "sampleTitles": [
+        "Data Engineer",
+        "Golang Engineer: Cloud Platform"
+      ]
+    },
+    {
+      "policyId": "ashby-mural-argentina-json-2026-10-08",
+      "source": "Mural · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/mural",
+      "status": "ok",
+      "itemCount": 5,
+      "sampleTitles": [
+        "Senior Software Engineer, Growth",
+        "Senior Software Engineer, Admin & IAM",
+        "Senior Software Engineer, Integrated Workflows"
+      ]
+    },
+    {
+      "policyId": "ashby-omniscient-argentina-json-2026-10-08",
+      "source": "Omniscient Digital · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/omniscient",
+      "status": "ok",
+      "itemCount": 2,
+      "sampleTitles": [
+        "Senior Recruiter",
+        "Senior Recruiter"
+      ]
+    },
+    {
+      "policyId": "ashby-optery-argentina-json-2026-10-08",
+      "source": "Optery · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/optery",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Senior Backend Engineer (LATAM)"
+      ]
+    },
+    {
+      "policyId": "ashby-profound-argentina-json-2026-10-08",
+      "source": "Profound · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/profound",
+      "status": "ok",
+      "itemCount": 9,
+      "sampleTitles": [
+        "Member of Technical Staff, Frontend",
+        "Member of Technical Staff, Backend",
+        "Member of Technical Staff, Fullstack"
+      ]
+    },
+    {
+      "policyId": "ashby-rehire-argentina-json-2026-10-08",
+      "source": "Rehire · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/rehire",
+      "status": "ok",
+      "itemCount": 39,
+      "sampleTitles": [
+        "Inside Sales Representative (Atención al Cliente & Gestión Comercial)",
+        "Comercial Ganadero Regional",
+        "Comercial Ganadero Regional"
+      ]
+    },
+    {
+      "policyId": "ashby-siena-argentina-json-2026-10-09",
+      "source": "Siena AI · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/siena",
+      "status": "ok",
+      "itemCount": 3,
+      "sampleTitles": [
+        "Software Engineer, Platform Experience",
+        "Senior Fullstack Engineer",
+        "Product Specialist"
+      ]
+    },
+    {
+      "policyId": "ashby-silver-argentina-json-2026-10-08",
+      "source": "Silver.dev (avisos de clientes) · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/silver",
+      "status": "ok",
+      "itemCount": 43,
+      "sampleTitles": [
+        "Silver.dev - Sr Technical Recruiter",
+        "Opportunity in Tech company - Mobile Engineer",
+        "Coperniq (YC W23) - Full Stack Engineer (Node/React)"
+      ]
+    },
+    {
+      "policyId": "ashby-superhuman%20platform%20inc-argentina-json-2026-10-08",
+      "source": "Superhuman · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/superhuman%20platform%20inc",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Software Engineer, Back-End - Mail (Latin America)"
+      ]
+    },
+    {
+      "policyId": "ashby-the-global-talent-co-argentina-json-2026-10-08",
+      "source": "The Global Talent Co. (empleador final por confirmar) · avisos para Argentina",
+      "connector": "ashby-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.ashbyhq.com/posting-api/job-board/the-global-talent-co",
+      "status": "ok",
+      "itemCount": 30,
+      "sampleTitles": [
+        "Virtual Assistant/Contracts Administrator (German-speaking)",
+        "Valuation & Transactions Analyst (Music Industry)",
+        "Chief of Staff (German-speaking)"
+      ]
+    },
+    {
+      "policyId": "findjobit-argentina-rss-2026-10-08",
+      "source": "Feed público de Findjobit para Argentina",
+      "connector": "rss",
+      "reviewedOn": "2026-10-08",
+      "url": "https://findjobit.com/jobs/country/argentina/feed",
+      "status": "ok",
+      "itemCount": 15,
+      "sampleTitles": [
+        "Niuro busca un GTM Engineer at Niuro",
+        "Niuro busca un Senior ServiceNow Developer and Business Systems Analyst",
+        "Niuro busca un GTM Operations Specialist"
+      ]
+    },
+    {
+      "policyId": "greenhouse-able-argentina-json-2026-10-08",
+      "source": "Able · empleos en Argentina y LATAM",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/able/jobs?content=true",
+      "status": "ok",
+      "itemCount": 6,
+      "sampleTitles": [
+        "AI Senior Engineer (Graph)",
+        "AI Senior Engineer (Vision)",
+        "Operations Analyst (Finance)"
+      ]
+    },
+    {
+      "policyId": "greenhouse-appdirect-argentina-json-2026-10-08",
+      "source": "AppDirect · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/appdirect/jobs?content=true",
+      "status": "ok",
+      "itemCount": 5,
+      "sampleTitles": [
+        "ITAD Operations Associate (finance-focused)",
+        "Product Manager",
+        "Revenue Accounting Analyst"
+      ]
+    },
+    {
+      "policyId": "greenhouse-arizeai-argentina-json-2026-10-09",
+      "source": "Arize AI · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://boards-api.greenhouse.io/v1/boards/arizeai/jobs?content=true",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "DevOps Support Engineer (Argentina)"
+      ]
+    },
+    {
+      "policyId": "greenhouse-backblaze-argentina-json-2026-10-08",
+      "source": "Backblaze · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/backblaze/jobs?content=true",
+      "status": "ok",
+      "itemCount": 8,
+      "sampleTitles": [
+        "AI Workflow Engineer | LATAM",
+        "Corporate Paralegal (LATAM)",
+        "Growth Marketing Director | LATAM"
+      ]
+    },
+    {
+      "policyId": "greenhouse-brainlabs-argentina-json-2026-10-08",
+      "source": "Brainlabs · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/brainlabs/jobs?content=true",
+      "status": "ok",
+      "itemCount": 2,
+      "sampleTitles": [
+        "Manager, SEO & Data Analytics",
+        "Senior Business Intelligence Specialist"
+      ]
+    },
+    {
+      "policyId": "greenhouse-clara-argentina-json-2026-10-08",
+      "source": "Clara · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/clara/jobs?content=true",
+      "status": "ok",
+      "itemCount": 5,
+      "sampleTitles": [
+        "AI Growth Automation Engineer - Buenos Aires (Hybrid)",
+        "Country Lead - Argentina (Hybrid)",
+        "Design Engineer, Web (AI-Native) - Hybrid"
+      ]
+    },
+    {
+      "policyId": "greenhouse-coinbase-argentina-json-2026-10-08",
+      "source": "Coinbase · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/coinbase/jobs?content=true",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Prime Operations Assistant"
+      ]
+    },
+    {
+      "policyId": "greenhouse-cookunity-argentina-json-2026-10-09",
+      "source": "CookUnity · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://boards-api.greenhouse.io/v1/boards/cookunity/jobs?content=true",
+      "status": "ok",
+      "itemCount": 17,
+      "sampleTitles": [
+        "AI Native Engineer, Growth Marketing",
+        "Business Analytics Manager",
+        "CRM Marketing Associate  – Lifecycle Marketing & Retention"
+      ]
+    },
+    {
+      "policyId": "greenhouse-counterpart-argentina-json-2026-10-08",
+      "source": "Counterpart · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/counterpart/jobs?content=true",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Staff Product Engineer"
+      ]
+    },
+    {
+      "policyId": "greenhouse-fluxon-argentina-json-2026-10-09",
+      "source": "Fluxon · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://boards-api.greenhouse.io/v1/boards/fluxon/jobs?content=true",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Staff Software Engineer"
+      ]
+    },
+    {
+      "policyId": "greenhouse-gofundme-argentina-json-2026-10-08",
+      "source": "GoFundMe · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/gofundme/jobs?content=true",
+      "status": "ok",
+      "itemCount": 11,
+      "sampleTitles": [
+        "AI Specialist, Masters or PHD Emerging Talent (LATAM, 2027)",
+        "Data & Analytics Specialist Emerging Talent (LATAM, 2027)",
+        "Manager, Data Engineering"
+      ]
+    },
+    {
+      "policyId": "greenhouse-greenhouse-argentina-json-2026-10-08",
+      "source": "Greenhouse · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/greenhouse/jobs?content=true",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Software Engineer (Contract, Argentina)"
+      ]
+    },
+    {
+      "policyId": "greenhouse-gympass-argentina-json-2026-10-08",
+      "source": "Wellhub · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/gympass/jobs?content=true",
+      "status": "ok",
+      "itemCount": 2,
+      "sampleTitles": [
+        "BDR - Enterprise Strategic Accounts",
+        "Channel Partners Senior Account Manager"
+      ]
+    },
+    {
+      "policyId": "greenhouse-interviewengineering-argentina-json-2026-10-08",
+      "source": "Karat (Interview Engineering) · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/interviewengineering/jobs?content=true",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Interview Engineer (Argentina)"
+      ]
+    },
+    {
+      "policyId": "greenhouse-invgate-argentina-json-2026-10-08",
+      "source": "InvGate · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/invgate/jobs?content=true",
+      "status": "ok",
+      "itemCount": 7,
+      "sampleTitles": [
+        "Account Executive",
+        "Bilingual Application Support Analyst",
+        "Business Development Representative"
+      ]
+    },
+    {
+      "policyId": "greenhouse-jampp-argentina-json-2026-10-09",
+      "source": "Jampp · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://boards-api.greenhouse.io/v1/boards/jampp/jobs?content=true",
+      "status": "ok",
+      "itemCount": 7,
+      "sampleTitles": [
+        "Adtech Programmatic Analytics",
+        "Growth Lead",
+        "Senior Data Engineer"
+      ]
+    },
+    {
+      "policyId": "greenhouse-monsterenergylatam-argentina-json-2026-10-08",
+      "source": "Monster Energy LATAM · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/monsterenergylatam/jobs?content=true",
+      "status": "ok",
+      "itemCount": 5,
+      "sampleTitles": [
+        "Consumer Engagement Marketing Member - CEM Member",
+        "Event & Sponsorship Marketing Manager",
+        "Monster Ambassador Team (MAT)"
+      ]
+    },
+    {
+      "policyId": "greenhouse-newsela-argentina-json-2026-10-08",
+      "source": "Newsela · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/newsela/jobs?content=true",
+      "status": "ok",
+      "itemCount": 4,
+      "sampleTitles": [
+        "Contract: Deal Support Coordinator",
+        "Contractor: Lead Analytics Engineer",
+        "Contractor: Senior Quality Engineer"
+      ]
+    },
+    {
+      "policyId": "greenhouse-nimblegravity-argentina-json-2026-10-08",
+      "source": "Nimble Gravity · empleos en Argentina y LATAM",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/nimblegravity/jobs?content=true",
+      "status": "ok",
+      "itemCount": 9,
+      "sampleTitles": [
+        "AI Architect",
+        "Copilot & Power Platform Architect",
+        "Data and Analytics Engineer"
+      ]
+    },
+    {
+      "policyId": "greenhouse-oliverargentina-argentina-json-2026-10-08",
+      "source": "OLIVER Agency Argentina · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/oliverargentina/jobs?content=true",
+      "status": "ok",
+      "itemCount": 7,
+      "sampleTitles": [
+        "Creative Director",
+        "Creative Strategist",
+        "Head of Art"
+      ]
+    },
+    {
+      "policyId": "greenhouse-powerdigitalmarketing-argentina-json-2026-10-08",
+      "source": "Power Digital · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/powerdigitalmarketing/jobs?content=true",
+      "status": "ok",
+      "itemCount": 70,
+      "sampleTitles": [
+        "ABM Strategist, Client Services",
+        "Associate Media Director, Paid Social & Programmatic",
+        "B2B Marketing Account Director"
+      ]
+    },
+    {
+      "policyId": "greenhouse-precisionmedicinegroup-argentina-json-2026-10-08",
+      "source": "Precision Medicine Group · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/precisionmedicinegroup/jobs?content=true",
+      "status": "ok",
+      "itemCount": 7,
+      "sampleTitles": [
+        "Clinical Data Manager",
+        "Proposal Associate",
+        "Proposals Manager/Sr Proposals Manager"
+      ]
+    },
+    {
+      "policyId": "greenhouse-quintoandar-argentina-json-2026-10-08",
+      "source": "Grupo QuintoAndar · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/quintoandar/jobs?content=true",
+      "status": "ok",
+      "itemCount": 7,
+      "sampleTitles": [
+        "Banco de Talentos I Telesales Executive - Argentina",
+        "Grupo QuintoAndar| Growth Marketing Specialist",
+        "Grupo QuintoAndar | Senior Software Engineer"
+      ]
+    },
+    {
+      "policyId": "greenhouse-sezzle-argentina-json-2026-10-08",
+      "source": "Sezzle · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/sezzle/jobs?content=true",
+      "status": "ok",
+      "itemCount": 28,
+      "sampleTitles": [
+        "Accountant",
+        "Chargeback Operations Intern",
+        "Fraud Data Analyst"
+      ]
+    },
+    {
+      "policyId": "greenhouse-sofitechsolutionslatam-argentina-json-2026-10-08",
+      "source": "SoFi Tech Solutions (LATAM) · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/sofitechsolutionslatam/jobs?content=true",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Accountant"
+      ]
+    },
+    {
+      "policyId": "greenhouse-webflow-argentina-json-2026-10-08",
+      "source": "Webflow · empleos en Argentina",
+      "connector": "greenhouse-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://boards-api.greenhouse.io/v1/boards/webflow/jobs?content=true",
+      "status": "ok",
+      "itemCount": 6,
+      "sampleTitles": [
+        "IT Support Specialist",
+        "Senior Infrastructure Engineer",
+        "Senior Software Engineer, Build Loop"
+      ]
+    },
+    {
+      "policyId": "lever-aleph-argentina-json-2026-10-08",
+      "source": "Aleph · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.lever.co/v0/postings/aleph?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 5,
+      "sampleTitles": [
+        "Associate Sales Operations Manager",
+        "Junior HRBP Analyst",
+        "Programmatic Specialist"
+      ]
+    },
+    {
+      "policyId": "lever-anchorage-argentina-json-2026-10-09",
+      "source": "Anchorage Digital · empleos con ubicación en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.lever.co/v0/postings/anchorage?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 2,
+      "sampleTitles": [
+        "Derivatives Trader",
+        "Senior Derivatives Trader"
+      ]
+    },
+    {
+      "policyId": "lever-appen-argentina-json-2026-10-09",
+      "source": "Appen · empleos con ubicación en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.lever.co/v0/postings/appen-2?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Strategic Sourcing Lead – Fulfillment - Argentina"
+      ]
+    },
+    {
+      "policyId": "lever-binance-argentina-json-2026-10-08",
+      "source": "Binance · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.lever.co/v0/postings/binance?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Growth Lead - Argentina"
+      ]
+    },
+    {
+      "policyId": "lever-bluelightconsulting-argentina-json-2026-10-08",
+      "source": "Bluelight Consulting · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.lever.co/v0/postings/bluelightconsulting?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 70,
+      "sampleTitles": [
+        "DevOps / SRE / DevSecOps Engineer (AWS) - Remote, Latin America",
+        "DevOps / SRE / DevSecOps Engineer (AWS) - Remote, Latin America",
+        "DevOps / SRE / DevSecOps Engineer (AWS) - Remote, Latin America"
+      ]
+    },
+    {
+      "policyId": "lever-despegar-argentina-json-2026-10-08",
+      "source": "Despegar · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.lever.co/v0/postings/despegar?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 29,
+      "sampleTitles": [
+        "¡Sumate a nuestro equipo de Finance - Planning & Control!",
+        "Analista de Operational Excellence",
+        "Associate Product Owner II Loyalty - Buenos Aires"
+      ]
+    },
+    {
+      "policyId": "lever-doola-argentina-json-2026-10-09",
+      "source": "doola · empleos con ubicación en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.lever.co/v0/postings/doola?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 4,
+      "sampleTitles": [
+        "Account Executive",
+        "Affiliate Manager",
+        "FP&A Analyst"
+      ]
+    },
+    {
+      "policyId": "lever-handoff-argentina-json-2026-10-08",
+      "source": "Handoff · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.lever.co/v0/postings/handoff?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Account Executive"
+      ]
+    },
+    {
+      "policyId": "lever-listo-argentina-json-2026-10-08",
+      "source": "Listo · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.lever.co/v0/postings/listo?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 2,
+      "sampleTitles": [
+        "Graphic Designer",
+        "Marketing Lead - B2B SaaS Content & Growth Manager"
+      ]
+    },
+    {
+      "policyId": "lever-minders-argentina-json-2026-10-08",
+      "source": "Minders · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.lever.co/v0/postings/minders?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 5,
+      "sampleTitles": [
+        "Graphic Designer Ssr",
+        "Growth Analyst Ssr.",
+        "Growth Analyst Ssr."
+      ]
+    },
+    {
+      "policyId": "lever-muttdata-argentina-json-2026-10-08",
+      "source": "Muttdata · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.lever.co/v0/postings/muttdata?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 20,
+      "sampleTitles": [
+        "#10 Backend Platform Engineer Senior (Python/FastAPI)",
+        "#11 Senior AI DevOps Engineer",
+        "#12 Data Governance & Platform Lead"
+      ]
+    },
+    {
+      "policyId": "lever-redbee-argentina-json-2026-10-08",
+      "source": "redbee · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.lever.co/v0/postings/redbee?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 7,
+      "sampleTitles": [
+        "Desarrollador .NET Senior",
+        "Developer Backend SSR/SR — Java",
+        "Fullstack Developer Senior | React + Java"
+      ]
+    },
+    {
+      "policyId": "lever-ryzlabs-argentina-json-2026-10-08",
+      "source": "RYZ Labs · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.lever.co/v0/postings/RyzLabs?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 33,
+      "sampleTitles": [
+        "Accountant - AR & Collections",
+        "Accounting Project Manager",
+        "Accounts Receivable & Refunds Specialist"
+      ]
+    },
+    {
+      "policyId": "lever-sauce-argentina-json-2026-10-09",
+      "source": "Sauce · empleos con ubicación en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.lever.co/v0/postings/Sauce?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "People & Recruiting Specialist"
+      ]
+    },
+    {
+      "policyId": "lever-terrahq-argentina-json-2026-10-08",
+      "source": "Terra · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.lever.co/v0/postings/terrahq?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Web Production Specialist (LatAm)"
+      ]
+    },
+    {
+      "policyId": "lever-trueml-argentina-json-2026-10-09",
+      "source": "TrueML · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.lever.co/v0/postings/trueml?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Jr. DevOps Engineer"
+      ]
+    },
+    {
+      "policyId": "lever-tryjeeves-argentina-json-2026-10-09",
+      "source": "Jeeves · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.lever.co/v0/postings/tryjeeves?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 10,
+      "sampleTitles": [
+        "Account Executive",
+        "Principal Backend Engineer",
+        "Product Manager - Accounting"
+      ]
+    },
+    {
+      "policyId": "lever-wing-assistant-argentina-json-2026-10-08",
+      "source": "Wing Assistant · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.lever.co/v0/postings/getwingapp?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 16,
+      "sampleTitles": [
+        "Account Executive - AI Agents",
+        "Customer Service Representative (Latin America)",
+        "Digital Marketing Assistant (Latin America)"
+      ]
+    },
+    {
+      "policyId": "lever-yuno-argentina-json-2026-10-08",
+      "source": "Yuno · empleos en Argentina",
+      "connector": "lever-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.lever.co/v0/postings/yuno?mode=json&limit=100",
+      "status": "ok",
+      "itemCount": 1,
+      "sampleTitles": [
+        "Senior Database Administrator"
+      ]
+    },
+    {
+      "policyId": "smartrecruiters-cielo-argentina-json-2026-10-09",
+      "source": "Cielo · empleos en Argentina",
+      "connector": "smartrecruiters-posting-details",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.smartrecruiters.com/v1/companies/Cielo2/postings?limit=100&offset=0&country=ar",
+      "status": "ok",
+      "itemCount": 2,
+      "sampleTitles": [
+        "Senior Pharma Recruiter",
+        "Specialized Talent Administrator & Coordinator"
+      ]
+    },
+    {
+      "policyId": "smartrecruiters-coface-argentina-json-2026-10-09",
+      "source": "Coface · empleos en Argentina",
+      "connector": "smartrecruiters-posting-details",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.smartrecruiters.com/v1/companies/Coface/postings?limit=100&offset=0&country=ar",
+      "status": "ok",
+      "itemCount": 3,
+      "sampleTitles": [
+        "Pasante Comercial",
+        "Risk Underwriting Analyst",
+        "Analista de Riesgo Crediticio"
+      ]
+    },
+    {
+      "policyId": "smartrecruiters-louis-dreyfus-argentina-json-2026-10-08",
+      "source": "Louis Dreyfus Company · empleos en Argentina",
+      "connector": "smartrecruiters-posting-details",
+      "reviewedOn": "2026-10-08",
+      "url": "https://api.smartrecruiters.com/v1/companies/LouisDreyfusCompany/postings?limit=100&offset=0&country=ar",
+      "status": "ok",
+      "itemCount": 18,
+      "sampleTitles": [
+        "Analista de Mantenimiento Jr",
+        "Coordinador/a Eléctrico",
+        "Representante Comercial Acopios (La Pampa)"
+      ]
+    },
+    {
+      "policyId": "smartrecruiters-miratech-argentina-json-2026-10-09",
+      "source": "Miratech · empleos en Argentina",
+      "connector": "smartrecruiters-posting-details",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.smartrecruiters.com/v1/companies/Miratech1/postings?limit=100&offset=0&country=ar",
+      "status": "ok",
+      "itemCount": 8,
+      "sampleTitles": [
+        "Senior React Native Developer",
+        "Senior Genesys Cloud Engineer",
+        "Senior Genesys Cloud Engineer"
+      ]
+    },
+    {
+      "policyId": "smartrecruiters-psi-cro-argentina-json-2026-10-09",
+      "source": "PSI CRO · empleos en Argentina",
+      "connector": "smartrecruiters-posting-details",
+      "reviewedOn": "2026-10-09",
+      "url": "https://api.smartrecruiters.com/v1/companies/PSICRO/postings?limit=100&offset=0&country=ar",
+      "status": "ok",
+      "itemCount": 10,
+      "sampleTitles": [
+        "Clinical Trials Lead Site Coordinator",
+        "Project Finance Manager (Clinical Trial Proposals)",
+        "Site Management Associate I"
+      ]
+    },
+    {
+      "policyId": "workable-sur-argentina-json-2026-10-08",
+      "source": "Sur · oportunidades en Argentina (empleador final por confirmar)",
+      "connector": "workable-sur-public-jobs",
+      "reviewedOn": "2026-10-08",
+      "url": "https://apply.workable.com/api/v1/widget/accounts/surglobal?details=true",
+      "status": "ok",
+      "itemCount": 14,
+      "sampleTitles": [
+        "Customer Success Manager",
+        "Demand Generation Marketer",
+        "Demand Generation Marketer"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "version": "0.4.83",
+  "checkedAt": "2026-10-09T07:42:35.152Z",
+  "method": "testJsonFeed through the production JSON connector; ten public detail responses were also checked directly",
+  "endpoint": "https://api.smartrecruiters.com/v1/companies/PSICRO/postings?limit=100&offset=0&country=ar",
+  "itemCount": 10,
+  "sampleTitles": [
+    "Clinical Trials Lead Site Coordinator",
+    "Project Finance Manager (Clinical Trial Proposals)",
+    "Site Management Associate I"
+  ],
+  "directDetailsValidated": 10,
+  "activeDetailsValidated": 10,
+  "uniquePostingIdsValidated": 10,
+  "country": "ar",
+  "companyIdentifier": "PSICRO",
+  "policyId": "smartrecruiters-psi-cro-argentina-json-2026-10-09",
+  "officialEvidence": "https://psi-cro.com/careers/",
+  "installerSha256": "fd43543f05d0044b1a87b3749fc56d8ea6282f3e3abd7d8114cd4e08a51f26e3"
+}

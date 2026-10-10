@@ -1,0 +1,211 @@
+{
+  "generatedAtUtc": "2026-10-09T17:15:07.311Z",
+  "projectVersion": "0.4.124",
+  "currentProject": {
+    "electronBuilder": "27.0.0-alpha.10",
+    "packageLockSha256": "8dbaafc3570dc5ac216555fe8951fbe7ae41b327c3a1cebb90bee1a31a067be4",
+    "fullAudit": {
+      "exitCode": 0,
+      "totals": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "affectedPackages": []
+    },
+    "productionAudit": {
+      "exitCode": 0,
+      "totals": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "affectedPackages": []
+    }
+  },
+  "registryDistTags": {
+    "latest": "26.15.3",
+    "next": "27.0.0-alpha.10",
+    "v26": "26.17.0"
+  },
+  "stableCandidates": [
+    {
+      "version": "26.15.3",
+      "isolationDirectory": ".qa-stable-builder-26.15.3",
+      "packageLockSha256": "e79854429258f59c5183930f3a09f93dd10cf9054d342426ef4181ac88e4d080",
+      "audit": {
+        "exitCode": 1,
+        "totals": {
+          "info": 0,
+          "low": 0,
+          "moderate": 8,
+          "high": 0,
+          "critical": 0,
+          "total": 8
+        },
+        "affectedPackages": [
+          "@electron/get:moderate",
+          "app-builder-lib:moderate",
+          "dmg-builder:moderate",
+          "electron-builder:moderate",
+          "electron-builder-squirrel-windows:moderate",
+          "global-agent:moderate",
+          "roarr:moderate",
+          "sprintf-js:moderate"
+        ]
+      }
+    },
+    {
+      "version": "26.16.1",
+      "isolationDirectory": ".qa-stable-builder-26.16.1",
+      "packageLockSha256": "7cf337d9aa5442be1563f82bf9c3c6d9abd6fc5897710510285438e17d3528ae",
+      "audit": {
+        "exitCode": 1,
+        "totals": {
+          "info": 0,
+          "low": 0,
+          "moderate": 8,
+          "high": 0,
+          "critical": 0,
+          "total": 8
+        },
+        "affectedPackages": [
+          "@electron/get:moderate",
+          "app-builder-lib:moderate",
+          "dmg-builder:moderate",
+          "electron-builder:moderate",
+          "electron-builder-squirrel-windows:moderate",
+          "global-agent:moderate",
+          "roarr:moderate",
+          "sprintf-js:moderate"
+        ]
+      }
+    },
+    {
+      "version": "26.17.0",
+      "isolationDirectory": ".qa-stable-builder-26.17.0",
+      "packageLockSha256": "fb7f6b4c685feb9835692093c84869f273d9ba09bd9e8525ab297cec1b9fbc4e",
+      "audit": {
+        "exitCode": 1,
+        "totals": {
+          "info": 0,
+          "low": 0,
+          "moderate": 8,
+          "high": 0,
+          "critical": 0,
+          "total": 8
+        },
+        "affectedPackages": [
+          "@electron/get:moderate",
+          "app-builder-lib:moderate",
+          "dmg-builder:moderate",
+          "electron-builder:moderate",
+          "electron-builder-squirrel-windows:moderate",
+          "global-agent:moderate",
+          "roarr:moderate",
+          "sprintf-js:moderate"
+        ]
+      }
+    },
+    {
+      "version": "26.5.0",
+      "isolationDirectory": ".qa-stable-builder-26.5.0",
+      "packageLockSha256": "0abaff55484352bccac49c333386052453b474483e2ea259ddb95fbb53bb75a8",
+      "audit": {
+        "exitCode": 1,
+        "totals": {
+          "info": 0,
+          "low": 0,
+          "moderate": 0,
+          "high": 8,
+          "critical": 1,
+          "total": 9
+        },
+        "affectedPackages": [
+          "@electron/rebuild:high",
+          "app-builder-lib:high",
+          "builder-util:high",
+          "builder-util-runtime:high",
+          "dmg-builder:high",
+          "electron-builder:high",
+          "electron-builder-squirrel-windows:high",
+          "electron-publish:high",
+          "tar:critical"
+        ]
+      }
+    }
+  ],
+  "note": "Stable builder 26.17.0 was additionally verified in an isolated NSIS x64 build and installed-package smoke. The 26.15.3 and 26.16.1 stable candidates were audited but not build-tested. The project package.json and lockfile remain on 27.0.0-alpha.10.",
+  "stableBuildCompatibility": {
+    "version": "26.17.0",
+    "isolationDirectory": ".qa-stable-builder-26.17.0-compat",
+    "packageLockSha256": "ca35868743175ef34d3177945abee4475ac3ac8bf6c68f8a37d2c5bae4fb9d59",
+    "audit": {
+      "exitCode": 1,
+      "totals": {
+        "info": 0,
+        "low": 0,
+        "moderate": 8,
+        "high": 0,
+        "critical": 0,
+        "total": 8
+      },
+      "affectedPackages": [
+        "@electron/get:moderate",
+        "app-builder-lib:moderate",
+        "dmg-builder:moderate",
+        "electron-builder:moderate",
+        "electron-builder-squirrel-windows:moderate",
+        "global-agent:moderate",
+        "roarr:moderate",
+        "sprintf-js:moderate"
+      ]
+    },
+    "productionOnlyAudit": {
+      "exitCode": 0,
+      "totals": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      }
+    },
+    "projectLockSha256": "8dbaafc3570dc5ac216555fe8951fbe7ae41b327c3a1cebb90bee1a31a067be4",
+    "projectLockUnchanged": true,
+    "build": {
+      "command": "electron-builder --win nsis (npm exec electron-builder@26.17.0)",
+      "exitCode": 0,
+      "target": "Windows NSIS x64",
+      "installerBytes": 159943100,
+      "installerSha256": "dc52ea394cf584a3605966b0d3c3237cb351058ea3fd86fba0ae388b9fce99f6",
+      "blockmapSha256": "3f724970e8df412e9c3bfb9f7305bef882c3cb21ce5ecc8bf8b3a7159f3a4329",
+      "appAsarSha256": "a045a8cf7dadd7074979cc67f63994a77dfc0a095d84797c2bee666fa2d67260",
+      "asarEntries": 918
+    },
+    "installedSmoke": {
+      "passed": true,
+      "markdownLinksChecked": 146,
+      "documentationFiles": 9,
+      "packagedEvidenceFiles": 166,
+      "packagedEvidenceBytes": 938745,
+      "recommendedSourceCards": 7,
+      "forcedColorScreens": 6,
+      "sqliteIntegrity": "ok",
+      "sqliteTables": 7,
+      "uninstallExit": 0,
+      "signatures": {
+        "installer": "NotSigned",
+        "executable": "NotSigned"
+      }
+    },
+    "decision": "Compatible with the current package configuration and NSIS installation smoke. Not adopted: stable builder has eight moderate build-toolchain advisories; current alpha has zero findings. Keep evaluating when stable v27 is released."
+  }
+}

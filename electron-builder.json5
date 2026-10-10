@@ -1,0 +1,73 @@
+// @see - https://www.electron.build/configuration/configuration
+{
+  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+  "appId": "ar.radarlaboral.desktop",
+  "asar": true,
+  "productName": "Radar Laboral",
+  "directories": {
+    "output": "release/${version}"
+  },
+  "files": [
+    "dist/**",
+    "dist-electron/**",
+    "resources/tray.png",
+    "resources/georef/localities.json",
+    "!node_modules/better-sqlite3/prebuilds/darwin-*.node",
+    "!node_modules/better-sqlite3/prebuilds/linux-*.node",
+    "!node_modules/better-sqlite3/prebuilds/linuxmusl-*.node",
+    "!node_modules/better-sqlite3/prebuilds/win32-arm64.node",
+    "!node_modules/better-sqlite3/build/Release/obj/**",
+    "!node_modules/better-sqlite3/build/Release/obj",
+    "!node_modules/better-sqlite3/build/*.vcxproj*",
+    "!node_modules/tesseract.js/docs/**",
+    "!node_modules/tesseract.js/docs"
+  ],
+  "extraResources": [
+    {
+      "from": "resources/ocr",
+      "to": "ocr"
+    }
+  ],
+  "extraFiles": [
+    {
+      "from": "README.md",
+      "to": "README.md"
+    },
+    {
+      "from": "LICENSE",
+      "to": "LICENSE"
+    },
+    {
+      "from": "docs",
+      "to": "docs",
+      "filter": [
+        "**/*.md",
+        "**/*.txt"
+      ]
+    },
+    {
+      "from": "package-evidence",
+      "to": "package-evidence",
+      "filter": ["**/*"]
+    }
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      }
+    ],
+    "artifactName": "${productName}-Windows-${version}-Setup.${ext}",
+    "icon": "resources/icon.ico"
+  },
+  "nsis": {
+    "include": "build/installer.nsh",
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false
+  }
+}

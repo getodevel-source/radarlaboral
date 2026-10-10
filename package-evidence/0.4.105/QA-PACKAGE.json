@@ -1,0 +1,45 @@
+{
+  "version": "0.4.105",
+  "method": "NSIS x64 installation, isolated synthetic profile, CDP source-card check, and uninstall",
+  "installerSha256": "92b62f11a6d99e14fc8e9762ab78dcbd7e8b0e70c9a8671d12e233fcec3707d9",
+  "package": {
+    "asarEntries": 918,
+    "testsExcluded": true,
+    "sprintfJsExcluded": true,
+    "toolchainModulesExcluded": {
+      "sprintfJs": true,
+      "roarr": true,
+      "globalAgent": true,
+      "electronGet": true
+    },
+    "cspConnectSelfOnly": true,
+    "greenhouseCookUnityPolicyIncluded": true,
+    "greenhouseUserinfoGuardIncluded": true,
+    "markdownDocs": 7,
+    "signatures": {
+      "installer": "NotSigned",
+      "executable": "NotSigned"
+    }
+  },
+  "installedApp": {
+    "title": "Radar Laboral",
+    "recommendedSourceCards": 7,
+    "greenhouseButton": "Agregar 26 tableros",
+    "smartRecruitersButton": "Agregar 5 tableros"
+  },
+  "sqlite": {
+    "integrity": "ok",
+    "tables": 7,
+    "syntheticPreferencePreserved": true
+  },
+  "uninstallExit": 0,
+  "syntheticUserDataPreserved": true,
+  "scheduledTaskUnchanged": true,
+  "hashes": {
+    "installer": "92b62f11a6d99e14fc8e9762ab78dcbd7e8b0e70c9a8671d12e233fcec3707d9",
+    "blockmap": "5716145be4471f3da622bb92a857717fec8dba01b1e443881e9b7ecda5a8c521",
+    "executable": "449b6571109194fae2baea9dcea4ee90ba3ba040e3b357dec4e0cc9db49424dc",
+    "appAsar": "3ab0791ce17322bc0d8d7a68b89934467b3cd1dee71a0425db3164fa9d5a9192"
+  },
+  "qaDirectory": ".qa-package-0.4.105-2026-10-09T11-32-23-341Z"
+}

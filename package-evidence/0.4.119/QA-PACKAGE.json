@@ -1,0 +1,54 @@
+{
+  "version": "0.4.119",
+  "method": "NSIS x64 installation, isolated synthetic profile, CDP source-card check, and uninstall",
+  "installerSha256": "0e0f093eea2c082a71ffed61d0e4e0ace1a89c17fac821ca5432abe20daecabb",
+  "package": {
+    "asarEntries": 918,
+    "testsExcluded": true,
+    "sprintfJsExcluded": true,
+    "toolchainModulesExcluded": {
+      "sprintfJs": true,
+      "roarr": true,
+      "globalAgent": true,
+      "electronGet": true
+    },
+    "cspConnectSelfOnly": true,
+    "greenhouseCookUnityPolicyIncluded": true,
+    "greenhouseUserinfoGuardIncluded": true,
+    "markdownDocs": 7,
+    "signatures": {
+      "installer": "NotSigned",
+      "executable": "NotSigned"
+    }
+  },
+  "installedApp": {
+    "title": "Radar Laboral",
+    "recommendedSourceCards": 7,
+    "greenhouseButton": "Agregar 26 tableros",
+    "smartRecruitersButton": "Agregar 5 tableros"
+  },
+  "sqlite": {
+    "integrity": "ok",
+    "tables": 7,
+    "syntheticPreferencePreserved": true,
+    "syntheticReminderProcessed": true
+  },
+  "notification": {
+    "syntheticReminderSeeded": true,
+    "processedByApp": true,
+    "nativeToastObserved": false,
+    "nativeToastMatchedNames": [],
+    "inAppFallbackObserved": false,
+    "outcome": "no-visible-notification-surface-observed"
+  },
+  "uninstallExit": 0,
+  "syntheticUserDataPreserved": true,
+  "scheduledTaskUnchanged": true,
+  "hashes": {
+    "installer": "0e0f093eea2c082a71ffed61d0e4e0ace1a89c17fac821ca5432abe20daecabb",
+    "blockmap": "b40507296f3d8241bb75bbe7fe31507e2514aeb09613e5eadc43f43a6213be7b",
+    "executable": "f2c83bd13cb6342e669f6ff6eb6b5dc281b9ed3dabc707d8244266e778e1e971",
+    "appAsar": "67626b1b79c4e80bc5aa6c86a7fa0d0b86872e4939bfc72e639dcb48ac08a6db"
+  },
+  "qaDirectory": ".qa-package-0.4.119-2026-10-09T14-44-02-966Z"
+}
