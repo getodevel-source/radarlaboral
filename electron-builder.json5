@@ -12,7 +12,7 @@
   // Sin esas variables, electron-builder usa el placeholder y el build NO publica.
   "publish": {
     "provider": "github",
-    "owner": "TU_USUARIO",
+    "owner": "getodevel-source",
     "repo": "radarlaboral",
     "private": false,
     "releaseType": "release"
