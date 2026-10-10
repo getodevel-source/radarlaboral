@@ -128,9 +128,21 @@ async function startAppUpdateService(): Promise<AppUpdateService> {
   // Sin feed real o en dev, el servicio queda en estado `disabled`
   // (ver electron/app-updates.ts); el import de electron-updater solo se carga
   // cuando hay feed real y la app está empaquetada.
-  const updater = feedConfigured && app.isPackaged
-    ? (await import('electron-updater')).autoUpdater
-    : nullUpdater()
+  // ESM+CJS: el namespace puede traer el getter en .autoUpdater o en .default.
+  let updater: ReturnType<typeof nullUpdater> | import('electron-updater').AppUpdater = nullUpdater()
+  if (feedConfigured && app.isPackaged) {
+    try {
+      const loaded = (await import('electron-updater')) as unknown as Record<string, unknown>
+      const candidate = (loaded.autoUpdater ?? (loaded.default as Record<string, unknown> | undefined)?.autoUpdater) as
+        | ReturnType<typeof nullUpdater>
+        | import('electron-updater').AppUpdater
+        | undefined
+      if (candidate && typeof (candidate as { on?: unknown }).on === 'function') updater = candidate as typeof updater
+      else console.error('Actualizaciones automáticas desactivadas: electron-updater no expuso autoUpdater en este build.')
+    } catch (error) {
+      console.error('Actualizaciones automáticas desactivadas: no se pudo cargar electron-updater.', error)
+    }
+  }
   const service = createAppUpdateService({
     updater,
     isPackaged: app.isPackaged,
