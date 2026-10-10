@@ -219,7 +219,11 @@ test('summarizes search completion counts without exposing source details', () =
   })
   assert.equal(searchCompletionNotice({ added: 0, errors: 0 }), null)
   assert.equal(searchCompletionNotice({ added: -1, errors: 2 }), null)
-  assert.equal(searchCompletionNotice({ added: 1.5, errors: 0 }), null)
+  assert.deepEqual(searchCompletionNotice({ added: 0, errors: 0, truncated: 2 }), {
+    title: 'Revisá tus fuentes de empleo',
+    body: '2 fuentes devolvieron más avisos de los revisados por consulta.',
+  })
+  assert.equal(searchCompletionNotice({ added: 0, errors: 0, truncated: -1 }), null)
 })
 
 test('uses a system notification for search results and falls back if Windows rejects it', () => {
@@ -921,7 +925,7 @@ test('uses system focus and selection colors in forced-colors mode', () => {
 
 test('announces transient app notices through one persistent polite status region', () => {
   const appSource = fs.readFileSync(new URL('../src/App.tsx', import.meta.url), 'utf8')
-  assert.match(appSource, /<div className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">\{toast\}<\/div>/u)
+  assert.match(appSource, /<div key=\{toast\.id\} className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">\{toast\.text\}<\/div>/u)
   assert.match(appSource, /<div className="toast-message" aria-hidden="true">/u)
 })
 
@@ -2457,6 +2461,24 @@ test('maps Greenhouse public postings only for Argentina and preserves approved 
   const tooManyListedJobs = Array.from({ length: GREENHOUSE_MAX_JOBS + 1 }, (_, index) => ({ id: index + 1 }))
   assert.throws(() => greenhouseArgentinaPayload({ meta: { total: tooManyListedJobs.length }, jobs: tooManyListedJobs }, 'invgate', 'InvGate'), /admite hasta 350/u)
 })
+test('Greenhouse rejects Córdoba Spain labels without Argentina', () => {
+  const payload = greenhouseArgentinaPayload({
+    meta: { total: 2 },
+    jobs: [
+      {
+        id: 44, title: 'Puesto en Córdoba España',
+        absolute_url: 'https://job-boards.greenhouse.io/invgate/jobs/44',
+        content: '', location: { name: 'Córdoba, Spain' },
+      },
+      {
+        id: 45, title: 'Puesto en Córdoba Argentina',
+        absolute_url: 'https://job-boards.greenhouse.io/invgate/jobs/45',
+        content: '', location: { name: 'Córdoba, Argentina' },
+      },
+    ],
+  }, 'invgate', 'InvGate')
+  assert.deepEqual(mapJsonFeed(payload, greenhouseArgentinaJsonConfig).map((item) => item.title), ['Puesto en Córdoba Argentina'])
+})
 
 test('maps Ashby public jobs with explicit Argentina eligibility and preserves secondary locations', () => {
   const payload = ashbyArgentinaPayload({
@@ -2621,6 +2643,23 @@ test('maps Ashby public jobs with explicit Argentina eligibility and preserves s
       jobUrl: 'https://example.com/rehire/92e83288-5e3a-4de7-b379-3e5eb95650c7',
     }],
   }, 'rehire', 'Rehire'), /enlace válido/u)
+})
+
+test('Ashby rejects Córdoba Spain labels without an Argentina country code', () => {
+  const payload = ashbyArgentinaPayload({
+    apiVersion: '1',
+    jobs: [
+      {
+        title: 'Role in Córdoba Spain', isListed: true, location: 'Córdoba, Spain', secondaryLocations: [],
+        jobUrl: 'https://jobs.ashbyhq.com/rehire/92e83288-5e3a-4de7-b379-3e5eb95650c5',
+      },
+      {
+        title: 'Role in Córdoba Argentina', isListed: true, location: 'Córdoba, Argentina', secondaryLocations: [],
+        jobUrl: 'https://jobs.ashbyhq.com/rehire/92e83288-5e3a-4de7-b379-3e5eb95650c6',
+      },
+    ],
+  }, 'rehire', 'Rehire')
+  assert.deepEqual(mapJsonFeed(payload, ashbyArgentinaJsonConfig).map((item) => item.title), ['Role in Córdoba Argentina'])
 })
 
 test('maps configurable CSV columns, quoting, structured salary, and separators', () => {
@@ -2831,6 +2870,16 @@ test('normalizes tracking links and rejects non-web schemes or embedded credenti
   assert.equal(
     normalizeOpportunityUrl('  https://jobs.example/search?role=analyst  '),
     'https://jobs.example/search?role=analyst',
+  )
+})
+test('strips advertising and analytics trackers from saved links', () => {
+  assert.equal(
+    normalizeOpportunityUrl('https://jobs.example/apply?msclkid=abc&role=analyst'),
+    'https://jobs.example/apply?role=analyst',
+  )
+  assert.equal(
+    normalizeOpportunityUrl('https://jobs.example/apply?_ga=1.2.3&role=analyst'),
+    'https://jobs.example/apply?role=analyst',
   )
 })
 

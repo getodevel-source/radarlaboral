@@ -227,11 +227,13 @@ export interface SearchRunResult {
   added: number
   checkedSources: number
   errors: Array<{ sourceId: string; sourceName: string; message: string }>
+  truncated: Array<{ sourceId: string; sourceName: string; message: string }>
 }
 
 export interface SearchCompletionCounts {
   added: number
   errors: number
+  truncated?: number
 }
 
 export interface ApplicationDraft {

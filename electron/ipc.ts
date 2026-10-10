@@ -13,6 +13,8 @@ import { importLocalJson, previewLocalJsonImport } from './json-import.ts'
 import { refreshSalaryExchangeRates } from './exchange-rates.ts'
 import { writeExclusiveCopy } from './exclusive-file-write.ts'
 import { normalizeOpportunityUrl } from '../src/shared/opportunity-url.ts'
+import { urlCarriesSecret } from '../src/shared/source-url-secrets.ts'
+
 import { validateOpportunityTracking } from '../src/shared/opportunity-tracking.ts'
 import { SALARY_CURRENCIES } from '../src/shared/types'
 import type {
@@ -236,6 +238,7 @@ const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => (
 
 const safeFilePart = (value: string) => value.replace(/[<>:"/\\|?*\x00-\x1f]/g, ' ').replace(/[. ]+$/g, '').trim().slice(0, 64) || 'Postulacion'
 
+
 function resumeHtml(input: ExportResumeCopyInput, resumeName: string, candidate: ReturnType<RadarDatabase['candidateProfile']>) {
   const paragraphs = escapeHtml(input.content).split(/\r?\n/).map((line) => line || '&nbsp;').join('\n')
   const contactLine = [candidate.fullName, candidate.email, candidate.phone, candidate.location]
@@ -275,8 +278,11 @@ const validateSource = (input: unknown): UserSourceInput => {
   if (url.protocol !== 'https:' && url.protocol !== 'http:') throw new Error('La fuente debe ser un enlace web.')
   if (url.username || url.password) throw new Error('El enlace no puede incluir credenciales.')
   if ((kind === 'rss' || kind === 'json' || kind === 'csv') && url.protocol !== 'https:') throw new Error('Las fuentes automáticas deben usar HTTPS.')
-  if ((kind === 'rss' || kind === 'json' || kind === 'csv') && [...url.searchParams.keys()].some((key) => /^(?:api[-_]?key|app[-_]?key|access[-_]?token|auth(?:orization)?|client[-_]?secret|password|secret|token|key)$/iu.test(key))) {
+  if ((kind === 'rss' || kind === 'json' || kind === 'csv') && urlCarriesSecret(url)) {
     throw new Error('Las fuentes automáticas deben ser públicas y no incluir claves o credenciales en el enlace.')
+  }
+  if (kind === 'website' && urlCarriesSecret(url)) {
+    throw new Error('El enlace de la fuente no puede incluir claves o credenciales en los parámetros.')
   }
   const customAutomationApproved = value.customAutomationApproved ?? false
   if (typeof customAutomationApproved !== 'boolean') throw new Error('La autorización para consultar una fuente personalizada debe estar activada o desactivada.')
@@ -400,7 +406,45 @@ export function registerIpc(
     }
     const outputPath = filePath.toLowerCase().endsWith('.pdf') ? filePath : `${filePath}.pdf`
     const originalPath = path.join(app.getPath('userData'), 'resumes', `${resume.id}.pdf`)
-    if (path.resolve(outputPath) === path.resolve(originalPath)) {
+    const outputResolved = path.resolve(outputPath)
+    const originalResolved = path.resolve(originalPath)
+    const outputParent = path.dirname(outputResolved)
+    const outputParentStats = await fs.lstat(outputParent).catch(() => {
+      throw new Error('La carpeta de destino no es válida o no existe. Elegí otra ubicación.')
+    })
+    if (!outputParentStats.isDirectory() || outputParentStats.isSymbolicLink()) {
+      throw new Error('La carpeta de destino no es segura. Elegí otra ubicación.')
+    }
+    try {
+      await fs.lstat(outputResolved)
+      throw new Error('Ya existe un archivo en esa ubicación. Elegí otro nombre; Radar Laboral no reemplaza archivos existentes.')
+    } catch (error) {
+      if (error instanceof Error && /Ya existe un archivo en esa ubicación/u.test(error.message)) throw error
+      const errno = (error as { code?: unknown } | null | undefined)?.code
+      if (errno !== undefined && errno !== 'ENOENT') {
+        throw new Error('No se pudo verificar el destino de la copia. Elegí otra ubicación.')
+      }
+    }
+    let outputReal = outputResolved
+    try {
+      outputReal = await fs.realpath(outputResolved)
+    } catch {
+      try {
+        outputReal = path.join(await fs.realpath(outputParent), path.basename(outputResolved))
+      } catch {
+        throw new Error('La carpeta de destino no es válida o no existe. Elegí otra ubicación.')
+      }
+    }
+    let originalReal = originalResolved
+    try {
+      originalReal = await fs.realpath(originalResolved)
+    } catch {
+      originalReal = originalResolved
+    }
+    const sameFile = process.platform === 'win32'
+      ? outputReal.toLowerCase() === originalReal.toLowerCase()
+      : outputReal === originalReal
+    if (sameFile || outputResolved === originalResolved) {
       throw new Error('La copia del CV debe guardarse con un nombre distinto del archivo original.')
     }
     const tempParent = path.resolve(app.getPath('temp'))
@@ -546,13 +590,12 @@ export function registerIpc(
     if (scheduleChanged) await onBackgroundScheduleChanged(input.backgroundSearchEnabled, input.searchIntervalHours)
     let settings
     try {
-      settings = database.saveSettings(input)
+      settings = database.saveSettings(input, input.aiApiKey ? encryptedAiApiKey : undefined)
     } catch (error) {
       if (scheduleChanged) await onBackgroundScheduleChanged(previous.backgroundSearchEnabled, previous.searchIntervalHours).catch(() => {})
       throw error
     }
     onSettingsChanged()
-    if (encryptedAiApiKey) database.saveAiApiKeyEncrypted(encryptedAiApiKey)
     return settings
   })
   ipcMain.handle('app:clear-ai-key', () => {

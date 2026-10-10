@@ -87,6 +87,16 @@ export function reportFollowUpReminder(
   }
 }
 
+/**
+ * Entrega sincrónica: marca recordatorios solo cuando el aviso queda visible.
+ *
+ * Si el aviso nativo se muestra de inmediato, `markFollowUpRemindersNotified`
+ * corre antes de retornar y el valor devuelto coincide con lo marcado. Si el
+ * aviso queda pendiente (el callback `onShown` corre después, p. ej. al
+ * mostrarse el toast nativo o el aviso en la app), retorna 0 en este llamado
+ * y el marcado ocurre cuando `onShown` se ejecuta. La firma se mantiene para
+ * no romper a los llamadores existentes.
+ */
 export function deliverDueFollowUpReminders(
   database: FollowUpDatabase,
   today: string,

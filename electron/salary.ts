@@ -79,6 +79,13 @@ function hasCurrencyCode(value: string, code: SalaryCurrency) {
   return new RegExp(`(?:^|[^\\p{L}\\p{N}])${code.toLowerCase()}(?:$|[^\\p{L}\\p{N}])`, 'u').test(value)
 }
 
+function hasCurrencyAlias(value: string, alias: string) {
+  const normalizedAlias = normalize(alias)
+  if (normalizedAlias.length > 3) return value.includes(normalizedAlias)
+  const escaped = normalizedAlias.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')
+  return new RegExp(`(?:^|[^\\p{L}\\p{N}])${escaped}(?:$|[^\\p{L}\\p{N}])`, 'u').test(value)
+}
+
 function currencyFromText(value: string): SalaryCurrency | null {
   const normalized = normalize(value)
   const genericDollarAliases = new Set(['dollar', 'dollars', 'dolar', 'dolares'])
@@ -86,7 +93,7 @@ function currencyFromText(value: string): SalaryCurrency | null {
     const aliases = code === 'USD'
       ? currencyAliases[code].filter((alias) => !genericDollarAliases.has(alias))
       : currencyAliases[code]
-    return hasCurrencyCode(normalized, code) || aliases.some((alias) => normalized.includes(normalize(alias)))
+    return hasCurrencyCode(normalized, code) || aliases.some((alias) => hasCurrencyAlias(normalized, alias))
   })
   const hasUnqualifiedDollar = [...genericDollarAliases].some((alias) => normalized.includes(alias))
   const hasOtherDollarCurrency = ['CAD', 'AUD', 'HKD', 'NZD', 'SGD'].some((code) => matches.includes(code as SalaryCurrency))
@@ -198,21 +205,27 @@ export function parseSalaryAmount(raw: string): number | null {
 /** Resolves only known period labels; unknown source values stay incomparable. */
 export function normalizeSalaryPeriod(raw: string): SalaryPeriod | null {
   const value = normalize(raw).replace(/[._-]+/gu, ' ').replace(/\s+/gu, ' ').trim()
-  if (['month', 'months', 'monthly', 'per month', 'per mo', 'every month', 'month to month', 'mes', 'meses', 'mensal', 'mensais', 'mensalmente', 'mensual', 'mensuales', 'mensualmente', 'por mes', 'al mes', 'mes a mes', 'p/m', 'p1m'].includes(value)) return 'monthly'
-  if (['year', 'years', 'annual', 'annually', 'yearly', 'per year', 'per annum', 'ano', 'anos', 'anual', 'anuales', 'por ano', 'al ano', 'p1y'].includes(value)) return 'annual'
-  if (['week', 'weeks', 'weekly', 'per week', 'semanal', 'semanales', 'semanalmente', 'por semana', 'por semanas', 'p1w'].includes(value)) return 'weekly'
-  if (['day', 'days', 'daily', 'per day', 'diario', 'diaria', 'por dia', 'p1d'].includes(value)) return 'daily'
-  if (['hour', 'hours', 'hourly', 'per hour', 'hora', 'horas', 'por hora', 'p1h', 'pt1h'].includes(value)) return 'hourly'
+  if (['month', 'months', 'monthly', 'per month', 'per mo', 'every month', 'month to month', 'mes', 'meses', 'mensal', 'mensais', 'mensalmente', 'mensual', 'mensuales', 'mensualmente', 'por mes', 'al mes', 'mes a mes', 'p/m', 'p1m', '/month', '/mes'].includes(value)) return 'monthly'
+  if (['year', 'years', 'annual', 'annually', 'yearly', 'per year', 'per annum', 'ano', 'anos', 'anual', 'anuales', 'por ano', 'al ano', 'p1y', '/ano', '/year', '/yr', 'p/a'].includes(value)) return 'annual'
+  if (['week', 'weeks', 'weekly', 'per week', 'semanal', 'semanales', 'semanalmente', 'por semana', 'por semanas', 'sem', 'p1w', '/week', '/wk'].includes(value)) return 'weekly'
+  if (['day', 'days', 'daily', 'per day', 'per diem', 'diario', 'diarios', 'diaria', 'diarias', 'diariamente', 'por dia', 'por dias', 'al dia', 'p1d', '/day', '/d'].includes(value)) return 'daily'
+  if (['hour', 'hours', 'hourly', 'per hour', 'per hours', 'per hrs', 'hora', 'horas', 'por hora', 'por horas', 'cada hora', 'hrs', 'p1h', 'pt1h', '/hour', '/hr', '/h'].includes(value)) return 'hourly'
   return null
 }
 
-/** Resolves one explicit period from salary text without guessing from schedule mentions. */
+/**
+ * Resolves one explicit period from salary text without guessing from schedule mentions.
+ * Asimetría documentada: el texto libre acepta "dólar" genérico como USD, mientras que la
+ * ruta estructurada (normalizeSalaryCurrency) exige un código o nombre de moneda exacto y
+ * deja incomparable cualquier moneda no reconocida. Quincenal queda incomparable a propósito:
+ * no existe un factor de conversión revisado, así que ningún período quincenal produce mensual.
+ */
 export function salaryPeriodFromText(raw: string): SalaryPeriod | null {
   if (!raw.trim() || raw.length > 300) return null
   const normalized = normalize(raw)
   const periods: Array<[SalaryPeriod, RegExp]> = [
     ['monthly', /\b(mensual(?:es|mente)?|mensal(?:mente|es)?|mensais|por\s+mes|al\s+mes|mes\s+a\s+mes|monthly|per\s+month|per\s+mo\.?|every\s+month|months?)\b|\/\s*(?:month|mes)\b/u],
-    ['annual', /\b(anual(?:es)?|por\s+ano|al\s+ano|yearly|annually|annual|per\s+(?:year|annum))\b|\/\s*(?:year|yr)\b/u],
+    ['annual', /\b(anual(?:es)?|por\s+ano|al\s+ano|yearly|annually|annual|per\s+(?:year|annum))\b|\/\s*(?:year|yr|ano)\b|\bp\/a\b/u],
     ['weekly', /\b(semanal(?:es|mente)?|por\s+semana|weekly|per\s+week)\b|\/\s*(?:week|wk)\b/u],
     ['daily', /\b(diari(?:o|a|os|as|amente)?|por\s+dias?|al\s+dia|daily|per\s+day|per\s+diem)\b|\/\s*(?:day|d)\b/u],
     ['hourly', /\b(hourly|per\s+hours?|per\s+hrs?|por\s+horas?|cada\s+hora)\b|\/\s*(?:hour|hr|h)\b/u],

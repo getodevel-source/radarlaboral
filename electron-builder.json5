@@ -45,6 +45,7 @@
         "**/*.txt"
       ]
     },
+    // El guard de evidencias vive en scripts/stage-package-evidence.mjs y scripts/smoke-package.mjs: el filter "**/*" es intencional.
     {
       "from": "package-evidence",
       "to": "package-evidence",

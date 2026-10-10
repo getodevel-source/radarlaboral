@@ -1,5 +1,5 @@
 export type SearchFailureNotice = { title: string; body: string }
-export type SearchCompletionCounts = { added: number; errors: number }
+export type SearchCompletionCounts = { added: number; errors: number; truncated?: number }
 export type SearchCompletionNotice = { title: string; body: string }
 
 export type SearchFailureReporter = {
@@ -16,8 +16,10 @@ export const searchFailureNotice: SearchFailureNotice = {
 }
 
 export function searchCompletionNotice(counts: SearchCompletionCounts): SearchCompletionNotice | null {
-  if (!Number.isInteger(counts.added) || counts.added < 0 || !Number.isInteger(counts.errors) || counts.errors < 0) return null
-  if (counts.added === 0 && counts.errors === 0) return null
+  const truncated = counts.truncated ?? 0
+  if (!Number.isInteger(counts.added) || counts.added < 0 || !Number.isInteger(counts.errors) || counts.errors < 0
+    || !Number.isInteger(truncated) || truncated < 0) return null
+  if (counts.added === 0 && counts.errors === 0 && truncated === 0) return null
 
   const messages: string[] = []
   if (counts.added > 0) {
@@ -25,6 +27,9 @@ export function searchCompletionNotice(counts: SearchCompletionCounts): SearchCo
   }
   if (counts.errors > 0) {
     messages.push(counts.errors === 1 ? 'Falló la consulta de 1 fuente. Revisá Fuentes.' : `Falló la consulta de ${counts.errors} fuentes. Revisá Fuentes.`)
+  }
+  if (truncated > 0) {
+    messages.push(truncated === 1 ? '1 fuente devolvió más avisos de los revisados por consulta.' : `${truncated} fuentes devolvieron más avisos de los revisados por consulta.`)
   }
   return {
     title: counts.added === 0 ? 'Revisá tus fuentes de empleo' : 'Actualización de Radar Laboral',

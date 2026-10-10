@@ -40,6 +40,9 @@ function isObject(value: unknown): value is Record<string, unknown> {
 }
 
 function isArgentinaLocation(value: string): boolean {
+  const segments = value.split(/[,;|]/u).map((segment) => segment.trim()).filter(Boolean)
+  const mentionsSpain = segments.some((segment) => (/\bspain\b|\bespa[nñ]a\b/iu.test(segment) || /\bES\b/u.test(segment)) && !/\bArgentina\b|\bBuenos Aires\b|\bC[óo]rdoba\b/iu.test(segment))
+  if (mentionsSpain && !segments.some((segment) => /\bArgentina\b/iu.test(segment))) return false
   return /\bArgentina\b|\bARG\b|\bBuenos Aires\b|\bC[óo]rdoba\b/iu.test(value)
 }
 
@@ -48,6 +51,9 @@ function normalizeLocationLabel(value: string): string {
 }
 
 function isApprovedArgentinaRegion(value: string, approvedRegionLabels: readonly string[]): boolean {
+  const segments = value.split(/[,;|]/u).map((segment) => segment.trim()).filter(Boolean)
+  const mentionsSpain = segments.some((segment) => (/\bspain\b|\bespa[nñ]a\b/iu.test(segment) || /\bES\b/u.test(segment)) && !/\bArgentina\b|\bBuenos Aires\b|\bC[óo]rdoba\b/iu.test(segment))
+  if (mentionsSpain && !segments.some((segment) => /\bArgentina\b/iu.test(segment))) return false
   const normalizedLocation = ` ${normalizeLocationLabel(value)} `
   return approvedRegionLabels.some((label) => {
     const normalizedLabel = normalizeLocationLabel(label)
@@ -69,6 +75,7 @@ function isPublicGreenhousePostingUrl(
     if (authority.includes('@')) return false
     if (url.protocol !== 'https:' || url.username || url.password || url.hash) return false
     if (['job-boards.greenhouse.io', 'job-boards.eu.greenhouse.io', 'boards.greenhouse.io'].includes(url.hostname)) {
+      if (url.port || url.search) return false
       return url.pathname.toLowerCase() === `/${boardToken.toLowerCase()}/jobs/${jobId}`
     }
     if (url.port) return false

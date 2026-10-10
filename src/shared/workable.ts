@@ -44,12 +44,13 @@ function workableJobUrl(value: unknown, shortcode: string): string | null {
   if (typeof value !== 'string') return null
   try {
     const url = new URL(value)
+    const pathname = url.pathname.length > 1 && url.pathname.endsWith('/') ? url.pathname.slice(0, -1) : url.pathname
     if (
       url.protocol !== 'https:' || url.hostname !== 'apply.workable.com' || url.port ||
       url.username || url.password || url.search || url.hash ||
-      url.pathname !== `/j/${shortcode}`
+      pathname !== `/j/${shortcode}`
     ) return null
-    return url.toString()
+    return `https://apply.workable.com/j/${shortcode}`
   } catch {
     return null
   }
@@ -89,7 +90,7 @@ export function workableArgentinaPayload(input: unknown): { jobs: Array<Record<s
     if (!url) throw new Error(`Workable devolvió un enlace inválido para el aviso ${shortcode}.`)
     const country = text(job.country)
     if (!country) throw new Error(`Workable no indicó el país del aviso ${shortcode}.`)
-    if (country.toLocaleLowerCase() !== 'argentina') continue
+    if (!['argentina', 'arg', 'ar'].includes(country.toLocaleLowerCase())) continue
 
     const record = {
       title,

@@ -78,9 +78,13 @@ function assertLeverPostingUrl(value: unknown) {
   }
   const authority = rawUrl.slice(rawUrl.indexOf('://') + 3).split(/[/?#]/u, 1)[0]
   if (authority.includes('@') || url.protocol !== 'https:' || url.username || url.password
-    || (url.hostname !== 'jobs.lever.co' && !url.hostname.endsWith('.lever.co'))) {
+    || url.hostname !== 'jobs.lever.co' || url.port || url.search || url.hash) {
     throw new Error('Lever devolvió un aviso con un enlace que no pertenece a su tablero público.')
   }
+}
+
+function normalizeLeverLocationLabel(value: string) {
+  return value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLocaleLowerCase().replace(/\s+/gu, ' ').trim()
 }
 
 /** Copies Lever's structured workplace type into the description used by Radar's matching rules. */
@@ -94,26 +98,28 @@ export function leverArgentinaPayload(
     throw new Error(`El límite de avisos argentinos de Lever debe estar entre 1 y ${LEVER_MAX_POSTINGS}.`)
   }
 
-  const hasArgentinaCountry = (value: unknown) => value && typeof value === 'object' && !Array.isArray(value)
-    && typeof (value as Record<string, unknown>).country === 'string'
-    && ((value as Record<string, unknown>).country as string).trim().toLocaleLowerCase() === 'ar'
-  const hasReviewedArgentinaLocation = (value: unknown) => {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return false
-    const posting = value as Record<string, unknown>
-    const categories = posting.categories && typeof posting.categories === 'object' && !Array.isArray(posting.categories)
-      ? posting.categories as Record<string, unknown>
-      : null
-    const locations = Array.isArray(categories?.allLocations)
-      ? categories.allLocations.filter((location): location is string => typeof location === 'string')
-      : []
-    return Boolean(argentinaLocationLabels?.some((label) => locations.includes(label)))
-  }
+  const normalizedApprovedLabels = (argentinaLocationLabels ?? [])
+    .map((label) => normalizeLeverLocationLabel(label))
+    .filter((label) => label.length > 0)
   const eligiblePostings = argentinaLocationLabels?.length
-    ? payload.filter((value) => Boolean(hasArgentinaCountry(value) || hasReviewedArgentinaLocation(value)))
+    ? payload.filter((value) => {
+      if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+      const posting = value as Record<string, unknown>
+      if (typeof posting.country === 'string' && posting.country.trim().toLocaleLowerCase() === 'ar') return true
+      const categories = posting.categories && typeof posting.categories === 'object' && !Array.isArray(posting.categories)
+        ? posting.categories as Record<string, unknown>
+        : null
+      const locations = Array.isArray(categories?.allLocations)
+        ? categories.allLocations.filter((location): location is string => typeof location === 'string')
+        : []
+      return locations.some((location) => normalizedApprovedLabels.includes(normalizeLeverLocationLabel(location)))
+    })
     : payload
   const argentinaCount = argentinaLocationLabels?.length
     ? eligiblePostings.length
-    : payload.filter(hasArgentinaCountry).length
+    : payload.filter((value) => value && typeof value === 'object' && !Array.isArray(value)
+      && typeof (value as Record<string, unknown>).country === 'string'
+      && ((value as Record<string, unknown>).country as string).trim().toLocaleLowerCase() === 'ar').length
   if (argentinaCount > maxArgentinaPostings) {
     throw new Error(`Lever devolvió más de ${maxArgentinaPostings} avisos argentinos; no se importó la fuente.`)
   }
@@ -129,7 +135,7 @@ export function leverArgentinaPayload(
       const locations = Array.isArray(categories?.allLocations)
         ? categories.allLocations.filter((location): location is string => typeof location === 'string')
         : []
-      const matchingLocation = argentinaLocationLabels.find((label) => locations.includes(label))
+      const matchingLocation = locations.find((location) => normalizedApprovedLabels.includes(normalizeLeverLocationLabel(location)))
       if (categories && matchingLocation) {
         posting = {
           ...posting,

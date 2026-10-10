@@ -58,7 +58,10 @@ function isArgentinaCountry(country: string): boolean {
 
 function isArgentinaLocation(location: string, country: string): boolean {
   if (country.trim()) return isArgentinaCountry(country)
-  return /\bArgentina\b|\bBuenos Aires\b|\bC[óo]rdoba\b/iu.test(location)
+  const segments = location.split(/[,;|]/u).map((segment) => segment.trim()).filter(Boolean)
+  const mentionsSpain = segments.some((segment) => (/\bspain\b|\bespa[nñ]a\b/iu.test(segment) || /\bES\b/u.test(segment)) && !/\bArgentina\b|\bBuenos Aires\b|\bC[óo]rdoba\b/iu.test(segment))
+  if (mentionsSpain && !segments.some((segment) => /\bArgentina\b/iu.test(segment))) return false
+  return /\bArgentina\b|\bARG\b|\bBuenos Aires\b|\bC[óo]rdoba\b/iu.test(location)
 }
 
 function locationText(label: string, address: AshbyAddress): string {
@@ -77,9 +80,19 @@ function postingIdFromUrl(value: unknown, boardToken: string): string | null {
   if (typeof value !== 'string') return null
   try {
     const url = new URL(value)
-    if (url.protocol !== 'https:' || url.hostname !== 'jobs.ashbyhq.com' || url.username || url.password) return null
+    if (url.protocol !== 'https:' || url.hostname !== 'jobs.ashbyhq.com' || url.username || url.password
+      || url.port || url.search || url.hash) return null
     const segments = url.pathname.split('/').filter(Boolean)
-    if (segments.length !== 2 || segments[0].toLocaleLowerCase() !== boardToken.toLocaleLowerCase()) return null
+    if (segments.length !== 2) return null
+    let decodedBoard = ''
+    let decodedExpected = ''
+    try {
+      decodedBoard = decodeURIComponent(segments[0])
+      decodedExpected = decodeURIComponent(boardToken)
+    } catch {
+      return null
+    }
+    if (decodedBoard.toLocaleLowerCase() !== decodedExpected.toLocaleLowerCase()) return null
     const id = segments[1]
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(id)) return null
     return id

@@ -29,6 +29,8 @@ import { localDateString } from '../src/shared/local-date.ts'
 import { validateOpportunityTracking } from '../src/shared/opportunity-tracking.ts'
 import { isSalaryExchangeRateSnapshot } from '../src/shared/salary-exchange-rates.ts'
 import { findVerifiedSourcePolicy, findVerifiedSourcePolicyById, verifiedSourcePolicyMatchesJsonConfig } from '../src/shared/verified-source-policies.ts'
+import { urlCarriesSecret } from '../src/shared/source-url-secrets.ts'
+
 import type { DueFollowUpReminder } from './follow-up-notifications.ts'
 
 type ProfileRow = {
@@ -262,6 +264,7 @@ function parseCsvSourceConfig(value: string) {
     return null
   }
 }
+
 
 const draftFromRow = (row: DraftRow): ApplicationDraft => ({
   id: row.id,
@@ -734,6 +737,8 @@ export class RadarDatabase {
   }
 
   removeOpportunity(id: string) {
+    const drafts = this.db.prepare('SELECT COUNT(*) AS count FROM application_drafts WHERE opportunity_id = ?').get(id) as { count: number }
+    if (drafts.count > 0) throw new Error('Esta vacante tiene borradores asociados. Eliminá los borradores antes de borrar la vacante.')
     this.db.prepare('DELETE FROM opportunities WHERE id = ?').run(id)
   }
 
@@ -766,7 +771,7 @@ export class RadarDatabase {
       if (sourceUrl.protocol !== 'https:' || sourceUrl.username || sourceUrl.password) {
         throw new Error('Las fuentes automáticas deben usar HTTPS y no incluir credenciales.')
       }
-      if ([...sourceUrl.searchParams.keys()].some((key) => /^(?:api[-_]?key|app[-_]?key|access[-_]?token|auth(?:orization)?|client[-_]?secret|password|secret|token|key)$/iu.test(key))) {
+      if (urlCarriesSecret(sourceUrl)) {
         throw new Error('Las fuentes automáticas deben ser públicas y no incluir claves o credenciales en el enlace.')
       }
     } else {
@@ -777,6 +782,9 @@ export class RadarDatabase {
       }
       if (!['https:', 'http:'].includes(sourceUrl.protocol) || sourceUrl.username || sourceUrl.password) {
         throw new Error('La fuente debe usar un enlace web público sin credenciales.')
+      }
+      if (urlCarriesSecret(sourceUrl)) {
+        throw new Error('El enlace de la fuente no puede incluir claves o credenciales en los parámetros.')
       }
     }
     let evidenceUrl = ''
@@ -1032,15 +1040,20 @@ export class RadarDatabase {
       .run('salaryExchangeRates', JSON.stringify(snapshot))
   }
 
-  saveSettings(settings: AppSettingsInput): AppSettings {
+  saveSettings(settings: AppSettingsInput, encryptedAiApiKey?: string | null): AppSettings {
     const save = this.db.prepare('INSERT INTO app_settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value')
+    const remove = this.db.prepare('DELETE FROM app_settings WHERE key = ?')
     const transaction = this.db.transaction(() => {
       save.run('searchIntervalHours', String(settings.searchIntervalHours))
       save.run('backgroundSearchEnabled', String(settings.backgroundSearchEnabled))
-      this.db.prepare('DELETE FROM app_settings WHERE key = ?').run('startAtLogin')
+      remove.run('startAtLogin')
       save.run('aiEnabled', String(settings.aiEnabled))
       save.run('aiBaseUrl', settings.aiBaseUrl.trim())
       save.run('aiModel', settings.aiModel.trim())
+      if (encryptedAiApiKey !== undefined) {
+        if (encryptedAiApiKey === null) remove.run('aiApiKeyEncrypted')
+        else save.run('aiApiKeyEncrypted', encryptedAiApiKey)
+      }
     })
     transaction()
     return this.settings()
@@ -1062,9 +1075,21 @@ export class RadarDatabase {
 
   async createBackup(parentDirectory: string, appVersion: string) {
     const parent = path.resolve(parentDirectory)
-    const parentStats = fs.statSync(parent)
-    if (!parentStats.isDirectory()) throw new Error('Elegí una carpeta de destino para la copia.')
-    if (this.isInside(this.resumesPath, parent)) {
+    const parentStats = fs.lstatSync(parent)
+    if (!parentStats.isDirectory() || parentStats.isSymbolicLink()) throw new Error('Elegí una carpeta de destino para la copia.')
+    let parentReal: string
+    try {
+      parentReal = fs.realpathSync(parent)
+    } catch {
+      throw new Error('Elegí una carpeta de destino para la copia.')
+    }
+    let resumesReal: string
+    try {
+      resumesReal = fs.realpathSync(this.resumesPath)
+    } catch {
+      resumesReal = path.resolve(this.resumesPath)
+    }
+    if (this.isInside(resumesReal, parentReal)) {
       throw new Error('Guardá la copia fuera de la carpeta donde están los CV.')
     }
 

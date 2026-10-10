@@ -2,6 +2,7 @@ import { SALARY_CURRENCIES } from '../src/shared/types.ts'
 import type { SalaryCurrency, SalaryExchangeRateSnapshot } from '../src/shared/types.ts'
 import { isSalaryExchangeRateSnapshot, isSalaryExchangeRateSnapshotUsable, shouldRefreshSalaryExchangeRates } from '../src/shared/salary-exchange-rates.ts'
 import type { RadarDatabase } from './database'
+import { fetchPinnedBytes, resolvePublicHttpsTarget } from './pinned-fetch.ts'
 
 const BCRA_QUOTES_URL = 'https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Cotizaciones'
 const maxResponseBytes = 128 * 1024
@@ -71,41 +72,62 @@ export function parseBcraSalaryExchangeRates(value: unknown, fetchedAt = new Dat
 }
 
 export async function fetchBcraSalaryExchangeRates(fetcher: typeof fetch = fetch, fetchedAt = new Date()): Promise<SalaryExchangeRateSnapshot> {
-  let response: Response
+  if (fetcher !== fetch) {
+    let response: Response
+    try {
+      response = await fetcher(BCRA_QUOTES_URL, {
+        headers: { accept: 'application/json' },
+        redirect: 'error',
+        signal: AbortSignal.timeout(10_000),
+      })
+    } catch {
+      throw new Error('No se pudo consultar la API pública de cotizaciones del BCRA.')
+    }
+    if (!response.ok) throw new Error(`La API del BCRA respondió con estado ${response.status}.`)
+    const declaredLength = Number(response.headers.get('content-length'))
+    if (Number.isFinite(declaredLength) && declaredLength > maxResponseBytes) throw new Error('La respuesta del BCRA supera el tamaño permitido.')
+    if (!response.body) throw new Error('La API del BCRA devolvió una respuesta vacía.')
+    const reader = response.body.getReader()
+    const chunks: Uint8Array[] = []
+    let bodyBytes = 0
+    try {
+      while (true) {
+        const part = await reader.read()
+        if (part.done) break
+        bodyBytes += part.value.byteLength
+        if (bodyBytes > maxResponseBytes) {
+          await reader.cancel().catch(() => {})
+          throw new Error('La respuesta del BCRA supera el tamaño permitido.')
+        }
+        chunks.push(part.value)
+      }
+    } finally {
+      reader.releaseLock()
+    }
+    const body = Buffer.concat(chunks.map((chunk) => Buffer.from(chunk))).toString('utf8')
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(body)
+    } catch {
+      throw new Error('El BCRA devolvió una respuesta que no es JSON válido.')
+    }
+    return parseBcraSalaryExchangeRates(parsed, fetchedAt)
+  }
+  let raw: Buffer
   try {
-    response = await fetcher(BCRA_QUOTES_URL, {
-      headers: { accept: 'application/json' },
-      redirect: 'error',
-      signal: AbortSignal.timeout(10_000),
-    })
-  } catch {
+    const target = await resolvePublicHttpsTarget(BCRA_QUOTES_URL)
+    raw = await fetchPinnedBytes(target, 'application/json', maxResponseBytes)
+  } catch (error) {
+    if (error instanceof Error) {
+      const status = /respondió (\d+)/u.exec(error.message)?.[1]
+      if (status) throw new Error(`La API del BCRA respondió con estado ${status}.`)
+      if (error.message.includes('supera el tamaño')) throw new Error('La respuesta del BCRA supera el tamaño permitido.')
+    }
     throw new Error('No se pudo consultar la API pública de cotizaciones del BCRA.')
   }
-  if (!response.ok) throw new Error(`La API del BCRA respondió con estado ${response.status}.`)
-  const declaredLength = Number(response.headers.get('content-length'))
-  if (Number.isFinite(declaredLength) && declaredLength > maxResponseBytes) throw new Error('La respuesta del BCRA supera el tamaño permitido.')
-  if (!response.body) throw new Error('La API del BCRA devolvió una respuesta vacía.')
-  const reader = response.body.getReader()
-  const chunks: Uint8Array[] = []
-  let bodyBytes = 0
-  try {
-    while (true) {
-      const part = await reader.read()
-      if (part.done) break
-      bodyBytes += part.value.byteLength
-      if (bodyBytes > maxResponseBytes) {
-        await reader.cancel().catch(() => {})
-        throw new Error('La respuesta del BCRA supera el tamaño permitido.')
-      }
-      chunks.push(part.value)
-    }
-  } finally {
-    reader.releaseLock()
-  }
-  const body = Buffer.concat(chunks.map((chunk) => Buffer.from(chunk))).toString('utf8')
   let parsed: unknown
   try {
-    parsed = JSON.parse(body)
+    parsed = JSON.parse(raw.toString('utf8'))
   } catch {
     throw new Error('El BCRA devolvió una respuesta que no es JSON válido.')
   }

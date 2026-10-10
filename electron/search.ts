@@ -1,15 +1,13 @@
-import dns from 'node:dns/promises'
 import { readFileSync } from 'node:fs'
-import https from 'node:https'
-import { isIP } from 'node:net'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import ipaddr from 'ipaddr.js'
 import Parser from 'rss-parser'
 import type { CsvSourceConfig, FeedTestResult, GeorefLocalitySuggestion, JsonSourceConfig, OpportunityInput, SalaryExchangeRateSnapshot, SearchProfile, SearchRunResult, UserSource } from '../src/shared/types'
 import type { RadarDatabase } from './database'
 import { convertMonthlySalaryCurrency, parseMonthlySalary, salaryPeriodFromText } from './salary.ts'
 import { currentSalaryExchangeRates } from './exchange-rates.ts'
+import { fetchPinnedBytes, fetchPinnedText, resolvePublicHttpsTarget, type ResolvedFeedTarget } from './pinned-fetch.ts'
+import { decodeCsvBytes } from '../src/shared/csv.ts'
 import { mapJsonFeed, validateJsonSourceConfig } from './connectors/json-feed.ts'
 import { mapCsvFeed, validateCsvSourceConfig } from './connectors/csv-feed.ts'
 import { normalizeOpportunityUrl } from '../src/shared/opportunity-url.ts'
@@ -36,7 +34,6 @@ const parser = new Parser({
     ],
   },
 })
-const maxFeedBytes = 5 * 1024 * 1024
 const maxLeverFeedBytes = 25 * 1024 * 1024
 
 type FeedItem = {
@@ -203,102 +200,6 @@ function distanceKm(left: GeorefLocality, right: GeorefLocality) {
   return 6371.0088 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
-const isPublicAddress = (value: string) => {
-  try {
-    return ipaddr.process(value).range() === 'unicast'
-  } catch {
-    return false
-  }
-}
-
-type ResolvedFeedTarget = { url: URL; address: string; family: 4 | 6 }
-
-async function resolvePublicHttpsTarget(rawUrl: string): Promise<ResolvedFeedTarget> {
-  const url = new URL(rawUrl)
-  if (url.protocol !== 'https:') throw new Error('Por seguridad, las fuentes automáticas deben usar HTTPS.')
-  if (url.username || url.password) throw new Error('El enlace no puede incluir credenciales.')
-  const hostname = url.hostname.toLowerCase().replace(/^\[|\]$/g, '')
-  if (hostname === 'localhost' || hostname.endsWith('.localhost') || hostname.endsWith('.local')) {
-    throw new Error('La fuente debe estar publicada en internet.')
-  }
-  if (isIP(hostname)) {
-    if (!isPublicAddress(hostname)) throw new Error('No se permiten direcciones de red local.')
-    return { url, address: hostname, family: isIP(hostname) as 4 | 6 }
-  }
-  const addresses = await dns.lookup(hostname, { all: true, verbatim: true })
-  if (!addresses.length || addresses.some(({ address }) => !isPublicAddress(address))) {
-    throw new Error('La fuente no apunta únicamente a direcciones públicas.')
-  }
-  const selected = addresses[0]
-  return { url, address: selected.address, family: selected.family as 4 | 6 }
-}
-
-function fetchPinnedText(target: ResolvedFeedTarget, accept: string, maxBytes = maxFeedBytes) {
-  const { url, address, family } = target
-  const hostname = url.hostname.toLowerCase().replace(/^\[|\]$/g, '')
-  return new Promise<string>((resolve, reject) => {
-    let settled = false
-    const fail = (error: Error) => {
-      if (settled) return
-      settled = true
-      reject(error)
-    }
-    const request = https.request({
-      hostname: address,
-      port: url.port ? Number(url.port) : 443,
-      path: `${url.pathname}${url.search}`,
-      method: 'GET',
-      family,
-      servername: isIP(hostname) ? undefined : hostname,
-      headers: {
-        host: url.host,
-        accept,
-        'accept-encoding': 'identity',
-      },
-      signal: AbortSignal.timeout(20_000),
-    }, (response) => {
-      const status = response.statusCode ?? 0
-      if (status < 200 || status >= 300) {
-        response.resume()
-        fail(new Error(`El servidor respondió ${status}.`))
-        return
-      }
-      const contentEncoding = response.headers['content-encoding']
-      if (contentEncoding && contentEncoding !== 'identity') {
-        response.destroy()
-        fail(new Error('La fuente devolvió una compresión no compatible.'))
-        return
-      }
-      const contentLength = Number(response.headers['content-length'] ?? 0)
-      if (contentLength > maxBytes) {
-        response.destroy()
-        fail(new Error(`La fuente supera el tamaño máximo de ${Math.floor(maxBytes / (1024 * 1024))} MB.`))
-        return
-      }
-
-      const chunks: Buffer[] = []
-      let total = 0
-      response.on('data', (chunk: Buffer | string) => {
-        const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)
-        total += bytes.byteLength
-        if (total > maxBytes) {
-          response.destroy()
-          fail(new Error(`La fuente supera el tamaño máximo de ${Math.floor(maxBytes / (1024 * 1024))} MB.`))
-          return
-        }
-        chunks.push(bytes)
-      })
-      response.on('end', () => {
-        if (settled) return
-        settled = true
-        resolve(Buffer.concat(chunks).toString('utf8'))
-      })
-      response.on('error', fail)
-    })
-    request.on('error', fail)
-    request.end()
-  })
-}
 
 function fetchPinnedXml(target: ResolvedFeedTarget) {
   return fetchPinnedText(target, 'application/rss+xml, application/atom+xml, application/xml, text/xml')
@@ -329,18 +230,20 @@ async function parseJsonResponse(json: string): Promise<unknown> {
   return payload
 }
 
-async function mapConcurrentOrdered<T, R>(items: T[], concurrency: number, mapper: (item: T, index: number) => Promise<R>): Promise<R[]> {
+async function mapConcurrentOrdered<T, R>(items: T[], concurrency: number, mapper: (item: T, index: number, signal: AbortSignal) => Promise<R>): Promise<R[]> {
   const results = new Array<R>(items.length)
+  const controller = new AbortController()
   let nextIndex = 0
   let failure: unknown
   const workers = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
-    while (failure === undefined) {
+    while (failure === undefined && !controller.signal.aborted) {
       const index = nextIndex++
       if (index >= items.length) return
       try {
-        results[index] = await mapper(items[index], index)
+        results[index] = await mapper(items[index], index, controller.signal)
       } catch (error) {
-        failure = error
+        if (failure === undefined) failure = error
+        controller.abort()
       }
     }
   })
@@ -355,15 +258,16 @@ async function fetchSmartRecruitersPayload(url: string, company: SmartRecruiters
   const list = await parseJsonResponse(await fetchPinnedText(target, 'application/json'))
   const postingIds = smartRecruitersPostingIds(list, company)
   let totalDetailBytes = 0
-  const details = await mapConcurrentOrdered(postingIds, 4, async (postingId) => {
+  const details = await mapConcurrentOrdered(postingIds, 4, async (postingId, _index, signal) => {
     const detailUrl = new URL(target.url)
     detailUrl.pathname = `/v1/companies/${company}/postings/${postingId}`
     detailUrl.search = ''
-    const detailText = await fetchPinnedText({ ...target, url: detailUrl }, 'application/json', 1024 * 1024)
-    totalDetailBytes += Buffer.byteLength(detailText, 'utf8')
-    if (totalDetailBytes > 25 * 1024 * 1024) {
+    const detailText = await fetchPinnedText({ ...target, url: detailUrl }, 'application/json', 1024 * 1024, signal)
+    const detailBytes = Buffer.byteLength(detailText, 'utf8')
+    if (totalDetailBytes + detailBytes > 25 * 1024 * 1024) {
       throw new Error(`Los detalles de SmartRecruiters superan el límite de 25 MB por consulta (${SMARTRECRUITERS_MAX_POSTINGS} avisos como máximo).`)
     }
+    totalDetailBytes += detailBytes
     return parseJsonResponse(detailText)
   })
   return smartRecruitersDetailsPayload(list, details, company)
@@ -425,7 +329,8 @@ export async function testJsonFeed(url: string, rawConfig: unknown): Promise<Fee
 
 async function fetchCsvFeed(url: string, config: CsvSourceConfig) {
   const target = await resolvePublicHttpsTarget(url)
-  const csv = await fetchPinnedText(target, 'text/csv, text/plain')
+  const raw = await fetchPinnedBytes(target, 'text/csv, text/plain')
+  const csv = decodeCsvBytes(raw).contents
   return mapCsvFeed(csv, config)
 }
 
@@ -781,6 +686,7 @@ export async function runSearch(
   let added = 0
   let checkedSources = 0
   const errors: SearchRunResult['errors'] = []
+  const truncated: SearchRunResult['truncated'] = []
 
   for (const source of activeSources) {
     if (source.kind === 'website') continue
@@ -791,9 +697,17 @@ export async function runSearch(
       const itemLimit = policy?.connector === 'lever-public-jobs'
         ? policy.leverArgentinaMaxPostings ?? LEVER_MAX_ARGENTINA_POSTINGS
         : 100
+      const truncatedItems = items.length > itemLimit ? items.length - itemLimit : 0
       for (const item of items.slice(0, itemLimit)) {
         const opportunity = itemToOpportunity(source, profiles, item, salaryExchangeRates)
         if (opportunity && database.addOpportunityIfNew(opportunity)) added += 1
+      }
+      if (truncatedItems > 0) {
+        truncated.push({
+          sourceId: source.id,
+          sourceName: source.name,
+          message: `Se conservaron ${itemLimit} de ${items.length} avisos por el límite de ${itemLimit} por consulta; ${truncatedItems} no se revisaron.`.slice(0, 500),
+        })
       }
       database.markSourceChecked(source.id, new Date().toISOString())
     } catch (error) {
@@ -807,5 +721,5 @@ export async function runSearch(
     }
   }
 
-  return { added, checkedSources, errors }
+  return { added, checkedSources, errors, truncated }
 }

@@ -80,10 +80,12 @@ export function smartRecruitersPostingIds(input: unknown, company: SmartRecruite
   return result.content.map((item, index) => {
     if (!isObject(item)) throw new Error(`El aviso ${index + 1} de SmartRecruiters no tiene un formato válido.`)
     const posting = item as SmartRecruitersPostingSummary
-    if (posting.company?.identifier !== company) {
+    const postingCompany = typeof posting.company?.identifier === 'string' ? posting.company.identifier : ''
+    if (postingCompany.toLocaleLowerCase() !== company.toLocaleLowerCase()) {
       throw new Error(`El aviso ${index + 1} no pertenece a ${smartRecruitersCompanyName(company)}.`)
     }
-    if (posting.location?.country !== 'ar') {
+    const postingCountry = typeof posting.location?.country === 'string' ? posting.location.country.trim().toLocaleLowerCase() : ''
+    if (postingCountry !== 'ar') {
       throw new Error(`El aviso ${index + 1} no cumple el filtro de país Argentina.`)
     }
     if (typeof posting.id !== 'string' || !/^\d{1,30}$/u.test(posting.id)) {
@@ -110,10 +112,12 @@ export function smartRecruitersDetailsPayload(
     const summary = summaries[index] as SmartRecruitersPostingSummary
     const detail = details[index]
     if (!isObject(detail)) throw new Error(`SmartRecruiters devolvió un detalle inválido para el aviso ${postingIds[index]}.`)
-    if (detail.id !== postingIds[index] || !isObject(detail.company) || detail.company.identifier !== company) {
+    const detailCompany = isObject(detail.company) && typeof detail.company.identifier === 'string' ? detail.company.identifier : ''
+    if (detail.id !== postingIds[index] || detailCompany.toLocaleLowerCase() !== company.toLocaleLowerCase()) {
       throw new Error(`El detalle ${postingIds[index]} no coincide con la empresa o el aviso solicitado.`)
     }
-    if (!isObject(detail.location) || detail.location.country !== 'ar' || detail.active !== true) continue
+    const detailCountry = isObject(detail.location) && typeof detail.location.country === 'string' ? detail.location.country.trim().toLocaleLowerCase() : ''
+    if (!isObject(detail.location) || detailCountry !== 'ar' || detail.active !== true) continue
     if (typeof detail.name !== 'string' || !detail.name.trim()) {
       throw new Error(`SmartRecruiters no devolvió el título del aviso ${postingIds[index]}.`)
     }
@@ -126,7 +130,11 @@ export function smartRecruitersDetailsPayload(
     } catch {
       throw new Error(`SmartRecruiters devolvió un enlace inválido para el aviso ${postingIds[index]}.`)
     }
-    if (postingUrl.protocol !== 'https:' || postingUrl.hostname !== 'jobs.smartrecruiters.com' || postingUrl.username || postingUrl.password || postingUrl.port || postingUrl.hash || [...postingUrl.searchParams.keys()].length > 0 || !postingUrl.pathname.startsWith(`/${company}/`) || !postingUrl.pathname.includes(String(postingIds[index]))) {
+    const postingId = String(postingIds[index])
+    const segments = postingUrl.pathname.split('/').filter(Boolean)
+    const postingSegment = segments.length === 2 && segments[0].toLocaleLowerCase() === company.toLocaleLowerCase() ? segments[1] : ''
+    const postingSlug = postingSegment === postingId || (postingSegment.startsWith(`${postingId}-`) && postingSegment.length > postingId.length + 1)
+    if (postingUrl.protocol !== 'https:' || postingUrl.hostname !== 'jobs.smartrecruiters.com' || postingUrl.username || postingUrl.password || postingUrl.port || postingUrl.hash || [...postingUrl.searchParams.keys()].length > 0 || !postingSlug) {
       throw new Error(`SmartRecruiters devolvió un enlace que no pertenece al tablero público de ${companyName}.`)
     }
     const location = detail.location

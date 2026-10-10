@@ -4,7 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default [
-  { ignores: ['dist/**', 'dist-electron/**', 'release/**', 'node_modules/**', '.smoke-*/**'] },
+  { ignores: ['dist/**', 'dist-electron/**', 'release/**', 'node_modules/**', '.smoke-*/**', '.qa-**/'] },
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {

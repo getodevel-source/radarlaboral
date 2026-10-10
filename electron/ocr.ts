@@ -48,11 +48,24 @@ export async function recognizeOcrImage(input: unknown): Promise<string> {
   // break the chain for later pages.
   const pending = ocrQueue.catch(() => '').then(async () => {
     const worker = await getWorker()
-    const result = await Promise.race([
-      worker.recognize(image),
-      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('El reconocimiento de la página tardó demasiado.')), 120_000)),
-    ])
-    return result.data.text.trim().slice(0, 100_000)
+    let timeout: NodeJS.Timeout | undefined
+    try {
+      const result = await Promise.race([
+        worker.recognize(image),
+        new Promise<never>((_, reject) => {
+          timeout = setTimeout(() => {
+            workerPromise = null
+            void worker.terminate().catch(() => {
+              // El worker colgado puede no responder durante el apagado.
+            })
+            reject(new Error('El reconocimiento de la página tardó demasiado.'))
+          }, 120_000)
+        }),
+      ])
+      return result.data.text.trim().slice(0, 100_000)
+    } finally {
+      clearTimeout(timeout)
+    }
   })
   ocrQueue = pending.catch(() => '')
   return pending

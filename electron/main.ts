@@ -41,6 +41,7 @@ let activeSearch: Promise<SearchRunResult> | null = null
 let pendingSearchFailureCount = 0
 let pendingSearchCompletionCounts: SearchCompletionCounts | null = null
 let searchCompletionListenerReady = false
+let searchFailureListenerReady = false
 let followUpReminderDeliverySequence = 0
 let followUpReminderListenerReady = false
 const pendingFollowUpReminders: Array<{ deliveryId: string; count: number }> = []
@@ -330,8 +331,8 @@ function showFollowUpReminderInApp(count: number, onShown?: () => void): boolean
   }
   const deliveryId = `follow-up-${++followUpReminderDeliverySequence}`
   if (onShown) followUpReminderAcknowledgements.set(deliveryId, onShown)
-  if (!window!.isVisible()) window!.show()
-  window!.focus()
+  if (!window!.isVisible() || !window!.isFocused()) window!.showInactive()
+  window!.flashFrame(true)
   window!.webContents.send('app:follow-up-reminder', { deliveryId, count })
   return false
 }
@@ -363,13 +364,19 @@ ipcMain.on('app:search-completion-notice-listener-ready', (event) => {
   flushPendingSearchCompletionNotice()
 })
 
+ipcMain.on('app:search-failed-listener-ready', (event) => {
+  if (event.sender !== mainWindow?.webContents) return
+  searchFailureListenerReady = true
+  flushPendingSearchFailure()
+})
+
 async function runSearchNow(notifyUnexpectedFailure = true) {
-  if (!database || maintenanceMode) return { added: 0, checkedSources: 0, errors: [] }
+  if (!database || maintenanceMode) return { added: 0, checkedSources: 0, errors: [], truncated: [] }
   if (activeSearch) return activeSearch
   activeSearch = runSearch(database)
     .then((result) => {
       if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('app:search-completed')
-      const counts = { added: result.added, errors: result.errors.length }
+      const counts = { added: result.added, errors: result.errors.length, truncated: result.truncated.length }
       reportSearchCompletion(counts, {
         log: (error) => console.error('No se pudo notificar el resultado de la búsqueda:', error),
         isSupported: () => Notification.isSupported() && areWindowsToastNotificationsEnabled(),
@@ -420,9 +427,9 @@ function showSearchCompletionInApp(counts: SearchCompletionCounts) {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
     return
   }
-  if (!window.isVisible()) {
-    window.show()
-    window.focus()
+  if (!window.isVisible() || !window.isFocused()) {
+    window.showInactive()
+    window.flashFrame(true)
   }
   if (window.webContents.isLoading() || !searchCompletionListenerReady) {
     pendingSearchCompletionCounts = mergeSearchCompletionCounts(pendingSearchCompletionCounts, counts)
@@ -432,9 +439,12 @@ function showSearchCompletionInApp(counts: SearchCompletionCounts) {
 }
 
 function mergeSearchCompletionCounts(previous: SearchCompletionCounts | null, next: SearchCompletionCounts): SearchCompletionCounts {
-  return previous
-    ? { added: previous.added + next.added, errors: previous.errors + next.errors }
-    : { ...next }
+  if (!previous) return { ...next }
+  return {
+    added: previous.added + next.added,
+    errors: previous.errors + next.errors,
+    truncated: (previous.truncated ?? 0) + (next.truncated ?? 0),
+  }
 }
 
 function flushPendingSearchCompletionNotice() {
@@ -450,11 +460,11 @@ function showSearchFailureInApp() {
     pendingSearchFailureCount += 1
     return
   }
-  if (!window.isVisible()) {
-    window.show()
-    window.focus()
+  if (!window.isVisible() || !window.isFocused()) {
+    window.showInactive()
+    window.flashFrame(true)
   }
-  if (window.webContents.isLoading()) {
+  if (window.webContents.isLoading() || !searchFailureListenerReady) {
     pendingSearchFailureCount += 1
     return
   }
@@ -462,7 +472,7 @@ function showSearchFailureInApp() {
 }
 
 function flushPendingSearchFailure() {
-  if (!pendingSearchFailureCount || !mainWindow || mainWindow.isDestroyed()) return
+  if (!pendingSearchFailureCount || !mainWindow || mainWindow.isDestroyed() || mainWindow.webContents.isLoading() || !searchFailureListenerReady) return
   const count = pendingSearchFailureCount
   pendingSearchFailureCount = 0
   mainWindow.webContents.send('app:search-failed', count)

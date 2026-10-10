@@ -356,6 +356,7 @@ function Icon({ name, size = 18 }: { name: string; size?: number }) {
     clock: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7v5l3.2 2" /></>,
     spark: <><path d="m12 3 1.6 6.1L20 11l-6.4 1.7L12 19l-1.6-6.3L4 11l6.4-1.9L12 3Z" /><path d="m19 16 .7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16Z" /></>,
   }
+  if (import.meta.env.DEV && !Object.hasOwn(paths, name)) console.warn(`Icono desconocido: ${name}`)
   return <svg {...common}>{paths[name] ?? paths.overview}</svg>
 }
 
@@ -375,6 +376,7 @@ function App() {
   const [profileForm, setProfileForm] = useState<ProfileForm>(emptyProfileForm)
   const [localityQuery, setLocalityQuery] = useState('')
   const [localitySuggestions, setLocalitySuggestions] = useState<GeorefLocalitySuggestion[]>([])
+  const [localityActiveIndex, setLocalityActiveIndex] = useState(-1)
   const [opportunityForm, setOpportunityForm] = useState<OpportunityForm>(emptyOpportunityForm)
   const [sourceForm, setSourceForm] = useState<SourceForm>(emptySourceForm)
   const [csvImportContents, setCsvImportContents] = useState('')
@@ -401,8 +403,9 @@ function App() {
   const [statusFilter, setStatusFilter] = useState<'todas' | OpportunityStatus>('todas')
   const [profileFilter, setProfileFilter] = useState('todas')
   const [query, setQuery] = useState('')
-  const [toast, setToast] = useState('')
-  const [followUpReminderDeliveryId, setFollowUpReminderDeliveryId] = useState<string | null>(null)
+  const [toast, setToast] = useState({ id: 0, text: '' })
+  const toastSeq = useRef(0)
+  const [followUpReminderQueue, setFollowUpReminderQueue] = useState<Array<{ deliveryId: string; text: string }>>([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [testingSource, setTestingSource] = useState(false)
@@ -437,13 +440,14 @@ function App() {
     const query = localityQuery.trim()
     if (modal !== 'profile' || query.length < 2) {
       setLocalitySuggestions([])
+      setLocalityActiveIndex(-1)
       return
     }
     let active = true
     const timer = window.setTimeout(() => {
       void window.radar.geography.searchLocalities(query)
-        .then((suggestions) => { if (active) setLocalitySuggestions(suggestions) })
-        .catch(() => { if (active) setLocalitySuggestions([]) })
+        .then((suggestions) => { if (active) { setLocalitySuggestions(suggestions); setLocalityActiveIndex(-1) } })
+        .catch(() => { if (active) { setLocalitySuggestions([]); setLocalityActiveIndex(-1) } })
     }, 160)
     return () => {
       active = false
@@ -459,10 +463,12 @@ function App() {
   }, [refresh])
 
   useEffect(() => {
-    const off = window.radar.app.onSearchCompletionNotice(({ added, errors }) => {
+    const off = window.radar.app.onSearchCompletionNotice(({ added, errors, truncated }) => {
       const messages: string[] = []
       if (added > 0) messages.push(added === 1 ? 'Se agregó 1 aviso nuevo.' : `Se agregaron ${added} avisos nuevos.`)
       if (errors > 0) messages.push(errors === 1 ? 'Falló la consulta de 1 fuente. Revisá Fuentes.' : `Falló la consulta de ${errors} fuentes. Revisá Fuentes.`)
+      const truncatedCount = truncated ?? 0
+      if (truncatedCount > 0) messages.push(truncatedCount === 1 ? '1 fuente devolvió más avisos de los revisados por consulta.' : `${truncatedCount} fuentes devolvieron más avisos de los revisados por consulta.`)
       showToast(messages.join(' '))
     })
     return off
@@ -470,7 +476,7 @@ function App() {
 
   useEffect(() => {
     const off = window.radar.app.onSearchFailed((count) => {
-      setToast(count === 1
+      showToast(count === 1
         ? 'Una búsqueda automática no pudo completarse. Revisá Fuentes o intentá de nuevo.'
         : `${count} búsquedas automáticas no pudieron completarse. Revisá Fuentes o intentá de nuevo.`)
     })
@@ -483,27 +489,30 @@ function App() {
       setStatusFilter('postulada')
       setProfileFilter('todas')
       setQuery('')
-      setToast(count === 1
+      const text = count === 1
         ? 'Llegó la fecha para retomar una postulación. Revisá Vacantes en estado Postulada.'
-        : `Llegó la fecha para retomar ${count} postulaciones. Revisá Vacantes en estado Postulada.`)
-      setFollowUpReminderDeliveryId(deliveryId)
+        : `Llegó la fecha para retomar ${count} postulaciones. Revisá Vacantes en estado Postulada.`
+      toastSeq.current += 1
+      setToast({ id: toastSeq.current, text })
+      setFollowUpReminderQueue((current) => [...current, { deliveryId, text }])
     })
     return off
   }, [])
 
   useLayoutEffect(() => {
-    if (!followUpReminderDeliveryId || !toast) return
+    const [current] = followUpReminderQueue
+    if (!current || !toast.text || toast.text !== current.text) return
     try {
-      window.radar.app.acknowledgeFollowUpReminder(followUpReminderDeliveryId)
+      window.radar.app.acknowledgeFollowUpReminder(current.deliveryId)
     } catch {
       // The main process already dropped the pending delivery; nothing to retry.
     }
-    setFollowUpReminderDeliveryId(null)
-  }, [followUpReminderDeliveryId, toast])
+    setFollowUpReminderQueue((pending) => pending.slice(1))
+  }, [followUpReminderQueue, toast])
 
   useEffect(() => {
-    if (!toast) return
-    const timer = window.setTimeout(() => setToast(''), 3500)
+    if (!toast.text) return
+    const timer = window.setTimeout(() => setToast((current) => current.id === toast.id ? { id: 0, text: '' } : current), 6000)
     return () => window.clearTimeout(timer)
   }, [toast])
 
@@ -550,7 +559,8 @@ function App() {
   }, [csvImportConfig, csvImportContents])
 
   function showToast(message: string) {
-    setToast(message)
+    toastSeq.current += 1
+    setToast({ id: toastSeq.current, text: message })
   }
 
   function openProfile(profile?: SearchProfile) {
@@ -558,6 +568,7 @@ function App() {
     setProfileForm(profile ? profileToForm(profile) : emptyProfileForm())
     setLocalityQuery('')
     setLocalitySuggestions([])
+    setLocalityActiveIndex(-1)
     setModal('profile')
   }
 
@@ -572,6 +583,7 @@ function App() {
     }
     setLocalityQuery('')
     setLocalitySuggestions([])
+    setLocalityActiveIndex(-1)
   }
 
   function openOpportunity() {
@@ -665,7 +677,7 @@ function App() {
       return
     }
     try {
-      const contents = await file.text()
+      const contents = decodeCsvBytes(new Uint8Array(await file.arrayBuffer())).contents
       setJsonImportContents(contents)
       setJsonImportFileName(file.name)
       setJsonImportFileError('')
@@ -1219,7 +1231,10 @@ function App() {
     } finally {
       setBusy(false)
     }
-    if (failures.length) showToast(`${imported} CV importado${imported === 1 ? '' : 's'}. ${failures[0]}`)
+    if (failures.length) {
+      const extra = failures.length > 1 ? ` y ${failures.length - 1} más` : ''
+      showToast(`${imported} CV guardado${imported === 1 ? '' : 's'}; ${failures.length} fallo${failures.length === 1 ? '' : 's'}: ${failures[0]}${extra}.`)
+    }
     else if (ocrFailures) showToast(`${imported} CV guardado${imported === 1 ? '' : 's'}; no se pudo aplicar OCR local en ${ocrFailures} página${ocrFailures === 1 ? '' : 's'}.`)
     else if (ocrPagesRecognized) showToast(`${imported} CV guardado${imported === 1 ? '' : 's'}; OCR local aplicado en ${ocrPagesRecognized} página${ocrPagesRecognized === 1 ? '' : 's'}.`)
     else if (imported) showToast(`${imported} CV guardado${imported === 1 ? '' : 's'} en esta computadora.`)
@@ -1558,9 +1573,15 @@ function App() {
                 <textarea required rows={2} aria-labelledby="profile-locations-label" placeholder="Santa Fe; Santo Tomé" value={profileForm.locations} onChange={(event) => setProfileForm({ ...profileForm, locations: event.target.value })} />
                 <div className="locality-picker">
                   <label htmlFor="profile-locality-search">Agregar localidad oficial</label>
-                  <input id="profile-locality-search" type="search" autoComplete="off" placeholder="Buscar por localidad, departamento o provincia" value={localityQuery} onChange={(event) => setLocalityQuery(event.target.value)} aria-expanded={localitySuggestions.length > 0} aria-controls="profile-locality-suggestions" />
+                  <input id="profile-locality-search" type="search" autoComplete="off" role="combobox" aria-autocomplete="list" aria-expanded={localitySuggestions.length > 0} aria-controls="profile-locality-suggestions" aria-activedescendant={localityActiveIndex >= 0 && localitySuggestions[localityActiveIndex] ? `profile-locality-option-${localitySuggestions[localityActiveIndex].id}` : undefined} placeholder="Buscar por localidad, departamento o provincia" value={localityQuery} onChange={(event) => { setLocalityQuery(event.target.value); setLocalityActiveIndex(-1) }} onKeyDown={(event) => {
+                    if (!localitySuggestions.length) return
+                    if (event.key === 'ArrowDown') { event.preventDefault(); setLocalityActiveIndex((current) => (current + 1) % localitySuggestions.length) }
+                    else if (event.key === 'ArrowUp') { event.preventDefault(); setLocalityActiveIndex((current) => (current <= 0 ? localitySuggestions.length - 1 : current - 1)) }
+                    else if (event.key === 'Enter' && localityActiveIndex >= 0 && localitySuggestions[localityActiveIndex]) { event.preventDefault(); addGeorefLocality(localitySuggestions[localityActiveIndex]) }
+                    else if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); setLocalitySuggestions([]); setLocalityActiveIndex(-1) }
+                  }} />
                   {localitySuggestions.length > 0 && <ul className="locality-suggestions" id="profile-locality-suggestions" role="listbox" aria-label="Localidades oficiales sugeridas">
-                    {localitySuggestions.map((locality) => <li key={locality.id} role="option" aria-selected="false">
+                    {localitySuggestions.map((locality, index) => <li key={locality.id} id={`profile-locality-option-${locality.id}`} role="option" aria-selected={index === localityActiveIndex}>
                       <button type="button" onClick={() => addGeorefLocality(locality)} aria-label={`Agregar ${locality.label}, código Georef ${locality.id}`}>
                         <strong>{locality.label}</strong>
                         <small>Código Georef {locality.id} · centroide {locality.lat.toFixed(4)}, {locality.lon.toFixed(4)}</small>
@@ -1720,8 +1741,8 @@ function App() {
         </Modal>}
       </div>}
 
-      <div className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">{toast}</div>
-      {toast && <div className="toast-message" aria-hidden="true"><span className="toast-mark"><Icon name="check" size={15} /></span>{toast}</div>}
+      <div key={toast.id} className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">{toast.text}</div>
+      {toast.text && <div className="toast-message" aria-hidden="true"><span className="toast-mark"><Icon name="check" size={15} /></span>{toast.text}</div>}
     </>
   )
 }

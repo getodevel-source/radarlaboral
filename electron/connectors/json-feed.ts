@@ -108,9 +108,9 @@ function structuredSalaryAt(item: unknown, config: JsonSourceConfig) {
   const minimum = amountAt(item, config.salaryMinimumPath)
   const maximum = amountAt(item, config.salaryMaximumPath)
   const rawCurrency = textAt(item, config.salaryCurrencyPath)
-  const currency = normalizeSalaryCurrency(rawCurrency) ?? rawCurrency.toUpperCase()
+  const currency = normalizeSalaryCurrency(rawCurrency)
   const period = textAt(item, config.salaryPeriodPath)
-  if (minimum === null || !/^[A-Z]{3}$/u.test(currency) || !period) return ''
+  if (minimum === null || currency === null || !period) return ''
   if (maximum !== null && maximum < minimum) return ''
   const normalizedPeriod = normalizeSalaryPeriod(period) ?? 'periodo informado sin normalizar'
   const amounts = maximum === null ? String(minimum) : `${minimum} - ${maximum}`

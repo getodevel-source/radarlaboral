@@ -62,9 +62,9 @@ function structuredSalaryIn(row: string[], positions: Map<string, number>, confi
   const minimum = parseSalaryAmount(textIn(row, positions, config.salaryMinimumColumn))
   const maximum = parseSalaryAmount(textIn(row, positions, config.salaryMaximumColumn))
   const rawCurrency = textIn(row, positions, config.salaryCurrencyColumn)
-  const currency = normalizeSalaryCurrency(rawCurrency) ?? rawCurrency.toUpperCase()
+  const currency = normalizeSalaryCurrency(rawCurrency)
   const period = textIn(row, positions, config.salaryPeriodColumn)
-  if (minimum === null || !/^[A-Z]{3}$/u.test(currency) || !period) return ''
+  if (minimum === null || currency === null || !period) return ''
   if (maximum !== null && maximum < minimum) return ''
   const normalizedPeriod = normalizeSalaryPeriod(period) ?? 'periodo informado sin normalizar'
   const amounts = maximum === null ? String(minimum) : `${minimum} - ${maximum}`

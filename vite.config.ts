@@ -7,6 +7,7 @@ import { createContentSecurityPolicyPlugin } from './build/content-security-poli
 
 export default defineConfig(({ command }) => ({
   base: './',
+  build: { sourcemap: false },
   plugins: [
     react(),
     createContentSecurityPolicyPlugin(command),

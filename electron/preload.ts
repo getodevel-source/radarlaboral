@@ -64,11 +64,13 @@ const api: RadarApi = {
     onSearchCompletionNotice: (callback) => {
       const listener = (_event: Electron.IpcRendererEvent, payload: unknown) => {
         if (!payload || typeof payload !== 'object') return
-        const counts = payload as { added?: unknown; errors?: unknown }
+        const counts = payload as { added?: unknown; errors?: unknown; truncated?: unknown }
         if (typeof counts.added !== 'number' || !Number.isInteger(counts.added) || counts.added < 0) return
         if (typeof counts.errors !== 'number' || !Number.isInteger(counts.errors) || counts.errors < 0) return
-        if (counts.added === 0 && counts.errors === 0) return
-        callback({ added: counts.added, errors: counts.errors })
+        const truncated = counts.truncated === undefined ? 0 : counts.truncated
+        if (typeof truncated !== 'number' || !Number.isInteger(truncated) || truncated < 0) return
+        if (counts.added === 0 && counts.errors === 0 && truncated === 0) return
+        callback({ added: counts.added, errors: counts.errors, truncated })
       }
       ipcRenderer.on('app:search-completion-notice', listener)
       ipcRenderer.send('app:search-completion-notice-listener-ready')
@@ -79,6 +81,7 @@ const api: RadarApi = {
         callback(typeof count === 'number' && Number.isInteger(count) && count > 0 ? count : 1)
       }
       ipcRenderer.on('app:search-failed', listener)
+      ipcRenderer.send('app:search-failed-listener-ready')
       return () => ipcRenderer.removeListener('app:search-failed', listener)
     },
     onFollowUpReminder: (callback) => {
