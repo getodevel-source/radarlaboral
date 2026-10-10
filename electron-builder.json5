@@ -71,7 +71,9 @@
         ]
       }
     ],
-    "artifactName": "${productName}-Windows-${version}-Setup.${ext}",
+    // Sin espacios: GitHubProvider resuelve descargas con espacios->guiones
+    // (p.replace(/ /g, "-")) y un asset con espacios daria 404 al actualizar.
+    "artifactName": "${name}-Windows-${version}-Setup.${ext}",
     "icon": "resources/icon.ico"
   },
   "nsis": {
