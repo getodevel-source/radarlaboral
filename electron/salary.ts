@@ -34,7 +34,7 @@ export function convertMonthlySalaryCurrency(
   }
 }
 
-export type SalaryPeriod = 'monthly' | 'annual' | 'weekly' | 'daily' | 'hourly'
+export type SalaryPeriod = 'monthly' | 'annual' | 'weekly' | 'fortnightly' | 'daily' | 'hourly'
 
 const currencyAliases: Record<SalaryCurrency, string[]> = {
   ARS: ['peso argentino', 'pesos argentinos', 'argentine peso', 'argentine pesos'],
@@ -208,6 +208,7 @@ export function normalizeSalaryPeriod(raw: string): SalaryPeriod | null {
   if (['month', 'months', 'monthly', 'per month', 'per mo', 'every month', 'month to month', 'mes', 'meses', 'mensal', 'mensais', 'mensalmente', 'mensual', 'mensuales', 'mensualmente', 'por mes', 'al mes', 'mes a mes', 'p/m', 'p1m', '/month', '/mes'].includes(value)) return 'monthly'
   if (['year', 'years', 'annual', 'annually', 'yearly', 'per year', 'per annum', 'ano', 'anos', 'anual', 'anuales', 'por ano', 'al ano', 'p1y', '/ano', '/year', '/yr', 'p/a'].includes(value)) return 'annual'
   if (['week', 'weeks', 'weekly', 'per week', 'semanal', 'semanales', 'semanalmente', 'por semana', 'por semanas', 'sem', 'p1w', '/week', '/wk'].includes(value)) return 'weekly'
+  if (['fortnight', 'fortnightly', 'fortnights', 'per fortnight', 'quincenal', 'quincenales', 'quincenalmente', 'por quincena', 'bisemanal', 'bisemanales', 'bimensual', 'p1f', '/quincena'].includes(value)) return 'fortnightly'
   if (['day', 'days', 'daily', 'per day', 'per diem', 'diario', 'diarios', 'diaria', 'diarias', 'diariamente', 'por dia', 'por dias', 'al dia', 'p1d', '/day', '/d'].includes(value)) return 'daily'
   if (['hour', 'hours', 'hourly', 'per hour', 'per hours', 'per hrs', 'hora', 'horas', 'por hora', 'por horas', 'cada hora', 'hrs', 'p1h', 'pt1h', '/hour', '/hr', '/h'].includes(value)) return 'hourly'
   return null
@@ -217,8 +218,8 @@ export function normalizeSalaryPeriod(raw: string): SalaryPeriod | null {
  * Resolves one explicit period from salary text without guessing from schedule mentions.
  * Asimetría documentada: el texto libre acepta "dólar" genérico como USD, mientras que la
  * ruta estructurada (normalizeSalaryCurrency) exige un código o nombre de moneda exacto y
- * deja incomparable cualquier moneda no reconocida. Quincenal queda incomparable a propósito:
- * no existe un factor de conversión revisado, así que ningún período quincenal produce mensual.
+ * deja incomparable cualquier moneda no reconocida. Quincenal equivale al doble del importe
+ * (pago cada 15 días, 24 períodos por año).
  */
 export function salaryPeriodFromText(raw: string): SalaryPeriod | null {
   if (!raw.trim() || raw.length > 300) return null
@@ -227,6 +228,7 @@ export function salaryPeriodFromText(raw: string): SalaryPeriod | null {
     ['monthly', /\b(mensual(?:es|mente)?|mensal(?:mente|es)?|mensais|por\s+mes|al\s+mes|mes\s+a\s+mes|monthly|per\s+month|per\s+mo\.?|every\s+month|months?)\b|\/\s*(?:month|mes)\b/u],
     ['annual', /\b(anual(?:es)?|por\s+ano|al\s+ano|yearly|annually|annual|per\s+(?:year|annum))\b|\/\s*(?:year|yr|ano)\b|\bp\/a\b/u],
     ['weekly', /\b(semanal(?:es|mente)?|por\s+semanas?|weekly|per\s+week)\b|\/\s*(?:week|wk)\b/u],
+    ['fortnightly', /\b(quincenal(?:es|mente)?|por\s+quincena|bisemanal(?:es)?|bimensual(?:es)?|fortnightly|per\s+fortnight)\b|\/\s*quincena\b/u],
     ['daily', /\b(diari(?:o|a|os|as|amente)?|por\s+dias?|al\s+dia|daily|per\s+day|per\s+diem)\b|\/\s*(?:day|d)\b/u],
     ['hourly', /\b(hourly|per\s+hours?|per\s+hrs?|por\s+horas?|cada\s+hora)\b|\/\s*(?:hour|hr|h)\b/u],
   ]
@@ -252,6 +254,7 @@ export function parseMonthlySalary(raw: string, workload: SalaryWorkload = {}): 
   const toMonthlyEquivalent = (amount: number) => {
     if (sourcePeriod === 'annual') return amount / 12
     if (sourcePeriod === 'monthly') return amount
+    if (sourcePeriod === 'fortnightly') return amount * 2
     const weeklyUnits = sourcePeriod === 'weekly'
       ? amount
       : sourcePeriod === 'daily'

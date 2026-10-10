@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { SALARY_CURRENCIES } from './shared/types'
 import { decodeCsvBytes, detectCsvDelimiter, parseCsvRows } from './shared/csv'
@@ -744,13 +744,17 @@ function App() {
   }
 
   async function deleteProfile(id: string) {
+    if (busy) return
     if (!window.confirm('¿Eliminar esta búsqueda? Las vacantes guardadas se mantienen en el seguimiento.')) return
+    setBusy(true)
     try {
       await window.radar.profiles.remove(id)
       await refresh()
       showToast('Búsqueda eliminada.')
     } catch (error) {
       showToast(error instanceof Error ? error.message : 'No se pudo eliminar la búsqueda.')
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -774,11 +778,15 @@ function App() {
   }
 
   async function updateStatus(opportunity: Opportunity, status: OpportunityStatus) {
+    if (busy) return
+    setBusy(true)
     try {
       await window.radar.opportunities.updateStatus(opportunity.id, status)
       await refresh()
     } catch (error) {
       showToast(error instanceof Error ? error.message : 'No se pudo actualizar el seguimiento.')
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -1097,11 +1105,15 @@ function App() {
   }
 
   async function toggleSource(source: UserSource) {
+    if (busy) return
+    setBusy(true)
     try {
       await window.radar.sources.updateEnabled(source.id, !source.enabled)
       await refresh()
     } catch (error) {
       showToast(error instanceof Error ? error.message : 'No se pudo actualizar la fuente.')
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -1363,6 +1375,8 @@ function App() {
   }
 
   async function clearAiApiKey() {
+    if (busy) return
+    setBusy(true)
     try {
       const saved = await window.radar.app.clearAiApiKey()
       setSettings(saved)
@@ -1370,6 +1384,8 @@ function App() {
       showToast('Clave eliminada de esta computadora.')
     } catch (error) {
       showToast(error instanceof Error ? error.message : 'No se pudo eliminar la clave.')
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -1552,6 +1568,7 @@ function App() {
                 onStatus={updateStatus}
                 onTracking={openTracking}
                 onDraft={openDraft}
+                busy={busy}
               />}
               {page === 'cv' && <ResumesPage resumes={resumes} busy={busy} onUpload={importResumes} onDelete={removeResume} />}
               {page === 'fuentes' && <SourcesPage sources={sources} profiles={profiles} onAdd={openSource} onAddRecommended={addFindjobitFeed} onAddDespegar={addDespegarJobs} onAddLeverSources={addAdditionalLeverSources} onAddSmartRecruitersSources={addSmartRecruitersArgentinaSources} onAddWorkableSur={addWorkableSurJobs} onAddGreenhouseSources={addGreenhouseArgentinaSources} onAddAshbySources={addAshbyArgentinaSources} onToggle={toggleSource} onCustomAutomationApproval={updateCustomAutomationApproval} onDelete={removeSource} onSearch={runSearch} onOpen={(url) => void window.radar.app.openExternal(url)} busy={busy} />}
@@ -1842,6 +1859,7 @@ function OpportunitiesPage({
   onStatus,
   onTracking,
   onDraft,
+  busy,
 }: {
   opportunities: Opportunity[]
   profiles: SearchProfile[]
@@ -1856,6 +1874,7 @@ function OpportunitiesPage({
   onStatus: (opportunity: Opportunity, status: OpportunityStatus) => void
   onTracking: (opportunity: Opportunity) => void
   onDraft: (opportunity: Opportunity) => void
+  busy: boolean
 }) {
   return <section className="content-card jobs-card">
     <div className="jobs-toolbar"><div className="filter-tabs"><button className={filter === 'todas' ? 'selected' : ''} onClick={() => setFilter('todas')}>Todas</button>{(['nueva', 'revisada', 'guardada', 'postulada', 'descartada'] as OpportunityStatus[]).map((status) => <button key={status} className={filter === status ? 'selected' : ''} onClick={() => setFilter(status)}>{statusLabels[status]}</button>)}</div><div className="jobs-filters"><select className="jobs-profile-filter" aria-label="Filtrar por perfil" value={profileFilter} onChange={(event) => setProfileFilter(event.target.value)}><option value="todas">Todos los perfiles</option><option value="sin-perfil">Sin perfil</option>{profiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.name}</option>)}</select><label className="table-search"><span>⌕</span><input placeholder="Buscar aviso, empresa o descripción" value={query} onChange={(event) => setQuery(event.target.value)} /></label></div></div>
@@ -1864,7 +1883,7 @@ function OpportunitiesPage({
       return <article className="job-row" key={opportunity.id}>
         <div className="job-company-mark job-company-large">{opportunity.company.slice(0, 1).toUpperCase()}</div>
         <div className="job-row-info"><div className="job-title-line"><h3>{opportunity.title}</h3><StatusBadge status={opportunity.status} /></div><p>{opportunity.company} <span>·</span> {opportunity.location || 'Ubicación no indicada'} <span>·</span> {opportunity.source}</p><div className="job-row-meta"><span>{formatDate(opportunity.publishedAt ?? opportunity.createdAt)}</span>{profile && <span>Perfil: {profile.name}</span>}{opportunity.matchScore !== null && <span className="fit-score"><Icon name="spark" size={13} /> {opportunity.matchScore}% de ajuste</span>}{opportunity.appliedDate && <span>Postulada: {formatDateOnly(opportunity.appliedDate)}</span>}{opportunity.followUpDate && <span className="follow-up-date">Seguimiento: {formatDateOnly(opportunity.followUpDate)}</span>}{opportunity.trackingNotes && <span>Notas guardadas</span>}</div>{opportunity.matchReasons.length > 0 && <div className="fit-reasons">{opportunity.matchReasons.slice(0, 2).map((reason) => <span key={reason}>{reason}</span>)}</div>}</div>
-        <div className="job-row-actions"><button className="small-action" onClick={() => onDraft(opportunity)}>{opportunity.status === 'postulada' ? 'Ver borrador' : 'Preparar'}</button><button className="small-action follow-up-action" onClick={() => onTracking(opportunity)}>Seguimiento</button><button className="icon-button icon-button-muted" onClick={() => onOpen(opportunity.url)} aria-label="Abrir aviso"><Icon name="external" size={16} /></button><select aria-label={`Estado de ${opportunity.title}`} value={opportunity.status} onChange={(event) => onStatus(opportunity, event.target.value as OpportunityStatus)}>{Object.entries(statusLabels).map(([status, label]) => <option value={status} key={status}>{label}</option>)}</select></div>
+        <div className="job-row-actions"><button className="small-action" onClick={() => onDraft(opportunity)}>{opportunity.status === 'postulada' ? 'Ver borrador' : 'Preparar'}</button><button className="small-action follow-up-action" onClick={() => onTracking(opportunity)}>Seguimiento</button><button className="icon-button icon-button-muted" onClick={() => onOpen(opportunity.url)} aria-label="Abrir aviso"><Icon name="external" size={16} /></button><select aria-label={`Estado de ${opportunity.title}`} value={opportunity.status} disabled={busy} onChange={(event) => onStatus(opportunity, event.target.value as OpportunityStatus)}>{Object.entries(statusLabels).map(([status, label]) => <option value={status} key={status}>{label}</option>)}</select></div>
       </article>
     })}</div> : <EmptyInline icon="briefcase" title="No hay vacantes en este filtro" detail="Agregá un aviso manualmente o conectá una fuente autorizada." action="Agregar vacante" onClick={onAdd} />}
   </section>
@@ -2015,6 +2034,7 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
 
 function Modal({ title, eyebrow, onClose, children, wide = false }: { title: string; eyebrow: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
   const dialogRef = useRef<HTMLElement | null>(null)
+  const titleId = useId()
   const closeRef = useRef(onClose)
   closeRef.current = onClose
 
@@ -2024,7 +2044,7 @@ function Modal({ title, eyebrow, onClose, children, wide = false }: { title: str
     return activateModalFocus(dialog, () => closeRef.current())
   }, [])
 
-  return <section ref={dialogRef} className={`modal-card ${wide ? 'modal-wide' : ''}`} role="dialog" aria-modal="true" aria-label={title} tabIndex={-1} onMouseDown={(event) => event.stopPropagation()}><header className="modal-header"><div><div className="eyebrow">{eyebrow}</div><h2>{title}</h2></div><button className="icon-button" onClick={onClose} aria-label="Cerrar"><Icon name="close" /></button></header><div className="modal-body">{children}</div></section>
+  return <section ref={dialogRef} className={`modal-card ${wide ? 'modal-wide' : ''}`} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} onMouseDown={(event) => event.stopPropagation()}><header className="modal-header"><div><div className="eyebrow">{eyebrow}</div><h2 id={titleId}>{title}</h2></div><button className="icon-button" onClick={onClose} aria-label="Cerrar"><Icon name="close" /></button></header><div className="modal-body">{children}</div></section>
 }
 
 export default App

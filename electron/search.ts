@@ -528,6 +528,7 @@ export function calculateFit(
           monthly: 'sueldo mensual',
           annual: 'sueldo anual dividido por 12',
           weekly: 'sueldo semanal anualizado con 52 semanas dividido por 12',
+          fortnightly: 'sueldo quincenal multiplicado por 2',
           daily: `sueldo diario anualizado con ${profile.workDaysPerWeek} días remunerados por semana y 52 semanas por año`,
           hourly: `sueldo horario anualizado con ${profile.workHoursPerWeek} horas remuneradas por semana y 52 semanas por año`,
         }[publishedSalary.sourcePeriod]
@@ -557,6 +558,7 @@ export function calculateFit(
         monthly: `El sueldo mensual publicado en ${currency}`,
         annual: `El sueldo anual publicado en ${currency}, dividido por 12`,
         weekly: `El sueldo semanal publicado en ${currency}, anualizado con 52 semanas y dividido por 12`,
+        fortnightly: `El sueldo quincenal publicado en ${currency}, multiplicado por 2`,
         daily: `El sueldo diario publicado en ${currency}, anualizado con ${profile.workDaysPerWeek} días remunerados por semana`,
         hourly: `El sueldo por hora publicado en ${currency}, anualizado con ${profile.workHoursPerWeek} horas remuneradas por semana`,
       }[publishedSalary.sourcePeriod]

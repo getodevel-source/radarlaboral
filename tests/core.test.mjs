@@ -1221,6 +1221,10 @@ test('compares monthly and annual salaries only when amount, period, and currenc
   assert.equal(normalizeSalaryPeriod('por año'), 'annual')
   assert.equal(normalizeSalaryPeriod('per annum'), 'annual')
   assert.equal(normalizeSalaryPeriod('semanalmente'), 'weekly')
+  assert.equal(normalizeSalaryPeriod('quincenal'), 'fortnightly')
+  assert.equal(normalizeSalaryPeriod('por quincena'), 'fortnightly')
+  assert.deepEqual(parseMonthlySalary('ARS 750.000 quincenales'), { currency: 'ARS', lowerBound: 1_500_000, upperBound: 1_500_000, sourcePeriod: 'fortnightly' })
+
   assert.equal(parseSalaryAmount('1.200.000'), 1_200_000)
   assert.equal(parseSalaryAmount('1,200.50'), 1_200.5)
   assert.equal(parseSalaryAmount('2.5K'), 2_500)
@@ -2450,6 +2454,20 @@ test('maps Greenhouse public postings only for Argentina and preserves approved 
     meta: { total: 1 },
     jobs: [{ id: 22, title: 'Puesto', absolute_url: 'https://job-boards.eu.greenhouse.io/otro-tablero/jobs/22', location: { name: 'Argentina' } }],
   }, 'invgate', 'InvGate'), /enlace que no pertenece/u)
+  const canonicalQueryPayload = greenhouseArgentinaPayload({
+    meta: { total: 1 },
+    jobs: [
+      { id: 22, title: 'Puesto con query canónica', absolute_url: 'https://job-boards.greenhouse.io/invgate/jobs/22?gh_jid=22', location: { name: 'Argentina' } },
+    ],
+  }, 'invgate', 'InvGate')
+  assert.deepEqual(canonicalQueryPayload.jobs.map((job) => job.title), ['Puesto con query canónica'])
+  assert.throws(() => greenhouseArgentinaPayload({
+    meta: { total: 1 },
+    jobs: [
+      { id: 23, title: 'Puesto con query ajena', absolute_url: 'https://job-boards.greenhouse.io/invgate/jobs/23?utm_source=x', location: { name: 'Argentina' } },
+    ],
+  }, 'invgate', 'InvGate'), /enlace que no pertenece/u)
+
   const tooManyArgentinaJobs = Array.from({ length: 101 }, (_, index) => ({
     id: index + 1,
     title: `Puesto ${index + 1}`,
@@ -2478,6 +2496,33 @@ test('Greenhouse rejects Córdoba Spain labels without Argentina', () => {
     ],
   }, 'invgate', 'InvGate')
   assert.deepEqual(mapJsonFeed(payload, greenhouseArgentinaJsonConfig).map((item) => item.title), ['Puesto en Córdoba Argentina'])
+})
+
+test('Greenhouse keeps bare Córdoba as Argentine when no country disambiguates it', () => {
+  const payload = greenhouseArgentinaPayload({
+    meta: { total: 1 },
+    jobs: [
+      {
+        id: 46, title: 'Puesto en Córdoba',
+        absolute_url: 'https://job-boards.greenhouse.io/invgate/jobs/46',
+        content: '', location: { name: 'Córdoba' },
+      },
+    ],
+  }, 'invgate', 'InvGate')
+  assert.deepEqual(mapJsonFeed(payload, greenhouseArgentinaJsonConfig).map((item) => item.title), ['Puesto en Córdoba'])
+})
+test('Greenhouse regional labels do not admit Spain locations', () => {
+  const payload = greenhouseArgentinaPayload({
+    meta: { total: 1 },
+    jobs: [
+      {
+        id: 99, title: 'Puesto en Madrid LATAM',
+        absolute_url: 'https://job-boards.greenhouse.io/able/jobs/99',
+        content: '', location: { name: 'Madrid, Spain (LATAM)' },
+      },
+    ],
+  }, 'able', 'Able', ['LATAM', 'Latin America'])
+  assert.deepEqual(mapJsonFeed(payload, greenhouseArgentinaJsonConfig), [])
 })
 
 test('maps Ashby public jobs with explicit Argentina eligibility and preserves secondary locations', () => {
@@ -3372,3 +3417,31 @@ test('RSS, JSON, and CSV previews share the public HTTPS connector boundary', as
   await assert.rejects(testConnector('json', 'https://127.0.0.1/jobs', jsonConfig), /direcciones de red local/u)
   await assert.rejects(testConnector('csv', 'https://127.0.0.1/jobs.csv', csvConfig), /direcciones de red local/u)
 })
+test('saves settings and AI key atomically and guards vacancies with drafts', (context) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'radar-laboral-atomic-'))
+  context.after(() => fs.rmSync(directory, { recursive: true, force: true }))
+  const database = new RadarDatabase(directory)
+  const saved = database.saveSettings({
+    searchIntervalHours: 8,
+    backgroundSearchEnabled: true,
+    aiEnabled: true,
+    aiBaseUrl: 'https://ai.example',
+    aiModel: 'modelo',
+  }, 'clave-cifrada')
+  assert.equal(saved.aiEnabled, true)
+  assert.equal(database.aiApiKeyEncrypted(), 'clave-cifrada')
+  const opportunity = database.addOpportunity({
+    profileId: null,
+    title: 'Aviso con borrador',
+    company: 'Empresa',
+    location: '',
+    source: 'Prueba',
+    url: 'https://example.org/con-borrador',
+    description: '',
+    salaryText: '',
+  })
+  database.saveDraft({ opportunityId: opportunity.id, resumeId: null, message: 'Borrador', resumeCopyText: '' })
+  assert.throws(() => database.removeOpportunity(opportunity.id), /borradores/u)
+  database.close()
+})
+

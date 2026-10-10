@@ -1,7 +1,7 @@
 {
   "version": "0.4.139",
   "method": "Temporary per-user Windows Task Scheduler tasks, on-demand launch plus accelerated one-minute recurrence, synthetic profile, main-window visibility probe",
-  "taskName": "RadarLaboral-QA-BackgroundSearch-1791589870981-25576",
+  "taskName": "RadarLaboral-QA-BackgroundSearch-1791629507595-17488",
   "result": "passed",
   "task": {
     "created": true,
@@ -18,14 +18,14 @@
     "startWhenAvailable": true
   },
   "recurrence": {
-    "taskName": "RadarLaboral-QA-BackgroundSearch-1791589870981-25576-Repeat",
+    "taskName": "RadarLaboral-QA-BackgroundSearch-1791629507595-17488-Repeat",
     "testIntervalMinutes": 1,
-    "startBoundary": "2026-10-09T20:52:00",
+    "startBoundary": "2026-10-10T07:52:00",
     "firstScheduledRunObserved": true,
     "secondScheduledRunObserved": true,
     "runTimesUtc": [
-      "2026-10-09T23:52:52.0000000Z",
-      "2026-10-09T23:53:53.0000000Z"
+      "2026-10-10T10:52:52.0000000Z",
+      "2026-10-10T10:53:53.0000000Z"
     ]
   },
   "application": {

@@ -75,8 +75,10 @@ function isPublicGreenhousePostingUrl(
     if (authority.includes('@')) return false
     if (url.protocol !== 'https:' || url.username || url.password || url.hash) return false
     if (['job-boards.greenhouse.io', 'job-boards.eu.greenhouse.io', 'boards.greenhouse.io'].includes(url.hostname)) {
-      if (url.port || url.search) return false
-      return url.pathname.toLowerCase() === `/${boardToken.toLowerCase()}/jobs/${jobId}`
+      if (url.port || url.hash) return false
+      if (url.pathname.toLowerCase() !== `/${boardToken.toLowerCase()}/jobs/${jobId}`) return false
+      if (!url.search) return true
+      return url.searchParams.size === 1 && url.searchParams.get('gh_jid') === jobId
     }
     if (url.port) return false
     return approvedCustomCareerUrlPatterns.some((pattern) => url.hostname === pattern.hostname
