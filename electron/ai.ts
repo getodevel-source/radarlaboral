@@ -10,16 +10,20 @@ async function readLimitedText(response: Response) {
   const reader = response.body.getReader()
   const chunks: Uint8Array[] = []
   let total = 0
-  while (true) {
-    const { value, done } = await reader.read()
-    if (done) break
-    if (!value) continue
-    total += value.byteLength
-    if (total > maxResponseBytes) {
-      await reader.cancel()
-      throw new Error('El proveedor devolvió una respuesta demasiado grande.')
+  try {
+    while (true) {
+      const { value, done } = await reader.read()
+      if (done) break
+      if (!value) continue
+      total += value.byteLength
+      if (total > maxResponseBytes) {
+        await reader.cancel().catch(() => {})
+        throw new Error('El proveedor devolvió una respuesta demasiado grande.')
+      }
+      chunks.push(value)
     }
-    chunks.push(value)
+  } finally {
+    reader.releaseLock()
   }
   return Buffer.concat(chunks).toString('utf8')
 }

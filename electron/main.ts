@@ -13,6 +13,7 @@ import { configureWindowsNotificationIdentity } from './windows-notification-ide
 import { runSearch } from './search'
 import { testPdfExportDirectoryFromArgs, userDataPathFromArgs } from './user-data-path.ts'
 import { localDateString } from '../src/shared/local-date.ts'
+import { urlCarriesSecret } from '../src/shared/source-url-secrets.ts'
 import type { SearchRunResult } from '../src/shared/types'
 
 const requireFile = fileURLToPath(import.meta.url)
@@ -179,6 +180,9 @@ function createWindow(showWhenReady = true) {
     flushPendingSearchCompletionNotice()
     flushPendingFollowUpReminder()
   })
+  mainWindow.on('focus', () => {
+    mainWindow?.flashFrame(false)
+  })
   mainWindow.on('close', (event) => {
     if (!quitting && tray) {
       event.preventDefault()
@@ -210,7 +214,9 @@ function isAppPage(rawUrl: string) {
 async function openHttpLink(rawUrl: string) {
   try {
     const url = new URL(rawUrl)
-    if (url.protocol === 'https:' || url.protocol === 'http:') await shell.openExternal(url.toString())
+    if ((url.protocol === 'https:' || url.protocol === 'http:') && !url.username && !url.password && !urlCarriesSecret(url)) {
+      await shell.openExternal(url.toString())
+    }
   } catch {
     // Untrusted or malformed links are ignored.
   }

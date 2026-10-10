@@ -143,11 +143,15 @@ export function smartRecruitersDetailsPayload(
       .map((value) => value.trim())
       .filter((value, index, parts) => parts.findIndex((part) => part.toLocaleLowerCase() === value.toLocaleLowerCase()) === index)
     const fullLocationParts = typeof location.fullLocation === 'string' && location.fullLocation.trim()
-      ? location.fullLocation.split(',').map((value) => value.trim()).filter(Boolean)
+      ? location.fullLocation.split(/[,;|]/u).map((value) => value.trim()).filter(Boolean)
       : locationParts
+    const isArgentinaPart = (value: string) => {
+      const key = value.toLocaleLowerCase()
+      return key === 'argentina' || key === 'ar'
+    }
     const normalizedLocationParts = fullLocationParts
-      .filter((value, index, parts) => value.toLocaleLowerCase() !== 'argentina' || parts.findIndex((part) => part.toLocaleLowerCase() === 'argentina') === index)
-    if (!normalizedLocationParts.some((value) => value.toLocaleLowerCase() === 'argentina')) normalizedLocationParts.push('Argentina')
+      .filter((value, index, parts) => !isArgentinaPart(value) || parts.findIndex((part) => isArgentinaPart(part)) === index)
+    if (!normalizedLocationParts.some(isArgentinaPart)) normalizedLocationParts.push('Argentina')
     const locationText = normalizedLocationParts.join(', ')
     const sections = isObject(detail.jobAd) && isObject(detail.jobAd.sections) ? detail.jobAd.sections : {}
     const description = ['companyDescription', 'jobDescription', 'qualifications', 'additionalInformation']

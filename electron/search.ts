@@ -172,7 +172,7 @@ function resolveLocality(value: string): GeorefLocality | null {
   const selectedId = value.match(/\s+\[Georef:([A-Za-z0-9_-]{1,80})\]\s*$/iu)?.[1]
   if (selectedId) return georefById.get(selectedId) ?? null
   value = stripGeorefSelection(value)
-  const parts = value.split(/\s*(?:,|;|\s\|\s)\s*/).map(normalizeLocationKey).filter(Boolean)
+  const parts = value.split(/\s*(?:,|;|\|)\s*/).map(normalizeLocationKey).filter(Boolean)
   if (parts[parts.length - 1] === 'argentina') parts.pop()
   const hasGovernmentLocal = parts.length > 3
   const hasDepartment = parts.length > 2
@@ -258,16 +258,21 @@ async function fetchSmartRecruitersPayload(url: string, company: SmartRecruiters
   const list = await parseJsonResponse(await fetchPinnedText(target, 'application/json'))
   const postingIds = smartRecruitersPostingIds(list, company)
   let totalDetailBytes = 0
+  let detailCap: Promise<void> = Promise.resolve()
   const details = await mapConcurrentOrdered(postingIds, 4, async (postingId, _index, signal) => {
     const detailUrl = new URL(target.url)
     detailUrl.pathname = `/v1/companies/${company}/postings/${postingId}`
     detailUrl.search = ''
     const detailText = await fetchPinnedText({ ...target, url: detailUrl }, 'application/json', 1024 * 1024, signal)
     const detailBytes = Buffer.byteLength(detailText, 'utf8')
-    if (totalDetailBytes + detailBytes > 25 * 1024 * 1024) {
-      throw new Error(`Los detalles de SmartRecruiters superan el límite de 25 MB por consulta (${SMARTRECRUITERS_MAX_POSTINGS} avisos como máximo).`)
-    }
-    totalDetailBytes += detailBytes
+    const slot = detailCap.then(() => {
+      if (totalDetailBytes + detailBytes > 25 * 1024 * 1024) {
+        throw new Error(`Los detalles de SmartRecruiters superan el límite de 25 MB por consulta (${SMARTRECRUITERS_MAX_POSTINGS} avisos como máximo).`)
+      }
+      totalDetailBytes += detailBytes
+    })
+    detailCap = slot.catch(() => {})
+    await slot
     return parseJsonResponse(detailText)
   })
   return smartRecruitersDetailsPayload(list, details, company)
@@ -470,8 +475,8 @@ export function calculateFit(
         missing.push('El aviso no se descartó por radio porque alguna localidad de origen no pudo resolverse de forma inequívoca')
       } else {
         score += 15
+        reasons.push(`A ${Math.round(nearestOrigin.distance)} km de ${nearestOrigin.origin.name} en línea recta (Georef)`)
       }
-      reasons.push(`A ${Math.round(nearestOrigin.distance)} km de ${nearestOrigin.origin.name} en línea recta (Georef)`)
     } else {
       if (matchedLocation) {
         score += 15

@@ -7,6 +7,8 @@ const TRACKER_FRAGMENT_KEY =
 function stripFragmentTrackers(hash: string): string {
   const raw = hash.startsWith('#') ? hash.slice(1) : hash
   if (!raw) return ''
+  // Los fragmentos simples se quitan a propósito: el hash nunca viaja al
+  // servidor, así que dos anclas del mismo aviso deben deduplicar igual.
   if (!raw.includes('=')) return ''
   const kept = raw.split('&').filter((entry) => {
     if (!entry) return false

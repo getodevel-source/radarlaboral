@@ -20,9 +20,14 @@ export function validateOpportunityTracking(input: unknown): OpportunityTracking
   if (typeof value.trackingNotes !== 'string' || value.trackingNotes.trim().length > 5000) {
     throw new Error('Las notas no pueden superar los 5000 caracteres.')
   }
+  const appliedDate = optionalDate(value.appliedDate, 'La fecha de postulación')
+  const followUpDate = optionalDate(value.followUpDate, 'La fecha de seguimiento')
+  if (appliedDate && followUpDate && followUpDate < appliedDate) {
+    throw new Error('La fecha de seguimiento no puede ser anterior a la fecha de postulación.')
+  }
   return {
-    appliedDate: optionalDate(value.appliedDate, 'La fecha de postulación'),
-    followUpDate: optionalDate(value.followUpDate, 'La fecha de seguimiento'),
+    appliedDate,
+    followUpDate,
     trackingNotes: value.trackingNotes.trim(),
   }
 }

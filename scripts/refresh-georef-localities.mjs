@@ -3,7 +3,11 @@ import path from 'node:path'
 
 const root = process.cwd()
 const endpoint = 'https://apis.datos.gob.ar/georef/api/v2.0/localidades-censales?max=5000'
-const response = await fetch(endpoint, { headers: { accept: 'application/json' } })
+const response = await fetch(endpoint, {
+  headers: { accept: 'application/json' },
+  redirect: 'error',
+  signal: AbortSignal.timeout(30_000),
+})
 if (!response.ok) throw new Error(`Georef respondió HTTP ${response.status}`)
 
 const payload = await response.json()

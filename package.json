@@ -14,7 +14,7 @@
     "typecheck": "tsc -b",
     "test": "node --experimental-strip-types --test tests/core.test.mjs",
     "build": "npm run typecheck && npm run lint && npm run test && npm run stage:package-evidence && vite build && electron-builder --win nsis",
-    "pack:dir": "npm run typecheck && npm run stage:package-evidence && vite build && electron-builder --dir --win",
+    "pack:dir": "npm run typecheck && npm run lint && npm run test && npm run stage:package-evidence && vite build && electron-builder --dir --win",
     "stage:package-evidence": "node scripts/stage-package-evidence.mjs",
     "smoke:package": "node --experimental-strip-types scripts/smoke-package.mjs",
     "refresh:geography": "node scripts/refresh-georef-localities.mjs",

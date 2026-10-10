@@ -341,7 +341,12 @@ export function registerIpc(
   ipcMain.handle('profiles:list', () => database.listProfiles())
   ipcMain.handle('profiles:save', (_event, payload: unknown) => {
     const value = payload as { id?: unknown; profile?: unknown }
-    const id = typeof value?.id === 'string' && value.id ? assertId(value.id) : undefined
+    let nested: unknown
+    if (value?.profile && typeof value.profile === 'object' && 'id' in value.profile) {
+      nested = value.profile.id
+    }
+    const rawId = value?.id ?? nested
+    const id = rawId === undefined || rawId === null || rawId === '' ? undefined : assertId(rawId)
     return database.saveProfile(validateProfile(value?.profile), id)
   })
   ipcMain.handle('profiles:remove', (_event, id: unknown) => database.removeProfile(assertId(id)))
@@ -592,7 +597,14 @@ export function registerIpc(
     try {
       settings = database.saveSettings(input, input.aiApiKey ? encryptedAiApiKey : undefined)
     } catch (error) {
-      if (scheduleChanged) await onBackgroundScheduleChanged(previous.backgroundSearchEnabled, previous.searchIntervalHours).catch(() => {})
+      if (scheduleChanged) {
+        const rollbackError = await onBackgroundScheduleChanged(previous.backgroundSearchEnabled, previous.searchIntervalHours).then((): null => null, (cause: unknown): unknown => cause)
+        if (rollbackError !== null && rollbackError !== undefined) {
+          console.error('No se pudo revertir la búsqueda programada de Windows:', rollbackError)
+          const detail = error instanceof Error ? error.message : 'No se pudo guardar la configuración.'
+          throw new Error(`${detail} Además, no se pudo revertir la búsqueda programada; revisá la opción en Preferencias.`)
+        }
+      }
       throw error
     }
     onSettingsChanged()
@@ -629,6 +641,7 @@ export function registerIpc(
       throw new Error('El enlace no es válido.')
     }
     if (url.protocol !== 'http:' && url.protocol !== 'https:') throw new Error('Solo se pueden abrir enlaces web.')
+    if (url.username || url.password || urlCarriesSecret(url)) throw new Error('El enlace no puede incluir credenciales o claves.')
     await shell.openExternal(url.toString())
   })
 }

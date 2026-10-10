@@ -1,18 +1,20 @@
 import type { CsvSourceConfig } from './types'
 
 export function decodeCsvBytes(input: Uint8Array): { contents: string; encoding: string } {
+  let decoded: { contents: string; encoding: string }
   if (input.length >= 2 && input[0] === 0xff && input[1] === 0xfe) {
-    return { contents: new TextDecoder('utf-16le').decode(input.subarray(2)), encoding: 'UTF-16LE' }
+    decoded = { contents: new TextDecoder('utf-16le').decode(input.subarray(2)), encoding: 'UTF-16LE' }
+  } else if (input.length >= 2 && input[0] === 0xfe && input[1] === 0xff) {
+    decoded = { contents: new TextDecoder('utf-16be').decode(input.subarray(2)), encoding: 'UTF-16BE' }
+  } else {
+    try {
+      decoded = { contents: new TextDecoder('utf-8', { fatal: true }).decode(input), encoding: 'UTF-8' }
+    } catch {
+      decoded = { contents: new TextDecoder('windows-1252').decode(input), encoding: 'Windows-1252' }
+    }
   }
-  if (input.length >= 2 && input[0] === 0xfe && input[1] === 0xff) {
-    return { contents: new TextDecoder('utf-16be').decode(input.subarray(2)), encoding: 'UTF-16BE' }
-  }
-
-  try {
-    return { contents: new TextDecoder('utf-8', { fatal: true }).decode(input), encoding: 'UTF-8' }
-  } catch {
-    return { contents: new TextDecoder('windows-1252').decode(input), encoding: 'Windows-1252' }
-  }
+  if (decoded.contents.charCodeAt(0) === 0xfeff) return { contents: decoded.contents.slice(1), encoding: decoded.encoding }
+  return decoded
 }
 
 export function parseCsvRows(input: string, delimiter: CsvSourceConfig['delimiter']): string[][] {

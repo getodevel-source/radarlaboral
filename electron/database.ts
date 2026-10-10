@@ -813,25 +813,34 @@ export class RadarDatabase {
     if (input.kind !== 'csv' && input.csvConfig) {
       throw new Error('Solo una fuente CSV puede tener un mapeo de columnas.')
     }
+    const existingSource = this.db.prepare('SELECT id FROM user_sources WHERE url = ? COLLATE NOCASE').get(sourceUrl.toString()) as { id: string } | undefined
+    if (existingSource) throw new Error('Ya existe una fuente con ese enlace. Revisá la lista de fuentes antes de agregarla.')
     const id = randomUUID()
-    this.db.prepare(`
-      INSERT INTO user_sources (
-        id, name, url, kind, profile_id, enabled, automation_approved, custom_automation_approved, verified_policy_id, automation_evidence_url, config_json, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      id,
-      input.name.trim(),
-      sourceUrl.toString(),
-      input.kind,
-      input.profileId,
-      Number(enabled),
-      Number(Boolean(policy)),
-      Number(customAutomationApproved),
-      policy?.id ?? null,
-      approvedEvidenceUrl,
-      JSON.stringify(jsonConfig ?? csvConfig ?? {}),
-      now(),
-    )
+    try {
+      this.db.prepare(`
+        INSERT INTO user_sources (
+          id, name, url, kind, profile_id, enabled, automation_approved, custom_automation_approved, verified_policy_id, automation_evidence_url, config_json, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        id,
+        input.name.trim(),
+        sourceUrl.toString(),
+        input.kind,
+        input.profileId,
+        Number(enabled),
+        Number(Boolean(policy)),
+        Number(customAutomationApproved),
+        policy?.id ?? null,
+        approvedEvidenceUrl,
+        JSON.stringify(jsonConfig ?? csvConfig ?? {}),
+        now(),
+      )
+    } catch (error) {
+      if (error instanceof Error && /UNIQUE constraint failed: user_sources\.url/iu.test(error.message)) {
+        throw new Error('Ya existe una fuente con ese enlace. Revisá la lista de fuentes antes de agregarla.')
+      }
+      throw error
+    }
     return sourceFromRow(this.db.prepare('SELECT * FROM user_sources WHERE id = ?').get(id) as SourceRow)
   }
 

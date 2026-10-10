@@ -27,4 +27,13 @@ export default [
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     },
   },
+  {
+    // Scripts de tooling (.mjs sin tipos): solo parseo como JS, sin reglas.
+    // tsc -b los excluye a propósito; verificación manual: `node --check <archivo>.mjs`.
+    files: ['scripts/**/*.mjs', 'build/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
+  },
 ]

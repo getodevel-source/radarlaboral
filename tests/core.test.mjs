@@ -2889,6 +2889,7 @@ test('imports a local JSON export using a saved assisted source mapping without 
     samples: [
       { title: 'Analista de datos', company: 'ACME', url: 'https://jobs.example/positions/one' },
       { title: 'Analista de datos', company: 'ACME', url: 'https://jobs.example/positions/one' },
+      { title: 'Operario nocturno', company: 'Empresa no informada', url: 'https://jobs.example/positions/nocturno' },
     ],
   })
   assert.equal(previewLocalJsonImport({ ...input, contents: `\uFEFF${contents}` }, database).itemCount, 5)

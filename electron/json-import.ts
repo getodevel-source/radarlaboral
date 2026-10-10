@@ -48,6 +48,7 @@ function prepareLocalJsonImport(input: unknown, database: RadarDatabase): Prepar
   if (profileId && !profile) throw new Error('El perfil seleccionado ya no existe. Elegí otro.')
 
   const opportunities: OpportunityInput[] = []
+  const sampleSource: Array<{ title: string; company: string; url: string }> = []
   let filtered = 0
   let invalidUrls = 0
   for (const record of records) {
@@ -58,6 +59,9 @@ function prepareLocalJsonImport(input: unknown, database: RadarDatabase): Prepar
       invalidUrls += 1
       continue
     }
+    if (sampleSource.length < 3) {
+      sampleSource.push({ title: record.title, company: record.company || 'Empresa no informada', url })
+    }
     const fit = calculateFit(profile, record.title, record.description, record.location, record.salary, salaryExchangeRates)
     if (!fit) {
       filtered += 1
@@ -65,13 +69,13 @@ function prepareLocalJsonImport(input: unknown, database: RadarDatabase): Prepar
     }
     opportunities.push({
       profileId,
-      title: record.title,
-      company: record.company || 'Empresa no informada',
-      location: record.location,
+      title: record.title.slice(0, 200),
+      company: (record.company || 'Empresa no informada').slice(0, 200),
+      location: record.location.slice(0, 300),
       source: source.name,
-      url,
-      description: record.description,
-      salaryText: record.salary,
+      url: url.slice(0, 2000),
+      description: record.description.slice(0, 12_000),
+      salaryText: record.salary.slice(0, 300),
       matchScore: fit.score,
       matchReasons: fit.reasons,
       missingRequirements: fit.missing,
@@ -84,11 +88,7 @@ function prepareLocalJsonImport(input: unknown, database: RadarDatabase): Prepar
     mappedCount: records.length,
     skipped: skipped + invalidUrls,
     filtered,
-    samples: opportunities.slice(0, 3).map((item) => ({
-      title: item.title,
-      company: item.company,
-      url: item.url,
-    })),
+    samples: sampleSource,
   }
   return { preview, opportunities }
 }

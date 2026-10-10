@@ -281,6 +281,7 @@ const statusLabels: Record<OpportunityStatus, string> = {
 
 const formatDate = (value: string | null) => {
   if (!value) return 'Sin fecha'
+  if (/^\d{4}-\d{2}-\d{2}$/u.test(value)) return formatDateOnly(value)
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return 'Sin fecha'
   return new Intl.DateTimeFormat('es-AR', { day: '2-digit', month: 'short' }).format(date)
@@ -1647,7 +1648,7 @@ function App() {
         {modal === 'csv-import' && <Modal title="Importar vacantes desde un archivo" eyebrow="IMPORTACIÓN LOCAL ASISTIDA" onClose={closeActiveModal} wide>
           <form className="form-stack" onSubmit={(event) => void importCsvOpportunities(event)}>
             <p className="csv-import-intro">Elegí un CSV que ya tengas en tu computadora, por ejemplo uno exportado desde un portal. Radar no abre ese sitio ni descarga datos. El archivo se lee acá y solo guarda las vacantes que selecciones en tu base local.</p>
-            <Field label="Archivo CSV o TSV local" hint="Hasta 5 MB y 1000 filas de avisos. El archivo no se guarda después de importar."><input required type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values" onChange={(event) => { void selectCsvImportFile(event.currentTarget.files?.[0]) }} /></Field>
+            <Field label="Archivo CSV o TSV local" hint="Hasta 5 MB y 1000 filas de avisos. El archivo no se guarda después de importar."><input required type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values" onChange={(event) => { void selectCsvImportFile(event.currentTarget.files?.[0]); event.currentTarget.value = '' }} /></Field>
             {csvImportFileName && <p className="csv-import-filename">Archivo elegido: {csvImportFileName}{csvImportEncoding && ` · texto leído como ${csvImportEncoding}`}</p>}
             {csvImportFileError && <div className="callout callout-error" role="alert"><Icon name="close" /><p>{csvImportFileError}</p></div>}
             {csvImportContents && <>
@@ -1829,7 +1830,7 @@ function Dashboard({
 
       <section className="content-card recent-overview">
         <div className="section-heading"><div><div className="eyebrow">ACTIVIDAD RECIENTE</div><h2>Últimas vacantes</h2></div><button className="icon-button" onClick={onOpenOpportunities} aria-label="Ver vacantes"><Icon name="arrow" /></button></div>
-        {recent.length ? <div className="recent-job-list">{recent.map((opportunity) => <button className="recent-job" key={opportunity.id} onClick={onOpenOpportunities}><span className="job-company-mark">{opportunity.company.slice(0, 1).toUpperCase()}</span><span className="recent-job-main"><strong>{opportunity.title}</strong><small>{opportunity.company} · {opportunity.location || opportunity.source}</small></span><span className="recent-job-date">{formatDate(opportunity.createdAt)}</span></button>)}</div> : <EmptyInline icon="briefcase" title="Tu seguimiento está listo" detail="Guardá un aviso para empezar a organizar postulaciones." action="Agregar vacante" onClick={onCreateOpportunity} />}
+        {recent.length ? <div className="recent-job-list">{recent.map((opportunity) => <button className="recent-job" key={opportunity.id} onClick={onOpenOpportunities}><span className="job-company-mark">{(Array.from(opportunity.company.trim())[0] ?? '•').toUpperCase()}</span><span className="recent-job-main"><strong>{opportunity.title}</strong><small>{opportunity.company} · {opportunity.location || opportunity.source}</small></span><span className="recent-job-date">{formatDate(opportunity.createdAt)}</span></button>)}</div> : <EmptyInline icon="briefcase" title="Tu seguimiento está listo" detail="Guardá un aviso para empezar a organizar postulaciones." action="Agregar vacante" onClick={onCreateOpportunity} />}
         {recent.length > 0 && <button className="link-button" onClick={onOpenOpportunities}>Ver todas las vacantes <Icon name="arrow" size={15} /></button>}
       </section>
     </div>
@@ -1881,7 +1882,7 @@ function OpportunitiesPage({
     {opportunities.length ? <div className="jobs-list">{opportunities.map((opportunity) => {
       const profile = profiles.find((item) => item.id === opportunity.profileId)
       return <article className="job-row" key={opportunity.id}>
-        <div className="job-company-mark job-company-large">{opportunity.company.slice(0, 1).toUpperCase()}</div>
+        <div className="job-company-mark job-company-large">{(Array.from(opportunity.company.trim())[0] ?? '•').toUpperCase()}</div>
         <div className="job-row-info"><div className="job-title-line"><h3>{opportunity.title}</h3><StatusBadge status={opportunity.status} /></div><p>{opportunity.company} <span>·</span> {opportunity.location || 'Ubicación no indicada'} <span>·</span> {opportunity.source}</p><div className="job-row-meta"><span>{formatDate(opportunity.publishedAt ?? opportunity.createdAt)}</span>{profile && <span>Perfil: {profile.name}</span>}{opportunity.matchScore !== null && <span className="fit-score"><Icon name="spark" size={13} /> {opportunity.matchScore}% de ajuste</span>}{opportunity.appliedDate && <span>Postulada: {formatDateOnly(opportunity.appliedDate)}</span>}{opportunity.followUpDate && <span className="follow-up-date">Seguimiento: {formatDateOnly(opportunity.followUpDate)}</span>}{opportunity.trackingNotes && <span>Notas guardadas</span>}</div>{opportunity.matchReasons.length > 0 && <div className="fit-reasons">{opportunity.matchReasons.slice(0, 2).map((reason) => <span key={reason}>{reason}</span>)}</div>}</div>
         <div className="job-row-actions"><button className="small-action" onClick={() => onDraft(opportunity)}>{opportunity.status === 'postulada' ? 'Ver borrador' : 'Preparar'}</button><button className="small-action follow-up-action" onClick={() => onTracking(opportunity)}>Seguimiento</button><button className="icon-button icon-button-muted" onClick={() => onOpen(opportunity.url)} aria-label="Abrir aviso"><Icon name="external" size={16} /></button><select aria-label={`Estado de ${opportunity.title}`} value={opportunity.status} disabled={busy} onChange={(event) => onStatus(opportunity, event.target.value as OpportunityStatus)}>{Object.entries(statusLabels).map(([status, label]) => <option value={status} key={status}>{label}</option>)}</select></div>
       </article>

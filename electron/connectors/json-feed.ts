@@ -134,13 +134,13 @@ export function mapJsonFeed(document: unknown, config: JsonSourceConfig, limit =
     const url = textAt(row, config.urlPath)
     if (!title || !url) return []
     return [{
-      title,
-      url,
-      description: textAt(row, config.descriptionPath),
-      company: textAt(row, config.companyPath),
-      location: textAt(row, config.locationPath),
-      salary: structuredSalaryAt(row, config) || textAt(row, config.salaryPath),
-      publishedAt: dateAt(row, config.publishedAtPath),
+      title: title.slice(0, 200),
+      url: url.slice(0, 2000),
+      description: textAt(row, config.descriptionPath).slice(0, 12_000),
+      company: textAt(row, config.companyPath).slice(0, 200),
+      location: textAt(row, config.locationPath).slice(0, 300),
+      salary: (structuredSalaryAt(row, config) || textAt(row, config.salaryPath)).slice(0, 300),
+      publishedAt: dateAt(row, config.publishedAtPath).slice(0, 100),
     }]
   })
   if (rows.length > 0 && records.length === 0) {
