@@ -1,0 +1,44 @@
+{
+  "version": "0.4.141",
+  "method": "Temporary per-user Windows Task Scheduler tasks, on-demand launch plus accelerated one-minute recurrence, synthetic profile, main-window visibility probe",
+  "taskName": "RadarLaboral-QA-BackgroundSearch-1791723497451-14444",
+  "result": "passed",
+  "task": {
+    "created": true,
+    "startedOnDemand": true,
+    "logonTrigger": true,
+    "intervalHours": 4,
+    "logonType": "Interactive",
+    "xmlLogonType": "InteractiveToken",
+    "principalMatchesCurrentUser": true,
+    "runLevel": "Limited",
+    "exportedXmlRunLevel": null,
+    "interactiveToken": true,
+    "leastPrivilege": true,
+    "startWhenAvailable": true
+  },
+  "recurrence": {
+    "taskName": "RadarLaboral-QA-BackgroundSearch-1791723497451-14444-Repeat",
+    "testIntervalMinutes": 1,
+    "startBoundary": "2026-10-11T09:59:00",
+    "firstScheduledRunObserved": true,
+    "secondScheduledRunObserved": true,
+    "runTimesUtc": [
+      "2026-10-11T12:59:59.0000000Z",
+      "2026-10-11T13:00:00.0000000Z"
+    ]
+  },
+  "application": {
+    "started": true,
+    "mainWindowCreated": true,
+    "mainWindowVisible": false,
+    "syntheticProfile": true
+  },
+  "cleanup": {
+    "taskRemoved": true,
+    "recurrenceTaskRemoved": true,
+    "applicationStopped": true,
+    "syntheticProfileRemoved": true
+  },
+  "error": null
+}

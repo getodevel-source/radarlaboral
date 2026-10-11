@@ -13,13 +13,19 @@ y los pasos restantes para distribuirlo públicamente.
    npm run build
    npm run smoke:package
    ```
-2. El instalador queda en `release/<versión>/Radar Laboral-Windows-<versión>-Setup.exe`.
-3. Ejecutalo con una cuenta de Windows con permiso de instalación.
-   El asistente NSIS permite elegir la carpeta de instalación.
-4. Al abrir la app por primera vez, revisá **Preferencias**:
+2. El instalador queda en `release/<versión>/radarlaboral-Windows-<versión>-Setup.exe`.
+3. Ejecutalo y elegí instalar para tu cuenta o para todos los usuarios.
+   La instalación para tu cuenta queda en la carpeta de programas del usuario;
+   la instalación para todos los usuarios pide elevación de Windows y queda en
+   `Program Files`. El instalador no permite elegir una carpeta protegida sin
+   esos permisos.
+4. Si ya tenías una versión instalada por usuario dentro de `Program Files`,
+   el instalador nuevo pide elevación y la migra a la instalación para todos
+   los usuarios. Confirmá el aviso de Windows para continuar.
+5. Al abrir la app por primera vez, revisá **Preferencias**:
    la versión instalada aparece al pie. Creá un perfil en **Búsquedas**,
    cargá CV en **Mis CV** y agregá fuentes en **Fuentes**.
-5. Si querés búsquedas con la app cerrada, activá
+6. Si querés búsquedas con la app cerrada, activá
    **Buscar aunque Radar esté cerrado** en Preferencias.
    Windows registra una tarea programada para tu cuenta, sin contraseña
    y con privilegios mínimos.

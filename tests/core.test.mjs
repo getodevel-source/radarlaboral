@@ -3829,3 +3829,11 @@ test('app update service disables itself in dev or without a repo', () => {
   assert.equal(placeholderBuild.service.state.status, 'disabled')
   assert.match(placeholderBuild.service.state.message, /GitHub Releases/u)
 })
+
+test('NSIS prevents protected per-user install paths and migrates old Program Files installs', () => {
+  const builderConfig = fs.readFileSync(new URL('../electron-builder.json5', import.meta.url), 'utf8')
+  const installerConfig = fs.readFileSync(new URL('../build/installer.nsh', import.meta.url), 'utf8')
+  assert.match(builderConfig, /"allowElevation": true/u)
+  assert.doesNotMatch(builderConfig, /"allowToChangeInstallationDirectory": true/u)
+  assert.match(installerConfig, /!macro customInstallMode[\s\S]*\$hasPerUserInstallation == "1"[\s\S]*\$PROGRAMFILES64[\s\S]*\$PROGRAMFILES32[\s\S]*\$isForceMachineInstall "1"[\s\S]*!macroend/u)
+})

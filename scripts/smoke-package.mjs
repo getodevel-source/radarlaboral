@@ -393,6 +393,21 @@ if (nativeNotification.globalToastEnabled === 0) {
   assert.ok(searchCompletionFallbackAccessibility.announcementText.includes('Falló la consulta de 1 fuente.'), 'The screen-reader status region does not contain the search fallback')
   assert.equal(searchCompletionFallbackAccessibility.visualToastAriaHidden, 'true', 'The visual search toast may duplicate the status-region announcement')
 }
+await session.eval("Array.from(document.querySelectorAll('button.nav-item')).find(button => button.querySelector('span')?.innerText.trim() === 'Preferencias')?.click()")
+await delay(300)
+const updateButton = await session.eval("Array.from(document.querySelectorAll('.settings-card button')).find(button => button.innerText.trim() === 'Buscar actualizaciones')?.innerText.trim() ?? null")
+assert.equal(updateButton, 'Buscar actualizaciones', 'The installed app is missing its update check button')
+await session.eval("Array.from(document.querySelectorAll('.settings-card button')).find(button => button.innerText.trim() === 'Buscar actualizaciones')?.click()")
+let updateStatusText = ''
+const updateCheckDeadline = Date.now() + 30_000
+while (Date.now() < updateCheckDeadline && updateStatusText !== 'Radar Laboral está actualizado.') {
+  updateStatusText = await session.eval("document.querySelector('.settings-card p[role=\"status\"]')?.innerText.trim() ?? ''")
+  if (updateStatusText.startsWith('No se pudo buscar la actualización.')) {
+    throw new Error(`The installed app could not complete its in-app update check: ${updateStatusText}`)
+  }
+  if (updateStatusText !== 'Radar Laboral está actualizado.') await delay(250)
+}
+assert.equal(updateStatusText, 'Radar Laboral está actualizado.', 'The installed app did not report the current GitHub release after an in-app update check')
 await session.eval("Array.from(document.querySelectorAll('button')).find(button => button.innerText.trim().startsWith('Fuentes'))?.click()")
 await delay(400)
 const sourceCards = await session.eval("Array.from(document.querySelectorAll('.source-recommended')).map(card => card.innerText)")
@@ -584,6 +599,7 @@ const report = {
   installerSha256: hashes.installer,
   package: { asarEntries: entries.length, testsExcluded: true, sprintfJsExcluded: toolchainModulesExcluded.sprintfJs, toolchainModulesExcluded, cspConnectSelfOnly: true, windowsNotificationIdentity: { appUserModelId: notificationShortcut.appUserModelId, toastActivatorClsid: notificationShortcut.toastActivatorClsid, startMenuShortcutVerified: true }, greenhouseCookUnityPolicyIncluded: cookUnityPolicyIncluded, greenhouseDeptPolicyIncluded: deptPolicyIncluded, greenhouseUserinfoGuardIncluded, documentationFiles: documentationFiles.length, markdownDocs: markdownFiles.length - 1, markdownLinksChecked, packagedEvidenceFiles: packagedEvidenceFiles.length, packagedEvidenceBytes, signatures },
   installedApp: {
+    inAppUpdateCheck: { button: updateButton, status: updateStatusText, latestReleaseIsOlderThanPackage: true },
     title: 'Radar Laboral',
     recommendedSourceCards: sourceCards.length,
     greenhouseButton: 'Agregar 27 tableros',

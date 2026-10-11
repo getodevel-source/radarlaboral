@@ -9,8 +9,9 @@
  * - El renderer consulta el estado por IPC y recibe pushes `app:update-state`.
  *
  * Seguridad:
- * - NSIS verifica la firma del instalador descargado contra `latest.yml`;
- *   además exigimos HTTPS con `electron-builder` `publish.provider: github`.
+ * - electron-updater verifica el manifiesto Ed25519 `latest.yml` contra la clave
+ *   pública embebida en `app-update.yml` antes de descargar, y contrasta el
+ *   SHA-512 del instalador; el feed de GitHub se sirve por HTTPS.
  * - Sin `owner/repo` configurado (ver `electron-builder.json5`), el servicio
  *   queda en `disabled` y explica el paso faltante en Preferencias.
  * - No hay polling agresivo: un chequeo al abrir + chequeo manual + reintento
