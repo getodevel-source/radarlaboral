@@ -221,6 +221,13 @@ for (const file of [installer, `${installer}.blockmap`, executable, archive]) as
 const entries = asar.listPackage(archive).map((entry) => entry.replaceAll('\\', '/'))
 const archivedManifest = JSON.parse(asar.extractFile(archive, 'package.json').toString('utf8'))
 assert.equal(archivedManifest.version, version)
+assert.ok(entries.includes('/resources/icon.ico'), 'Package omits the Windows app icon')
+const archivedIcon = asar.extractFile(archive, 'resources/icon.ico')
+assert.equal(archivedIcon.readUInt16LE(0), 0, 'Windows icon has an invalid reserved field')
+assert.equal(archivedIcon.readUInt16LE(2), 1, 'Windows icon is not an ICO resource')
+const archivedIconCount = archivedIcon.readUInt16LE(4)
+const archivedIconSizes = Array.from({ length: archivedIconCount }, (_, index) => archivedIcon[index * 16 + 6] || 256)
+assert.deepEqual(archivedIconSizes, [16, 24, 32, 48, 64, 128, 256], 'Windows icon is missing a display size')
 const archivedMain = asar.extractFile(archive, 'dist-electron/main.js').toString('utf8')
 assert.match(archivedMain, /commandLine\.appendSwitch\(["']lang["'],\s*["']es-AR["']\)/u)
 assert.match(archivedMain, /setAppUserModelId/u)
@@ -397,6 +404,8 @@ await session.eval("Array.from(document.querySelectorAll('button.nav-item')).fin
 await delay(300)
 const updateButton = await session.eval("Array.from(document.querySelectorAll('.settings-card button')).find(button => button.innerText.trim() === 'Buscar actualizaciones')?.innerText.trim() ?? null")
 assert.equal(updateButton, 'Buscar actualizaciones', 'The installed app is missing its update check button')
+const sidebarBrandIcon = await session.eval("(() => { const image = document.querySelector('.brand-mark'); return { loaded: Boolean(image?.complete && image.naturalWidth > 0), naturalWidth: image?.naturalWidth ?? 0 }; })()")
+assert.equal(sidebarBrandIcon.loaded, true, 'The installed app did not load its sidebar brand icon')
 await session.eval("Array.from(document.querySelectorAll('.settings-card button')).find(button => button.innerText.trim() === 'Buscar actualizaciones')?.click()")
 let updateStatusText = ''
 const updateCheckDeadline = Date.now() + 30_000
@@ -597,9 +606,10 @@ const report = {
   version,
   method: 'NSIS x64 installation, isolated synthetic profile, CDP source-card and forced-colors checks, and uninstall',
   installerSha256: hashes.installer,
-  package: { asarEntries: entries.length, testsExcluded: true, sprintfJsExcluded: toolchainModulesExcluded.sprintfJs, toolchainModulesExcluded, cspConnectSelfOnly: true, windowsNotificationIdentity: { appUserModelId: notificationShortcut.appUserModelId, toastActivatorClsid: notificationShortcut.toastActivatorClsid, startMenuShortcutVerified: true }, greenhouseCookUnityPolicyIncluded: cookUnityPolicyIncluded, greenhouseDeptPolicyIncluded: deptPolicyIncluded, greenhouseUserinfoGuardIncluded, documentationFiles: documentationFiles.length, markdownDocs: markdownFiles.length - 1, markdownLinksChecked, packagedEvidenceFiles: packagedEvidenceFiles.length, packagedEvidenceBytes, signatures },
+  package: { asarEntries: entries.length, testsExcluded: true, sprintfJsExcluded: toolchainModulesExcluded.sprintfJs, toolchainModulesExcluded, cspConnectSelfOnly: true, windowsIcon: { included: true, sizes: archivedIconSizes }, windowsNotificationIdentity: { appUserModelId: notificationShortcut.appUserModelId, toastActivatorClsid: notificationShortcut.toastActivatorClsid, startMenuShortcutVerified: true }, greenhouseCookUnityPolicyIncluded: cookUnityPolicyIncluded, greenhouseDeptPolicyIncluded: deptPolicyIncluded, greenhouseUserinfoGuardIncluded, documentationFiles: documentationFiles.length, markdownDocs: markdownFiles.length - 1, markdownLinksChecked, packagedEvidenceFiles: packagedEvidenceFiles.length, packagedEvidenceBytes, signatures },
   installedApp: {
     inAppUpdateCheck: { button: updateButton, status: updateStatusText, latestReleaseIsOlderThanPackage: true },
+    sidebarBrandIcon,
     title: 'Radar Laboral',
     recommendedSourceCards: sourceCards.length,
     greenhouseButton: 'Agregar 27 tableros',

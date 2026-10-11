@@ -1,57 +1,53 @@
-"""Generate the small Radar Laboral tray and Windows app icons (Python stdlib only)."""
+"""Generate Radar Laboral's shared camera mark for Windows and the system tray."""
 
-from math import cos, hypot, pi, sin
+from math import hypot
 from pathlib import Path
 import struct
 import zlib
 
 
 OUT = Path(__file__).resolve().parent
+BACKGROUND_TOP = (243, 139, 103)
+BACKGROUND_BOTTOM = (233, 118, 86)
+WHITE = (255, 255, 255)
 
 
-def color(r, g, b, a=255):
-    return bytes((r, g, b, a))
+def rounded_rectangle_distance(x, y, center_x, center_y, half_width, half_height, radius):
+    dx = abs(x - center_x) - (half_width - radius)
+    dy = abs(y - center_y) - (half_height - radius)
+    return hypot(max(dx, 0), max(dy, 0)) + min(max(dx, dy), 0) - radius
 
 
-def draw(size):
-    pixels = [bytearray((0, 0, 0, 0) * size) for _ in range(size)]
-    scale = size / 64
+def sample(x, y):
+    background_distance = rounded_rectangle_distance(x, y, 32, 32, 32, 32, 17)
+    if background_distance > 0:
+        return (0, 0, 0, 0)
 
-    def put(x, y, rgba):
-        x, y = round(x * scale), round(y * scale)
-        if 0 <= x < size and 0 <= y < size:
-            offset = x * 4
-            pixels[y][offset:offset + 4] = rgba
+    gradient = min(max((x * 0.85 + y) / (64 * 1.85), 0), 1)
+    color = tuple(round(top + (bottom - top) * gradient) for top, bottom in zip(BACKGROUND_TOP, BACKGROUND_BOTTOM))
 
-    def disc(x, y, radius, rgba):
-        for py in range(max(0, round((y - radius) * scale)), min(size, round((y + radius) * scale) + 1)):
-            for px in range(max(0, round((x - radius) * scale)), min(size, round((x + radius) * scale) + 1)):
-                if hypot(px / scale - x, py / scale - y) <= radius:
-                    pixels[py][px * 4:px * 4 + 4] = rgba
+    camera_frame = rounded_rectangle_distance(x, y, 32, 32, 16, 16, 8)
+    lens_distance = hypot(x - 32, y - 32) - 8.2
+    dot_distance = hypot(x - 43, y - 21)
+    if abs(camera_frame) <= 1.1 or abs(lens_distance) <= 1.1 or dot_distance <= 1.6:
+        color = WHITE
+    return (*color, 255)
 
-    # Rounded square background.
+
+def draw(size, samples=4):
+    pixels = []
     for y in range(size):
+        row = bytearray()
         for x in range(size):
-            px, py = (x + 0.5) / scale, (y + 0.5) / scale
-            cx = min(max(px, 11), 53)
-            cy = min(max(py, 11), 53)
-            if hypot(px - cx, py - cy) <= 11:
-                pixels[y][x * 4:x * 4 + 4] = color(25, 57, 42)
-
-    # Three radar arcs and a sweep line.
-    center = (29, 36)
-    for radius in (10, 18, 26):
-        for step in range(181):
-            angle = (-150 + step * 0.72) * pi / 180
-            x = center[0] + cos(angle) * radius
-            y = center[1] + sin(angle) * radius
-            put(x, y, color(191, 216, 193, 235))
-            disc(x, y, 0.6, color(191, 216, 193, 235))
-    for step in range(36):
-        t = step / 35
-        put(center[0] + (51 - center[0]) * t, center[1] + (14 - center[1]) * t, color(238, 244, 231))
-        disc(center[0] + (51 - center[0]) * t, center[1] + (14 - center[1]) * t, 1.1, color(238, 244, 231))
-    disc(*center, 2.5, color(238, 244, 231))
+            channels = [0, 0, 0, 0]
+            for sample_y in range(samples):
+                for sample_x in range(samples):
+                    point_x = (x + (sample_x + 0.5) / samples) * 64 / size
+                    point_y = (y + (sample_y + 0.5) / samples) * 64 / size
+                    for channel, value in enumerate(sample(point_x, point_y)):
+                        channels[channel] += value
+            row.extend(round(value / (samples * samples)) for value in channels)
+        pixels.append(row)
     return pixels
 
 
@@ -71,25 +67,38 @@ def png_bytes(pixels):
     )
 
 
-def write_ico(pixels):
+def dib_bytes(pixels):
     size = len(pixels)
     xor = bytearray()
+    mask_row_size = ((size + 31) // 32) * 4
     and_mask = bytearray()
     for row in reversed(pixels):
         for x in range(size):
             r, g, b, a = row[x * 4:x * 4 + 4]
             xor.extend((b, g, r, a))
-    for _ in range(size):
-        and_mask.extend(bytes((size + 7) // 8))
+    for row in reversed(pixels):
+        mask = bytearray(mask_row_size)
+        for x in range(size):
+            if row[x * 4 + 3] == 0:
+                mask[x // 8] |= 1 << (7 - x % 8)
+        and_mask.extend(mask)
     header = struct.pack("<IiiHHIIiiII", 40, size, size * 2, 1, 32, 0, len(xor) + len(and_mask), 0, 0, 0, 0)
-    image = header + xor + and_mask
-    directory = struct.pack("<HHH", 0, 1, 1)
-    dimensions = 0 if size == 256 else size
-    entry = struct.pack("<BBBBHHII", dimensions, dimensions, 0, 0, 1, 32, len(image), 22)
-    (OUT / "icon.ico").write_bytes(directory + entry + image)
+    return header + xor + and_mask
+
+
+def write_ico():
+    sizes = (16, 24, 32, 48, 64, 128, 256)
+    images = [(size, dib_bytes(draw(size))) for size in sizes]
+    directory = struct.pack("<HHH", 0, 1, len(images))
+    entries = bytearray()
+    offset = 6 + 16 * len(images)
+    for size, image in images:
+        dimensions = 0 if size == 256 else size
+        entries.extend(struct.pack("<BBBBHHII", dimensions, dimensions, 0, 0, 1, 32, len(image), offset))
+        offset += len(image)
+    (OUT / "icon.ico").write_bytes(directory + entries + b"".join(image for _, image in images))
 
 
 if __name__ == "__main__":
-    tray = draw(64)
-    (OUT / "tray.png").write_bytes(png_bytes(tray))
-    write_ico(draw(256))
+    (OUT / "tray.png").write_bytes(png_bytes(draw(64)))
+    write_ico()

@@ -20,6 +20,7 @@
   "files": [
     "dist/**",
     "dist-electron/**",
+    "resources/icon.ico",
     "resources/tray.png",
     "resources/georef/localities.json",
     "!node_modules/better-sqlite3/prebuilds/darwin-*.node",
@@ -79,6 +80,9 @@
   },
   "nsis": {
     "include": "build/installer.nsh",
+    "installerIcon": "resources/icon.ico",
+    "uninstallerIcon": "resources/icon.ico",
+    "installerHeaderIcon": "resources/icon.ico",
     "oneClick": false,
     "allowElevation": true,
     "perMachine": false,

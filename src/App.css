@@ -1,10 +1,7 @@
 .app-shell { display: flex; min-height: 100vh; width: 100%; background: var(--paper); }
 .sidebar { position: fixed; z-index: 3; inset: 0 auto 0 0; display: flex; width: 246px; flex-direction: column; padding: 28px 17px 18px; color: #e9eee8; background: var(--forest); }
 .brand-lockup { display: flex; align-items: center; gap: 12px; width: fit-content; margin: 1px 0 54px 7px; padding: 0; color: inherit; border: 0; background: transparent; text-align: left; cursor: pointer; }
-.brand-mark { position: relative; display: grid; width: 39px; height: 39px; place-items: center; overflow: hidden; border-radius: 14px; background: #e77b57; box-shadow: inset 0 1px 2px #ffffff5c, 0 8px 22px #0c201b66; }
-.brand-mark::before, .brand-mark::after { position: absolute; width: 24px; height: 24px; border: 1px solid #fff8; border-radius: 50%; content: ''; }
-.brand-mark::after { width: 12px; height: 12px; border-color: #fff; }
-.brand-mark span { position: absolute; top: 9px; right: 8px; width: 6px; height: 6px; border: 1px solid #f1b1a0; border-radius: 50%; background: #fff; }
+.brand-mark { display: block; width: 39px; height: 39px; flex: 0 0 39px; border-radius: 11px; box-shadow: inset 0 1px 2px #ffffff5c, 0 8px 22px #0c201b66; }
 .brand-text { display: flex; align-items: baseline; gap: 5px; letter-spacing: -.035em; }
 .brand-text strong { color: #fff; font-size: 20px; font-weight: 680; }
 .brand-text small { color: #bacbc0; font-size: 14px; font-weight: 400; }

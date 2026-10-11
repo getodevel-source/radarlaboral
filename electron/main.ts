@@ -23,6 +23,7 @@ const appRoot = path.join(electronDirectory, '..')
 const devServerUrl = process.env.VITE_DEV_SERVER_URL
 const rendererDirectory = path.join(appRoot, 'dist')
 const trayIconPath = path.join(appRoot, 'resources', 'tray.png')
+const appIconPath = path.join(appRoot, 'resources', 'icon.ico')
 const customUserDataPath = userDataPathFromArgs(process.argv)
 const testPdfExportDirectory = testPdfExportDirectoryFromArgs(process.argv, customUserDataPath)
 const backgroundRunArgument = '--radar-background-run'
@@ -249,6 +250,7 @@ function createWindow(showWhenReady = true) {
     minHeight: 680,
     show: false,
     title: 'Radar Laboral',
+    icon: appIconPath,
     backgroundColor: '#f4f3ef',
     webPreferences: {
       preload: path.join(electronDirectory, 'preload.mjs'),

@@ -1,0 +1,238 @@
+{
+  "version": "0.4.142",
+  "method": "NSIS x64 installation, isolated synthetic profile, CDP source-card and forced-colors checks, and uninstall",
+  "installerSha256": "662c691f4ce85dde0345e4a2b535ed97fe711e4d079c1a52fc4c5b0ec6ae8827",
+  "package": {
+    "asarEntries": 1214,
+    "testsExcluded": true,
+    "sprintfJsExcluded": true,
+    "toolchainModulesExcluded": {
+      "sprintfJs": true,
+      "roarr": true,
+      "globalAgent": true,
+      "electronGet": true
+    },
+    "cspConnectSelfOnly": true,
+    "windowsNotificationIdentity": {
+      "appUserModelId": "ar.radarlaboral.desktop",
+      "toastActivatorClsid": "{017378BE-4BF1-42DA-A318-80EDED2C1A4B}",
+      "startMenuShortcutVerified": true
+    },
+    "greenhouseCookUnityPolicyIncluded": true,
+    "greenhouseDeptPolicyIncluded": true,
+    "greenhouseUserinfoGuardIncluded": true,
+    "documentationFiles": 14,
+    "markdownDocs": 9,
+    "markdownLinksChecked": 173,
+    "packagedEvidenceFiles": 260,
+    "packagedEvidenceBytes": 2518980,
+    "signatures": {
+      "installer": "NotSigned",
+      "executable": "NotSigned"
+    }
+  },
+  "installedApp": {
+    "inAppUpdateCheck": {
+      "button": "Buscar actualizaciones",
+      "status": "Radar Laboral está actualizado.",
+      "latestReleaseIsOlderThanPackage": true
+    },
+    "title": "Radar Laboral",
+    "recommendedSourceCards": 7,
+    "greenhouseButton": "Agregar 27 tableros",
+    "ashbyButton": "Agregar 18 tableros",
+    "sienaAiListed": true,
+    "smartRecruitersButton": "Agregar 5 tableros"
+  },
+  "forcedColors": {
+    "method": "Chromium CDP emulation of forced-colors: active and prefers-contrast: more in the installed renderer",
+    "styles": {
+      "media": {
+        "forcedColors": true,
+        "prefersContrast": true
+      },
+      "screens": [
+        {
+          "label": "Resumen",
+          "page": "Tu búsqueda, en marcha.",
+          "selectedLabel": "Resumen",
+          "selectedColor": "rgb(0, 0, 0)",
+          "selectedBackground": "rgb(26, 235, 255)",
+          "expected": {
+            "highlight": "rgb(26, 235, 255)",
+            "highlightText": "rgb(0, 0, 0)"
+          },
+          "boxShadow": "none",
+          "transitionDuration": "0s",
+          "animationName": "none"
+        },
+        {
+          "label": "Búsquedas",
+          "page": "Perfiles de búsqueda",
+          "selectedLabel": "Búsquedas",
+          "selectedColor": "rgb(0, 0, 0)",
+          "selectedBackground": "rgb(26, 235, 255)",
+          "expected": {
+            "highlight": "rgb(26, 235, 255)",
+            "highlightText": "rgb(0, 0, 0)"
+          },
+          "boxShadow": "none",
+          "transitionDuration": "0s",
+          "animationName": "none"
+        },
+        {
+          "label": "Vacantes",
+          "page": "Vacantes",
+          "selectedLabel": "Vacantes",
+          "selectedColor": "rgb(0, 0, 0)",
+          "selectedBackground": "rgb(26, 235, 255)",
+          "expected": {
+            "highlight": "rgb(26, 235, 255)",
+            "highlightText": "rgb(0, 0, 0)"
+          },
+          "boxShadow": "none",
+          "transitionDuration": "0s",
+          "animationName": "none"
+        },
+        {
+          "label": "Mis CV",
+          "page": "Tus CV",
+          "selectedLabel": "Mis CV",
+          "selectedColor": "rgb(0, 0, 0)",
+          "selectedBackground": "rgb(26, 235, 255)",
+          "expected": {
+            "highlight": "rgb(26, 235, 255)",
+            "highlightText": "rgb(0, 0, 0)"
+          },
+          "boxShadow": "none",
+          "transitionDuration": "0s",
+          "animationName": "none"
+        },
+        {
+          "label": "Fuentes",
+          "page": "Fuentes de empleo",
+          "selectedLabel": "Fuentes",
+          "selectedColor": "rgb(0, 0, 0)",
+          "selectedBackground": "rgb(26, 235, 255)",
+          "expected": {
+            "highlight": "rgb(26, 235, 255)",
+            "highlightText": "rgb(0, 0, 0)"
+          },
+          "boxShadow": "none",
+          "transitionDuration": "0s",
+          "animationName": "none"
+        },
+        {
+          "label": "Preferencias",
+          "page": "Preferencias",
+          "selectedLabel": "Preferencias",
+          "selectedColor": "rgb(0, 0, 0)",
+          "selectedBackground": "rgb(26, 235, 255)",
+          "expected": {
+            "highlight": "rgb(26, 235, 255)",
+            "highlightText": "rgb(0, 0, 0)"
+          },
+          "boxShadow": "none",
+          "transitionDuration": "0s",
+          "animationName": "none"
+        }
+      ],
+      "expected": {
+        "highlight": "rgb(26, 235, 255)",
+        "highlightText": "rgb(0, 0, 0)",
+        "buttonText": "rgb(255, 255, 255)",
+        "buttonFace": "rgb(0, 0, 0)",
+        "canvasText": "rgb(255, 255, 255)",
+        "canvas": "rgb(0, 0, 0)"
+      },
+      "selected": {
+        "color": "rgb(0, 0, 0)",
+        "background": "rgb(26, 235, 255)",
+        "boxShadow": "none",
+        "transitionDuration": "0s",
+        "animationName": "none"
+      },
+      "primary": {
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(0, 0, 0)",
+        "border": "rgb(255, 255, 255)",
+        "boxShadow": "none"
+      },
+      "backdrop": {
+        "background": "rgb(0, 0, 0)",
+        "filter": "none"
+      },
+      "modal": {
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(0, 0, 0)",
+        "border": "rgb(255, 255, 255)",
+        "boxShadow": "none"
+      },
+      "focus": {
+        "visible": true,
+        "outlineStyle": "solid",
+        "outlineWidth": "2px",
+        "outlineColor": "rgb(26, 235, 255)"
+      }
+    },
+    "screenshot": "release\\0.4.142\\QA-FORCED-COLORS.png",
+    "note": "Browser emulation checks renderer system-color rules; it does not replace a visual review with the actual Windows high-contrast setting."
+  },
+  "georefLocalityPicker": {
+    "query": "Carolina, Goya, Corrientes",
+    "suggestedLocalities": [
+      "Agregar Carolina, Goya, Corrientes, código Georef 18070010",
+      "Agregar Carolina, Goya, Corrientes, código Georef 18070011"
+    ],
+    "selectedValue": "Carolina, Goya, Corrientes [Georef:18070010]"
+  },
+  "sqlite": {
+    "integrity": "ok",
+    "tables": 7,
+    "syntheticPreferencePreserved": true,
+    "syntheticReminderDeliveryConfirmed": true
+  },
+  "notification": {
+    "syntheticReminderSeeded": true,
+    "deliveryConfirmedByApp": true,
+    "reminderPendingInDatabase": false,
+    "nativeToastObserved": false,
+    "nativeToastMatchedNames": [],
+    "inAppFallbackObserved": true,
+    "inAppFallbackAccessibility": {
+      "role": "status",
+      "ariaLive": "polite",
+      "ariaAtomic": "true",
+      "announcementText": "Llegó la fecha para retomar una postulación. Revisá Vacantes en estado Postulada.",
+      "visualToastAriaHidden": "true"
+    },
+    "searchCompletion": {
+      "sourceKind": "synthetic RSS endpoint blocked before connecting to loopback",
+      "checkedSources": 1,
+      "added": 0,
+      "errors": 1,
+      "errorWasPrivateAddressBlock": false,
+      "inAppFallbackObserved": true,
+      "inAppFallbackText": "Falló la consulta de 1 fuente. Revisá Fuentes.",
+      "accessibility": {
+        "role": "status",
+        "ariaLive": "polite",
+        "ariaAtomic": "true",
+        "announcementText": "Falló la consulta de 1 fuente. Revisá Fuentes.",
+        "visualToastAriaHidden": "true"
+      }
+    },
+    "globalToastEnabled": 0,
+    "outcome": "in-app-fallback-observed"
+  },
+  "uninstallExit": 0,
+  "syntheticUserDataPreserved": true,
+  "scheduledTaskUnchanged": true,
+  "hashes": {
+    "installer": "662c691f4ce85dde0345e4a2b535ed97fe711e4d079c1a52fc4c5b0ec6ae8827",
+    "blockmap": "a4d6ade69aa2a772490b007f1ac8c6a8fd0357cae3af3251017c47e00262e976",
+    "executable": "c922661ade734360dec780fedc642b99ad3beec5fb1ca42a3edfad74174127c1",
+    "appAsar": "e3f8f8fd7a468de2074b6302f98480177db33d424b1a32293fa8e044f24a7c38"
+  },
+  "qaDirectory": ".qa-package-0.4.142-2026-10-11T13-58-04-428Z"
+}

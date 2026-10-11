@@ -1,5 +1,7 @@
 # Radar Laboral
 
+<p align="center"><img src="resources/brand-icon.svg" width="72" alt="Icono naranja de Radar Laboral" /></p>
+
 **Una búsqueda laboral más ordenada, desde tu PC.** Reuní perfiles, vacantes, CV y seguimiento en una app de escritorio para Windows.
 
 <p align="center">

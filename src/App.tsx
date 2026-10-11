@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
+import brandIcon from '../resources/brand-icon.svg'
 import { SALARY_CURRENCIES } from './shared/types'
 import { decodeCsvBytes, detectCsvDelimiter, parseCsvRows } from './shared/csv'
 import { MANUAL_PORTALS } from './shared/manual-portals'
@@ -1568,7 +1569,7 @@ function App() {
     <div className="app-shell" inert={Boolean(modal)}>
       <aside className="sidebar">
         <button className="brand-lockup" onClick={() => setPage('resumen')} aria-label="Ir al resumen">
-          <span className="brand-mark"><span /></span>
+          <img className="brand-mark" src={brandIcon} alt="" />
           <span className="brand-text"><strong>radar</strong><small>laboral</small></span>
         </button>
 

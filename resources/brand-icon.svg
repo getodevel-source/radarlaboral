@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Radar Laboral">
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="0.85" y2="1">
+      <stop offset="0" stop-color="#f38b67" />
+      <stop offset="1" stop-color="#e97656" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="17" fill="url(#background)" />
+  <rect x="16" y="16" width="32" height="32" rx="8" fill="none" stroke="#fff" stroke-width="2.2" />
+  <circle cx="32" cy="32" r="8.2" fill="none" stroke="#fff" stroke-width="2.2" />
+  <circle cx="43" cy="21" r="1.6" fill="#fff" />
+</svg>
