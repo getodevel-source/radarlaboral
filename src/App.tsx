@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
-import brandIcon from '../resources/brand-icon.svg'
+import brandIcon from '../resources/brand-icon.png'
 import { SALARY_CURRENCIES } from './shared/types'
 import { decodeCsvBytes, detectCsvDelimiter, parseCsvRows } from './shared/csv'
 import { MANUAL_PORTALS } from './shared/manual-portals'

@@ -20,6 +20,7 @@
   "files": [
     "dist/**",
     "dist-electron/**",
+    "resources/brand-icon.png",
     "resources/icon.ico",
     "resources/tray.png",
     "resources/georef/localities.json",

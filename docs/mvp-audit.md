@@ -1,6 +1,12 @@
 # Auditoría del MVP
 
-Estado revisado el 11 de octubre de 2026 sobre la version 0.4.147. Esta auditoria conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la version actual.
+Estado revisado el 11 de octubre de 2026 sobre la version 0.4.148. Esta auditoria conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la version actual.
+
+## 0.4.148 - icono exacto en toda la aplicación
+
+Se reemplazó la marca anterior por el PNG entregado para el proyecto, sin editar ni recomprimir el archivo original. `resources/brand-icon.png` conserva el SHA-256 `89386200574C725E1C8F55213F75355B16971AEF73539693F7762CE7591931B8`, igual al de la imagen fuente; la interfaz, el favicon, el README y el paquete parten de ese archivo. Windows usa versiones redimensionadas para la ventana, la bandeja, el ejecutable y las pantallas del instalador y desinstalador. El ICO mantiene siete tamaños, de 16 a 256 píxeles.
+
+El empaquetado comprueba que el PNG incorporado a la aplicación sea byte por byte igual al original, que el renderer cargue la marca y que los iconos de Windows incluyan sus tamaños requeridos. El typecheck, lint, las 98 pruebas, el build y el smoke de instalación y desinstalación NSIS x64 pasaron. La validación de la actualización desde 0.4.147 se ejecuta contra el release publicado y se añadirá a esta evidencia después de probarla desde la app.
 
 ## 0.4.147 - actualización comprobada desde la app
 
@@ -14,9 +20,9 @@ La acción **Instalar y salir** ejecuta NSIS en modo silencioso para que la app 
 
 La versión 0.4.142 corrige el instalador para que no permita elegir una carpeta protegida en una instalación por usuario. Si detecta una instalación anterior por usuario dentro de `Program Files`, solicita elevación de Windows y la migra a una instalación para todos los usuarios. También conserva los datos de usuario y permite reintentar los chequeos del actualizador cuando falla una consulta inicial. El smoke NSIS x64 instaló Radar en una carpeta aislada de usuario, abrió la app, recorrió seis pantallas, comprobó la integridad de SQLite y desinstaló con código 0 conservando los datos sintéticos. Desde **Preferencias → Versión de la app**, el botón **Buscar actualizaciones** consultó GitHub y mostró que 0.4.142 ya era la versión más reciente; en ese momento GitHub publicaba 0.4.141, por lo que esta prueba valida el chequeo y el estado "al día", no una descarga e instalación de otra versión. Evidencia local: `release/0.4.142/QA-PACKAGE.json`.
 
-## 0.4.145 - marca y tema oscuro
+## 0.4.145 - primera marca propia y tema oscuro (histórico)
 
-El símbolo propio combina una R con un barrido de radar y una señal naranja. Se usa en README, favicon, barra lateral, bandeja de Windows, ventana, icono del ejecutable y recursos del instalador/desinstalador. El ICO incluye siete tamaños entre 16 y 256 píxeles.
+La marca anterior combinaba una R con un barrido de radar y una señal naranja. La versión 0.4.148 la reemplazó por el archivo PNG exacto entregado para el proyecto.
 
 Preferencias incorpora un switch accesible para alternar entre tema claro y oscuro. El cambio se aplica al instante y se conserva en el perfil local de Electron, incluso al cerrar y volver a abrir la app. El tema oscuro adapta superficies, textos, campos, tarjetas, estados y controles, conserva el contraste del modo de colores forzados y actualiza el color de la barra del sistema.
 

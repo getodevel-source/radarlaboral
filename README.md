@@ -1,6 +1,6 @@
 # Radar Laboral
 
-<p align="center"><img src="resources/brand-icon.svg" width="72" alt="Símbolo Radar Laboral: la letra R con un barrido de radar" /></p>
+<p align="center"><img src="resources/brand-icon.png" width="88" alt="Icono de Radar Laboral: radar verde con destellos color durazno" /></p>
 
 **Una búsqueda laboral más ordenada, desde tu PC.** Reuní perfiles, vacantes, CV y seguimiento en una app de escritorio para Windows.
 

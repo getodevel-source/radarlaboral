@@ -221,6 +221,14 @@ for (const file of [installer, `${installer}.blockmap`, executable, archive]) as
 const entries = asar.listPackage(archive).map((entry) => entry.replaceAll('\\', '/'))
 const archivedManifest = JSON.parse(asar.extractFile(archive, 'package.json').toString('utf8'))
 assert.equal(archivedManifest.version, version)
+assert.ok(entries.includes('/resources/brand-icon.png'), 'Package omits the original Radar Laboral brand artwork')
+const archivedBrandImage = asar.extractFile(archive, 'resources/brand-icon.png')
+assert.deepEqual(archivedBrandImage, fs.readFileSync(path.join(root, 'resources', 'brand-icon.png')), 'Packaged brand artwork differs from the original PNG')
+assert.deepEqual(
+  { width: archivedBrandImage.readUInt32BE(16), height: archivedBrandImage.readUInt32BE(20) },
+  { width: 1254, height: 1254 },
+  'Packaged brand artwork has unexpected dimensions',
+)
 assert.ok(entries.includes('/resources/icon.ico'), 'Package omits the Windows app icon')
 const archivedIcon = asar.extractFile(archive, 'resources/icon.ico')
 assert.equal(archivedIcon.readUInt16LE(0), 0, 'Windows icon has an invalid reserved field')
