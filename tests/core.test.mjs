@@ -3776,12 +3776,12 @@ test('keeps startup usable when creating the tray icon fails', () => {
   assert.match(trayFactory, /la ventana seguir[aá] disponible/u)
 })
 
-test('app update leaves the user closed after choosing install and exit', () => {
+test('app update installs silently and leaves the user closed after choosing install and exit', () => {
   const { service, updater, calls } = createUpdateTestHarness({ feed: true })
   updater.emit('update-downloaded', { version: '0.5.0' })
   service.quitAndInstall()
   assert.equal(updater.autoRunAppAfterInstall, false)
-  assert.deepEqual(calls.quitArguments, [false, false])
+  assert.deepEqual(calls.quitArguments, [true, false])
 })
 
 test('app update service guards quitAndInstall and throttles error retries', async () => {

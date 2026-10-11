@@ -1,0 +1,267 @@
+{
+  "version": "0.4.145",
+  "method": "NSIS x64 installation, isolated synthetic profile, CDP appearance/source-card/forced-colors checks, and uninstall",
+  "installerSha256": "45cb9df175e04f4f04eef43e96e553e8e33c560c944a53f8c7755616826d9a47",
+  "package": {
+    "asarEntries": 1216,
+    "testsExcluded": true,
+    "sprintfJsExcluded": true,
+    "toolchainModulesExcluded": {
+      "sprintfJs": true,
+      "roarr": true,
+      "globalAgent": true,
+      "electronGet": true
+    },
+    "cspConnectSelfOnly": true,
+    "windowsIcon": {
+      "included": true,
+      "sizes": [
+        16,
+        24,
+        32,
+        48,
+        64,
+        128,
+        256
+      ]
+    },
+    "trayIcon": {
+      "included": true,
+      "width": 64,
+      "height": 64
+    },
+    "windowsNotificationIdentity": {
+      "appUserModelId": "ar.radarlaboral.desktop",
+      "toastActivatorClsid": "{017378BE-4BF1-42DA-A318-80EDED2C1A4B}",
+      "startMenuShortcutVerified": true
+    },
+    "greenhouseCookUnityPolicyIncluded": true,
+    "greenhouseDeptPolicyIncluded": true,
+    "greenhouseUserinfoGuardIncluded": true,
+    "documentationFiles": 16,
+    "markdownDocs": 9,
+    "markdownLinksChecked": 176,
+    "packagedEvidenceFiles": 266,
+    "packagedEvidenceBytes": 2649236,
+    "signatures": {
+      "installer": "NotSigned",
+      "executable": "NotSigned"
+    }
+  },
+  "installedApp": {
+    "inAppUpdateCheck": {
+      "button": "Buscar actualizaciones",
+      "status": "Radar Laboral está actualizado.",
+      "latestReleaseIsOlderThanPackage": true
+    },
+    "sidebarBrandIcon": {
+      "loaded": true,
+      "naturalWidth": 150
+    },
+    "appearance": {
+      "role": "switch",
+      "initialTheme": "light",
+      "lightBackground": "rgb(244, 243, 239)",
+      "darkTheme": "dark",
+      "darkBackground": "rgb(23, 29, 25)",
+      "preferenceStored": true
+    },
+    "title": "Radar Laboral",
+    "recommendedSourceCards": 7,
+    "greenhouseButton": "Agregar 27 tableros",
+    "ashbyButton": "Agregar 18 tableros",
+    "sienaAiListed": true,
+    "smartRecruitersButton": "Agregar 5 tableros"
+  },
+  "forcedColors": {
+    "method": "Chromium CDP emulation of forced-colors: active and prefers-contrast: more in the installed renderer",
+    "styles": {
+      "media": {
+        "forcedColors": true,
+        "prefersContrast": true
+      },
+      "screens": [
+        {
+          "label": "Resumen",
+          "page": "Tu búsqueda, en marcha.",
+          "selectedLabel": "Resumen",
+          "selectedColor": "rgb(0, 0, 0)",
+          "selectedBackground": "rgb(26, 235, 255)",
+          "expected": {
+            "highlight": "rgb(26, 235, 255)",
+            "highlightText": "rgb(0, 0, 0)"
+          },
+          "boxShadow": "none",
+          "transitionDuration": "0s",
+          "animationName": "none"
+        },
+        {
+          "label": "Búsquedas",
+          "page": "Perfiles de búsqueda",
+          "selectedLabel": "Búsquedas",
+          "selectedColor": "rgb(0, 0, 0)",
+          "selectedBackground": "rgb(26, 235, 255)",
+          "expected": {
+            "highlight": "rgb(26, 235, 255)",
+            "highlightText": "rgb(0, 0, 0)"
+          },
+          "boxShadow": "none",
+          "transitionDuration": "0s",
+          "animationName": "none"
+        },
+        {
+          "label": "Vacantes",
+          "page": "Vacantes",
+          "selectedLabel": "Vacantes",
+          "selectedColor": "rgb(0, 0, 0)",
+          "selectedBackground": "rgb(26, 235, 255)",
+          "expected": {
+            "highlight": "rgb(26, 235, 255)",
+            "highlightText": "rgb(0, 0, 0)"
+          },
+          "boxShadow": "none",
+          "transitionDuration": "0s",
+          "animationName": "none"
+        },
+        {
+          "label": "Mis CV",
+          "page": "Tus CV",
+          "selectedLabel": "Mis CV",
+          "selectedColor": "rgb(0, 0, 0)",
+          "selectedBackground": "rgb(26, 235, 255)",
+          "expected": {
+            "highlight": "rgb(26, 235, 255)",
+            "highlightText": "rgb(0, 0, 0)"
+          },
+          "boxShadow": "none",
+          "transitionDuration": "0s",
+          "animationName": "none"
+        },
+        {
+          "label": "Fuentes",
+          "page": "Fuentes de empleo",
+          "selectedLabel": "Fuentes",
+          "selectedColor": "rgb(0, 0, 0)",
+          "selectedBackground": "rgb(26, 235, 255)",
+          "expected": {
+            "highlight": "rgb(26, 235, 255)",
+            "highlightText": "rgb(0, 0, 0)"
+          },
+          "boxShadow": "none",
+          "transitionDuration": "0s",
+          "animationName": "none"
+        },
+        {
+          "label": "Preferencias",
+          "page": "Preferencias",
+          "selectedLabel": "Preferencias",
+          "selectedColor": "rgb(0, 0, 0)",
+          "selectedBackground": "rgb(26, 235, 255)",
+          "expected": {
+            "highlight": "rgb(26, 235, 255)",
+            "highlightText": "rgb(0, 0, 0)"
+          },
+          "boxShadow": "none",
+          "transitionDuration": "0s",
+          "animationName": "none"
+        }
+      ],
+      "expected": {
+        "highlight": "rgb(26, 235, 255)",
+        "highlightText": "rgb(0, 0, 0)",
+        "buttonText": "rgb(255, 255, 255)",
+        "buttonFace": "rgb(0, 0, 0)",
+        "canvasText": "rgb(255, 255, 255)",
+        "canvas": "rgb(0, 0, 0)"
+      },
+      "selected": {
+        "color": "rgb(0, 0, 0)",
+        "background": "rgb(26, 235, 255)",
+        "boxShadow": "none",
+        "transitionDuration": "0s",
+        "animationName": "none"
+      },
+      "primary": {
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(0, 0, 0)",
+        "border": "rgb(255, 255, 255)",
+        "boxShadow": "none"
+      },
+      "backdrop": {
+        "background": "rgb(0, 0, 0)",
+        "filter": "none"
+      },
+      "modal": {
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(0, 0, 0)",
+        "border": "rgb(255, 255, 255)",
+        "boxShadow": "none"
+      },
+      "focus": {
+        "visible": true,
+        "outlineStyle": "solid",
+        "outlineWidth": "2px",
+        "outlineColor": "rgb(26, 235, 255)"
+      }
+    },
+    "screenshot": "release\\0.4.145\\QA-FORCED-COLORS.png",
+    "note": "Browser emulation checks renderer system-color rules; it does not replace a visual review with the actual Windows high-contrast setting."
+  },
+  "georefLocalityPicker": {
+    "query": "Carolina, Goya, Corrientes",
+    "suggestedLocalities": [
+      "Agregar Carolina, Goya, Corrientes, código Georef 18070010",
+      "Agregar Carolina, Goya, Corrientes, código Georef 18070011"
+    ],
+    "selectedValue": "Carolina, Goya, Corrientes [Georef:18070010]"
+  },
+  "sqlite": {
+    "integrity": "ok",
+    "tables": 7,
+    "syntheticPreferencePreserved": true,
+    "syntheticReminderDeliveryConfirmed": true
+  },
+  "notification": {
+    "syntheticReminderSeeded": true,
+    "deliveryConfirmedByApp": true,
+    "reminderPendingInDatabase": false,
+    "nativeToastObserved": false,
+    "nativeToastMatchedNames": [],
+    "inAppFallbackObserved": true,
+    "inAppFallbackAccessibility": {
+      "role": "status",
+      "ariaLive": "polite",
+      "ariaAtomic": "true",
+      "announcementText": "Llegó la fecha para retomar una postulación. Revisá Vacantes en estado Postulada.",
+      "visualToastAriaHidden": "true"
+    },
+    "searchCompletion": {
+      "sourceKind": "synthetic RSS endpoint blocked before connecting to loopback",
+      "checkedSources": 1,
+      "added": 0,
+      "errors": 1,
+      "errorWasPrivateAddressBlock": true,
+      "inAppFallbackObserved": true,
+      "inAppFallbackText": "Falló la consulta de 1 fuente. Revisá Fuentes.",
+      "accessibility": {
+        "role": "status",
+        "ariaLive": "polite",
+        "ariaAtomic": "true",
+        "announcementText": "Falló la consulta de 1 fuente. Revisá Fuentes.",
+        "visualToastAriaHidden": "true"
+      }
+    },
+    "globalToastEnabled": 0,
+    "outcome": "in-app-fallback-observed"
+  },
+  "uninstallExit": 0,
+  "syntheticUserDataPreserved": true,
+  "scheduledTaskUnchanged": true,
+  "hashes": {
+    "installer": "45cb9df175e04f4f04eef43e96e553e8e33c560c944a53f8c7755616826d9a47",
+    "blockmap": "737ce7aaa8ea6e068415defe682f5611397d80e1c5eea1d3265f3a02524468dc",
+    "executable": "54f97f74a6f15a9e2d235d2a0f91ef1948ee2cb8ab7269200094a942c2814bec",
+    "appAsar": "45569d3f629000763a35b265090c2a2127e4bca6cd25f2c4e2a29ec458afbe14"
+  },
+  "qaDirectory": ".qa-package-0.4.145-2026-10-11T17-07-38-707Z"
+}

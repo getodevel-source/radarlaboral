@@ -313,7 +313,9 @@ export function createAppUpdateService(options: AppUpdateServiceOptions): AppUpd
     checkForUpdates,
     quitAndInstall() {
       if (state.status !== 'downloaded') throw new Error('Todavía no hay una actualización descargada para instalar.')
-      updater.quitAndInstall(false, false)
+      // Use NSIS silent mode so its finish page does not relaunch the app after
+      // the user explicitly chose “Instalar y salir”.
+      updater.quitAndInstall(true, false)
     },
   }
 }

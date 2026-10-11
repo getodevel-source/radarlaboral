@@ -1,6 +1,10 @@
 # Auditoría del MVP
 
-Estado revisado el 11 de octubre de 2026 sobre la version 0.4.145. Esta auditoria conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la version actual.
+Estado revisado el 11 de octubre de 2026 sobre la version 0.4.146. Esta auditoria conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la version actual.
+
+## 0.4.146 - cierre correcto del actualizador
+
+La accion **Instalar y salir** ahora ejecuta NSIS en modo silencioso para que la app permanezca cerrada al terminar la instalacion. La prueba real 0.4.144 -> 0.4.145 confirmo la descarga firmada y el reemplazo de la aplicacion; tambien revelo que el instalador interactivo volvia a abrir Radar Laboral aunque la accion promete salir. La nueva opcion de instalacion silenciosa queda cubierta por una prueba automatizada y se verificara entre releases 0.4.146 y 0.4.147.
 
 La versión 0.4.142 corrige el instalador para que no permita elegir una carpeta protegida en una instalación por usuario. Si detecta una instalación anterior por usuario dentro de `Program Files`, solicita elevación de Windows y la migra a una instalación para todos los usuarios. También conserva los datos de usuario y permite reintentar los chequeos del actualizador cuando falla una consulta inicial. El smoke NSIS x64 instaló Radar en una carpeta aislada de usuario, abrió la app, recorrió seis pantallas, comprobó la integridad de SQLite y desinstaló con código 0 conservando los datos sintéticos. Desde **Preferencias → Versión de la app**, el botón **Buscar actualizaciones** consultó GitHub y mostró que 0.4.142 ya era la versión más reciente; en ese momento GitHub publicaba 0.4.141, por lo que esta prueba valida el chequeo y el estado "al día", no una descarga e instalación de otra versión. Evidencia local: `release/0.4.142/QA-PACKAGE.json`.
 
