@@ -936,6 +936,78 @@ test('dialogs expose their title to assistive readers and preferences show the a
   assert.match(appSource, /Radar Laboral \{appVersion/u)
 })
 
+test('hydrates the current update state without clearing it during ordinary refreshes', () => {
+  const appSource = fs.readFileSync(new URL('../src/App.tsx', import.meta.url), 'utf8')
+  const refreshStart = appSource.indexOf('const refresh = useCallback(async () => {')
+  const refreshEnd = appSource.indexOf('\n  }, [])', refreshStart)
+  assert.ok(refreshStart >= 0 && refreshEnd > refreshStart)
+  assert.doesNotMatch(appSource.slice(refreshStart, refreshEnd), /setUpdateState/u)
+
+  const listenerIndex = appSource.indexOf('window.radar.app.onUpdateState')
+  const statusIndex = appSource.indexOf('window.radar.app.updateStatus()', listenerIndex)
+  assert.ok(listenerIndex >= 0 && statusIndex > listenerIndex)
+  const effectStart = appSource.lastIndexOf('useEffect(() => {', listenerIndex)
+  const effectEnd = appSource.indexOf('\n  }, [])', statusIndex)
+  assert.ok(effectStart >= 0 && effectEnd > statusIndex)
+  assert.match(appSource.slice(effectStart, effectEnd), /updateStateEventSequence\.current/u)
+})
+
+test('ordinary data refreshes do not overwrite unsaved preferences or candidate details', () => {
+  const appSource = fs.readFileSync(new URL('../src/App.tsx', import.meta.url), 'utf8')
+  const refreshStart = appSource.indexOf('const refresh = useCallback(async () => {')
+  const refreshEnd = appSource.indexOf('\n  }, [])', refreshStart)
+  assert.ok(refreshStart >= 0 && refreshEnd > refreshStart)
+  const refreshSource = appSource.slice(refreshStart, refreshEnd)
+  assert.doesNotMatch(refreshSource, /app\.settings\(\)|candidate\.get\(\)|setSettings\(|setCandidateProfile\(/u)
+
+  const preferencesStart = appSource.indexOf('const loadPreferences = useCallback(async () => {')
+  const preferencesEnd = appSource.indexOf('\n  }, [])', preferencesStart)
+  assert.ok(preferencesStart >= 0 && preferencesEnd > preferencesStart)
+  const preferencesSource = appSource.slice(preferencesStart, preferencesEnd)
+  assert.match(preferencesSource, /window\.radar\.app\.settings\(\)/u)
+  assert.match(preferencesSource, /window\.radar\.candidate\.get\(\)/u)
+  assert.match(appSource, /Promise\.all\(\[refresh\(\), loadPreferences\(\)\]\)/u)
+  assert.ok(/setSettings\(\(current\)\s*=>\s*\(\{ \.\.\.current, aiApiKeyConfigured: saved\.aiApiKeyConfigured \}\)\)/u.test(appSource))
+  assert.ok(/setSettings\(\(current\)\s*=>\s*\(\{ \.\.\.current, salaryExchangeRates: refreshed\.salaryExchangeRates \}\)\)/u.test(appSource))
+})
+
+test('ignores JSON import previews after their file or mapping changes', () => {
+  const appSource = fs.readFileSync(new URL('../src/App.tsx', import.meta.url), 'utf8')
+  assert.match(appSource, /const jsonImportPreviewSequence = useRef\(0\)/u)
+  assert.match(appSource, /function invalidateJsonImportPreview\(\)\s*\{[^}]*jsonImportPreviewSequence\.current\s*\+=\s*1[^}]*setJsonImportPreview\(null\)[^}]*setPreviewingJsonImport\(false\)/su)
+
+  const previewStart = appSource.indexOf('async function previewJsonOpportunities()')
+  const previewEnd = appSource.indexOf('\n  async function testSource()', previewStart)
+  assert.ok(previewStart >= 0 && previewEnd > previewStart)
+  const previewSource = appSource.slice(previewStart, previewEnd)
+  assert.match(previewSource, /const requestSequence = \+\+jsonImportPreviewSequence\.current/u)
+  assert.match(previewSource, /if \(requestSequence === jsonImportPreviewSequence\.current\) setJsonImportPreview\(\{ result \}\)/u)
+  assert.match(previewSource, /if \(requestSequence === jsonImportPreviewSequence\.current\) setPreviewingJsonImport\(false\)/u)
+  assert.match(previewSource, /if \(requestSequence === jsonImportPreviewSequence\.current\) \{\s*setJsonImportPreview\(\{ error:/u)
+
+  const fileStart = appSource.indexOf('async function selectJsonImportFile(')
+  const fileEnd = appSource.indexOf('\n  async function previewJsonOpportunities()', fileStart)
+  assert.ok(fileStart >= 0 && fileEnd > fileStart)
+  const fileSource = appSource.slice(fileStart, fileEnd)
+  assert.match(fileSource, /invalidateJsonImportPreview\(\)/u)
+  assert.match(fileSource, /const requestSequence = \+\+jsonImportFileReadSequence\.current/u)
+  assert.match(fileSource, /if \(requestSequence !== jsonImportFileReadSequence\.current\) return/u)
+  assert.match(appSource, /setJsonImportSourceId\(event\.target\.value\); invalidateJsonImportPreview\(\)/u)
+  assert.match(appSource, /setJsonImportProfileId\(event\.target\.value\); invalidateJsonImportPreview\(\)/u)
+})
+
+test('keeps the last selected CSV file when reads finish out of order', () => {
+  const appSource = fs.readFileSync(new URL('../src/App.tsx', import.meta.url), 'utf8')
+  assert.match(appSource, /const csvImportFileReadSequence = useRef\(0\)/u)
+  const fileStart = appSource.indexOf('async function selectCsvImportFile(')
+  const fileEnd = appSource.indexOf('\n  async function selectJsonImportFile(', fileStart)
+  assert.ok(fileStart >= 0 && fileEnd > fileStart)
+  const fileSource = appSource.slice(fileStart, fileEnd)
+  assert.match(fileSource, /const requestSequence = \+\+csvImportFileReadSequence\.current/u)
+  assert.match(fileSource, /if \(requestSequence !== csvImportFileReadSequence\.current\) return/u)
+  assert.match(appSource, /function openCsvImport\(\)\s*\{\s*csvImportFileReadSequence\.current\s*\+=\s*1/u)
+})
+
 test('removes Vite development hosts from the packaged Content Security Policy', () => {
   const html = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8')
   const developmentPlugin = createContentSecurityPolicyPlugin('serve')

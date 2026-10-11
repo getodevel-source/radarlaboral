@@ -411,21 +411,29 @@ function App() {
   const [toast, setToast] = useState({ id: 0, text: '' })
 
   const toastSeq = useRef(0)
+  const updateStateEventSequence = useRef(0)
+  const csvImportFileReadSequence = useRef(0)
+  const jsonImportPreviewSequence = useRef(0)
+  const jsonImportFileReadSequence = useRef(0)
   const [followUpReminderQueue, setFollowUpReminderQueue] = useState<Array<{ deliveryId: string; text: string }>>([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [testingSource, setTestingSource] = useState(false)
 
+  function invalidateJsonImportPreview() {
+    jsonImportPreviewSequence.current += 1
+    setJsonImportPreview(null)
+    setPreviewingJsonImport(false)
+  }
+
   const refresh = useCallback(async () => {
-    const [nextProfiles, nextOpportunities, nextResumes, nextSources, nextDrafts, nextSummary, nextSettings, nextCandidate, nextVersion] = await Promise.all([
+    const [nextProfiles, nextOpportunities, nextResumes, nextSources, nextDrafts, nextSummary, nextVersion] = await Promise.all([
       window.radar.profiles.list(),
       window.radar.opportunities.list(),
       window.radar.resumes.list(),
       window.radar.sources.list(),
       window.radar.drafts.list(),
       window.radar.app.summary(),
-      window.radar.app.settings(),
-      window.radar.candidate.get(),
       window.radar.app.version().catch(() => ''),
     ])
     setProfiles(nextProfiles)
@@ -434,18 +442,22 @@ function App() {
     setSources(nextSources)
     setDrafts(nextDrafts)
     setSummary(nextSummary)
+    setAppVersion(nextVersion)
+  }, [])
+
+  const loadPreferences = useCallback(async () => {
+    const [nextSettings, nextCandidate] = await Promise.all([
+      window.radar.app.settings(),
+      window.radar.candidate.get(),
+    ])
     setSettings(nextSettings)
     setCandidateProfile(nextCandidate)
-    setAppVersion(nextVersion)
-    const [nextProfiles2, nextOpportunities2, nextResumes2, nextSources2, nextDrafts2, nextSummary2, nextSettings2, nextCandidate2, nextVersion2, nextUpdate] = [nextProfiles, nextOpportunities, nextResumes, nextSources, nextDrafts, nextSummary, nextSettings, nextCandidate, nextVersion, null] as unknown as [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, string, AppUpdateState | null]
-    void nextProfiles2; void nextOpportunities2; void nextResumes2; void nextSources2; void nextDrafts2; void nextSummary2; void nextSettings2; void nextCandidate2; void nextVersion2
-    setUpdateState(nextUpdate)
   }, [])
 
   useEffect(() => {
-    void refresh().catch((error: unknown) => showToast(error instanceof Error ? error.message : 'No se pudieron cargar tus datos.'))
+    void Promise.all([refresh(), loadPreferences()]).catch((error: unknown) => showToast(error instanceof Error ? error.message : 'No se pudieron cargar tus datos.'))
       .finally(() => setLoading(false))
-  }, [refresh])
+  }, [refresh, loadPreferences])
 
   useEffect(() => {
     const query = localityQuery.trim()
@@ -474,13 +486,24 @@ function App() {
   }, [refresh])
 
   useEffect(() => {
+    let active = true
     const off = window.radar.app.onUpdateState((next) => {
+      updateStateEventSequence.current += 1
       setUpdateState(next)
       if (next.status === 'downloaded') {
         showToast(next.message)
       }
     })
-    return off
+    const requestedAtSequence = updateStateEventSequence.current
+    void window.radar.app.updateStatus()
+      .then((next) => {
+        if (active && updateStateEventSequence.current === requestedAtSequence) setUpdateState(next)
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+      off()
+    }
   }, [])
 
   useEffect(() => {
@@ -619,6 +642,7 @@ function App() {
   }
 
   function openCsvImport() {
+    csvImportFileReadSequence.current += 1
     setCsvImportContents('')
     setCsvImportFileName('')
     setCsvImportEncoding('')
@@ -630,6 +654,8 @@ function App() {
   }
 
   function openJsonImport() {
+    invalidateJsonImportPreview()
+    jsonImportFileReadSequence.current += 1
     const firstSource = jsonImportSources[0]
     setJsonImportContents('')
     setJsonImportFileName('')
@@ -642,6 +668,7 @@ function App() {
 
   function closeActiveModal() {
     if (modal === 'csv-import') {
+      csvImportFileReadSequence.current += 1
       setCsvImportContents('')
       setCsvImportFileName('')
       setCsvImportEncoding('')
@@ -649,6 +676,8 @@ function App() {
       setCsvImportFileError('')
     }
     if (modal === 'json-import') {
+      invalidateJsonImportPreview()
+      jsonImportFileReadSequence.current += 1
       setJsonImportContents('')
       setJsonImportFileName('')
       setJsonImportFileError('')
@@ -659,16 +688,19 @@ function App() {
 
   async function selectCsvImportFile(file: File | undefined) {
     if (!file) return
+    const requestSequence = ++csvImportFileReadSequence.current
+    setCsvImportContents('')
+    setCsvImportFileName(file.name)
+    setCsvImportEncoding('')
+    setCsvImportSourceName('')
+    setCsvImportFileError('')
     if (file.size > 5 * 1024 * 1024) {
-      setCsvImportContents('')
-      setCsvImportFileName('')
-      setCsvImportEncoding('')
-      setCsvImportSourceName('')
       setCsvImportFileError('El archivo supera el límite local de 5 MB.')
       return
     }
     try {
       const decoded = decodeCsvBytes(new Uint8Array(await file.arrayBuffer()))
+      if (requestSequence !== csvImportFileReadSequence.current) return
       const contents = decoded.contents
       const delimiter = detectCsvDelimiter(contents)
       const rows = parseCsvRows(contents, delimiter)
@@ -680,37 +712,37 @@ function App() {
       setCsvImportFileError('')
       setCsvImportConfig(csvImportConfigFor(headers, delimiter))
     } catch (error) {
-      setCsvImportContents('')
-      setCsvImportFileName(file.name)
-      setCsvImportEncoding('')
-      setCsvImportSourceName('')
-      setCsvImportFileError(error instanceof Error ? error.message : 'No se pudo leer el CSV.')
+      if (requestSequence === csvImportFileReadSequence.current) {
+        setCsvImportFileError(error instanceof Error ? error.message : 'No se pudo leer el CSV.')
+      }
     }
   }
 
   async function selectJsonImportFile(file: File | undefined) {
     if (!file) return
-    setJsonImportPreview(null)
+    invalidateJsonImportPreview()
+    const requestSequence = ++jsonImportFileReadSequence.current
+    setJsonImportContents('')
+    setJsonImportFileName(file.name)
+    setJsonImportFileError('')
     if (file.size > 5 * 1024 * 1024) {
-      setJsonImportContents('')
-      setJsonImportFileName(file.name)
       setJsonImportFileError('El archivo JSON supera el límite local de 5 MB.')
       return
     }
     try {
       const contents = decodeCsvBytes(new Uint8Array(await file.arrayBuffer())).contents
+      if (requestSequence !== jsonImportFileReadSequence.current) return
       setJsonImportContents(contents)
-      setJsonImportFileName(file.name)
-      setJsonImportFileError('')
     } catch (error) {
-      setJsonImportContents('')
-      setJsonImportFileName(file.name)
-      setJsonImportFileError(error instanceof Error ? error.message : 'No se pudo leer el archivo JSON.')
+      if (requestSequence === jsonImportFileReadSequence.current) {
+        setJsonImportFileError(error instanceof Error ? error.message : 'No se pudo leer el archivo JSON.')
+      }
     }
   }
 
   async function previewJsonOpportunities() {
     if (!jsonImportContents || !jsonImportSourceId) return
+    const requestSequence = ++jsonImportPreviewSequence.current
     setPreviewingJsonImport(true)
     setJsonImportPreview(null)
     try {
@@ -720,11 +752,13 @@ function App() {
         profileId: jsonImportProfileId || null,
       }
       const result = await window.radar.opportunities.previewJsonImport(input)
-      setJsonImportPreview({ result })
+      if (requestSequence === jsonImportPreviewSequence.current) setJsonImportPreview({ result })
     } catch (error) {
-      setJsonImportPreview({ error: error instanceof Error ? error.message : 'No se pudo revisar el JSON local.' })
+      if (requestSequence === jsonImportPreviewSequence.current) {
+        setJsonImportPreview({ error: error instanceof Error ? error.message : 'No se pudo revisar el JSON local.' })
+      }
     } finally {
-      setPreviewingJsonImport(false)
+      if (requestSequence === jsonImportPreviewSequence.current) setPreviewingJsonImport(false)
     }
   }
 
@@ -1385,7 +1419,7 @@ function App() {
     setBusy(true)
     try {
       const refreshed = await window.radar.app.refreshSalaryExchangeRates()
-      setSettings(refreshed)
+      setSettings((current) => ({ ...current, salaryExchangeRates: refreshed.salaryExchangeRates }))
       const date = refreshed.salaryExchangeRates?.asOf
       showToast(date ? `Cotizaciones del BCRA actualizadas al ${date}.` : 'El BCRA no publicó cotizaciones disponibles.')
     } catch (error) {
@@ -1424,7 +1458,7 @@ function App() {
     setBusy(true)
     try {
       const saved = await window.radar.app.clearAiApiKey()
-      setSettings(saved)
+      setSettings((current) => ({ ...current, aiApiKeyConfigured: saved.aiApiKeyConfigured }))
       setAiApiKeyDraft('')
       showToast('Clave eliminada de esta computadora.')
     } catch (error) {
@@ -1713,8 +1747,8 @@ function App() {
           <form className="form-stack" onSubmit={(event) => void importJsonOpportunities(event)}>
             <p className="csv-import-intro">Elegí un archivo JSON que ya tengas. Radar usa el mapeo de una fuente JSON guardada, procesa el archivo en esta computadora y no consulta el enlace de esa fuente.</p>
             {jsonImportSources.length > 0 ? <>
-              <Field label="Fuente y mapeo guardados"><select value={jsonImportSourceId} onChange={(event) => { setJsonImportSourceId(event.target.value); setJsonImportPreview(null) }}>{jsonImportSources.map((source) => <option value={source.id} key={source.id}>{source.name} · {source.url}</option>)}</select></Field>
-              <Field label="Perfil para aplicar filtros y ranking"><select value={jsonImportProfileId} onChange={(event) => { setJsonImportProfileId(event.target.value); setJsonImportPreview(null) }}><option value="">Sin asignar perfil</option>{profiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.name}</option>)}</select></Field>
+              <Field label="Fuente y mapeo guardados"><select value={jsonImportSourceId} onChange={(event) => { setJsonImportSourceId(event.target.value); invalidateJsonImportPreview() }}>{jsonImportSources.map((source) => <option value={source.id} key={source.id}>{source.name} · {source.url}</option>)}</select></Field>
+              <Field label="Perfil para aplicar filtros y ranking"><select value={jsonImportProfileId} onChange={(event) => { setJsonImportProfileId(event.target.value); invalidateJsonImportPreview() }}><option value="">Sin asignar perfil</option>{profiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.name}</option>)}</select></Field>
               <Field label="Archivo JSON local" hint="Hasta 5 MB y 1000 avisos. El archivo no se conserva después de importar."><input required type="file" accept=".json,application/json" onChange={(event) => { void selectJsonImportFile(event.currentTarget.files?.[0]); event.currentTarget.value = '' }} /></Field>
               {jsonImportFileName && <p className="csv-import-filename">Archivo elegido: {jsonImportFileName}</p>}
               {jsonImportFileError && <div className="callout callout-error" role="alert"><Icon name="close" /><p>{jsonImportFileError}</p></div>}
