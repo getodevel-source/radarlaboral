@@ -34,6 +34,15 @@ class RootErrorBoundary extends React.Component<{ children: React.ReactNode }, R
   }
 }
 
+try {
+  if (window.localStorage.getItem('radar-laboral-theme') === 'dark') {
+    document.documentElement.dataset.theme = 'dark'
+    document.documentElement.style.colorScheme = 'dark'
+  }
+} catch {
+  // The app can still start with the default light theme when storage is unavailable.
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <RootErrorBoundary>

@@ -228,6 +228,11 @@ assert.equal(archivedIcon.readUInt16LE(2), 1, 'Windows icon is not an ICO resour
 const archivedIconCount = archivedIcon.readUInt16LE(4)
 const archivedIconSizes = Array.from({ length: archivedIconCount }, (_, index) => archivedIcon[index * 16 + 6] || 256)
 assert.deepEqual(archivedIconSizes, [16, 24, 32, 48, 64, 128, 256], 'Windows icon is missing a display size')
+assert.ok(entries.includes('/resources/tray.png'), 'Package omits the Windows tray brand icon')
+const archivedTrayIcon = asar.extractFile(archive, 'resources/tray.png')
+assert.deepEqual([...archivedTrayIcon.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10], 'Windows tray icon is not a PNG image')
+const archivedTrayIconSize = { width: archivedTrayIcon.readUInt32BE(16), height: archivedTrayIcon.readUInt32BE(20) }
+assert.deepEqual(archivedTrayIconSize, { width: 64, height: 64 }, 'Windows tray icon has an unexpected size')
 const archivedMain = asar.extractFile(archive, 'dist-electron/main.js').toString('utf8')
 assert.match(archivedMain, /commandLine\.appendSwitch\(["']lang["'],\s*["']es-AR["']\)/u)
 assert.match(archivedMain, /setAppUserModelId/u)
@@ -406,6 +411,20 @@ const updateButton = await session.eval("Array.from(document.querySelectorAll('.
 assert.equal(updateButton, 'Buscar actualizaciones', 'The installed app is missing its update check button')
 const sidebarBrandIcon = await session.eval("(() => { const image = document.querySelector('.brand-mark'); return { loaded: Boolean(image?.complete && image.naturalWidth > 0), naturalWidth: image?.naturalWidth ?? 0 }; })()")
 assert.equal(sidebarBrandIcon.loaded, true, 'The installed app did not load its sidebar brand icon')
+const appearanceBefore = await session.eval("(() => { const control = document.querySelector('.theme-switch'); return { role: control?.getAttribute('role') ?? null, checked: control?.getAttribute('aria-checked') ?? null, theme: document.documentElement.dataset.theme ?? '', background: getComputedStyle(document.querySelector('.app-shell')).backgroundColor }; })()")
+assert.equal(appearanceBefore.role, 'switch', 'The appearance control is not exposed as a switch')
+assert.equal(appearanceBefore.checked, 'false', 'A fresh profile did not start in the light theme')
+assert.equal(appearanceBefore.theme, 'light', 'The light theme was not applied on startup')
+await session.eval("document.querySelector('.theme-switch')?.click()")
+await delay(250)
+const appearanceDark = await session.eval("(() => { const control = document.querySelector('.theme-switch'); return { checked: control?.getAttribute('aria-checked') ?? null, theme: document.documentElement.dataset.theme ?? '', background: getComputedStyle(document.querySelector('.app-shell')).backgroundColor, stored: localStorage.getItem('radar-laboral-theme') }; })()")
+assert.equal(appearanceDark.checked, 'true', 'The appearance switch did not announce dark mode')
+assert.equal(appearanceDark.theme, 'dark', 'The installed app did not apply dark mode')
+assert.notEqual(appearanceDark.background, appearanceBefore.background, 'Dark mode did not change the app surface color')
+assert.equal(appearanceDark.stored, 'dark', 'The installed app did not persist dark mode')
+await session.eval("document.querySelector('.theme-switch')?.click()")
+await delay(250)
+assert.equal(await session.eval("document.documentElement.dataset.theme"), 'light', 'The appearance switch could not return to light mode')
 await session.eval("Array.from(document.querySelectorAll('.settings-card button')).find(button => button.innerText.trim() === 'Buscar actualizaciones')?.click()")
 let updateStatusText = ''
 const updateCheckDeadline = Date.now() + 30_000
@@ -604,12 +623,13 @@ const hashes = { installer: hash(installer), blockmap: hash(`${installer}.blockm
 const signatures = { installer: signature(installer), executable: signature(executable) }
 const report = {
   version,
-  method: 'NSIS x64 installation, isolated synthetic profile, CDP source-card and forced-colors checks, and uninstall',
+  method: 'NSIS x64 installation, isolated synthetic profile, CDP appearance/source-card/forced-colors checks, and uninstall',
   installerSha256: hashes.installer,
-  package: { asarEntries: entries.length, testsExcluded: true, sprintfJsExcluded: toolchainModulesExcluded.sprintfJs, toolchainModulesExcluded, cspConnectSelfOnly: true, windowsIcon: { included: true, sizes: archivedIconSizes }, windowsNotificationIdentity: { appUserModelId: notificationShortcut.appUserModelId, toastActivatorClsid: notificationShortcut.toastActivatorClsid, startMenuShortcutVerified: true }, greenhouseCookUnityPolicyIncluded: cookUnityPolicyIncluded, greenhouseDeptPolicyIncluded: deptPolicyIncluded, greenhouseUserinfoGuardIncluded, documentationFiles: documentationFiles.length, markdownDocs: markdownFiles.length - 1, markdownLinksChecked, packagedEvidenceFiles: packagedEvidenceFiles.length, packagedEvidenceBytes, signatures },
+  package: { asarEntries: entries.length, testsExcluded: true, sprintfJsExcluded: toolchainModulesExcluded.sprintfJs, toolchainModulesExcluded, cspConnectSelfOnly: true, windowsIcon: { included: true, sizes: archivedIconSizes }, trayIcon: { included: true, ...archivedTrayIconSize }, windowsNotificationIdentity: { appUserModelId: notificationShortcut.appUserModelId, toastActivatorClsid: notificationShortcut.toastActivatorClsid, startMenuShortcutVerified: true }, greenhouseCookUnityPolicyIncluded: cookUnityPolicyIncluded, greenhouseDeptPolicyIncluded: deptPolicyIncluded, greenhouseUserinfoGuardIncluded, documentationFiles: documentationFiles.length, markdownDocs: markdownFiles.length - 1, markdownLinksChecked, packagedEvidenceFiles: packagedEvidenceFiles.length, packagedEvidenceBytes, signatures },
   installedApp: {
     inAppUpdateCheck: { button: updateButton, status: updateStatusText, latestReleaseIsOlderThanPackage: true },
     sidebarBrandIcon,
+    appearance: { role: appearanceBefore.role, initialTheme: appearanceBefore.theme, lightBackground: appearanceBefore.background, darkTheme: appearanceDark.theme, darkBackground: appearanceDark.background, preferenceStored: appearanceDark.stored === 'dark' },
     title: 'Radar Laboral',
     recommendedSourceCards: sourceCards.length,
     greenhouseButton: 'Agregar 27 tableros',
@@ -642,7 +662,7 @@ const report = {
       checkedSources: searchResult.checkedSources,
       added: searchResult.added,
       errors: searchResult.errors.length,
-      errorWasPrivateAddressBlock: /p.blica|privada|loopback/u.test(searchResult.errors[0].message),
+      errorWasPrivateAddressBlock: /p.blica|privada|loopback|puerto/u.test(searchResult.errors[0].message),
       inAppFallbackObserved: nativeNotification.globalToastEnabled === 0 ? Boolean(inAppSearchCompletionText) : null,
       inAppFallbackText: inAppSearchCompletionText,
       accessibility: searchCompletionFallbackAccessibility,

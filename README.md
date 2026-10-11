@@ -1,6 +1,6 @@
 # Radar Laboral
 
-<p align="center"><img src="resources/brand-icon.svg" width="72" alt="Icono naranja de Radar Laboral" /></p>
+<p align="center"><img src="resources/brand-icon.svg" width="72" alt="Símbolo Radar Laboral: la letra R con un barrido de radar" /></p>
 
 **Una búsqueda laboral más ordenada, desde tu PC.** Reuní perfiles, vacantes, CV y seguimiento en una app de escritorio para Windows.
 
@@ -37,6 +37,13 @@
       <sub>Guardá distintos perfiles para explorar objetivos diferentes.</sub>
     </td>
   </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <a href="docs/images/tema-oscuro.png"><img src="docs/images/tema-oscuro.png" width="720" alt="Preferencias de Radar Laboral con el tema oscuro activado" /></a><br />
+      <strong>Elegí tema claro u oscuro</strong><br />
+      <sub>La aplicación recuerda tu preferencia en esta computadora.</sub>
+    </td>
+  </tr>
 </table>
 
 ## Cómo te ayuda
@@ -46,6 +53,7 @@
 - **Vacantes ordenadas:** compará cada aviso con tus criterios, revisá qué datos faltan y seguí su estado.
 - **CV y borradores:** guardá versiones PDF en tu equipo, prepará copias adaptadas y redactá mensajes para revisar.
 - **Seguimiento:** registrá postulaciones, notas y fechas para retomar el contacto; Radar te avisa cuando llega el momento.
+- **Tema a tu gusto:** alterná entre los temas claro y oscuro desde **Preferencias → Apariencia**; la app recuerda tu elección.
 
 ## Empezar
 

@@ -1,10 +1,20 @@
 # Auditoría del MVP
 
-Estado revisado el 11 de octubre de 2026 sobre la versión 0.4.144. Esta auditoría conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la versión actual.
+Estado revisado el 11 de octubre de 2026 sobre la version 0.4.145. Esta auditoria conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la version actual.
 
 La versión 0.4.142 corrige el instalador para que no permita elegir una carpeta protegida en una instalación por usuario. Si detecta una instalación anterior por usuario dentro de `Program Files`, solicita elevación de Windows y la migra a una instalación para todos los usuarios. También conserva los datos de usuario y permite reintentar los chequeos del actualizador cuando falla una consulta inicial. El smoke NSIS x64 instaló Radar en una carpeta aislada de usuario, abrió la app, recorrió seis pantallas, comprobó la integridad de SQLite y desinstaló con código 0 conservando los datos sintéticos. Desde **Preferencias → Versión de la app**, el botón **Buscar actualizaciones** consultó GitHub y mostró que 0.4.142 ya era la versión más reciente; en ese momento GitHub publicaba 0.4.141, por lo que esta prueba valida el chequeo y el estado "al día", no una descarga e instalación de otra versión. Evidencia local: `release/0.4.142/QA-PACKAGE.json`.
 
-La versión 0.4.144 usa el icono naranja de cámara en la barra lateral, la bandeja, la ventana, el instalador, el desinstalador y este README. El ICO de Windows contiene siete tamaños entre 16 y 256 píxeles. La validación del paquete comprueba el ICO incluido y que la app instalada cargue el icono de la barra lateral.
+## 0.4.145 - marca y tema oscuro
+
+El símbolo propio combina una R con un barrido de radar y una señal naranja. Se usa en README, favicon, barra lateral, bandeja de Windows, ventana, icono del ejecutable y recursos del instalador/desinstalador. El ICO incluye siete tamaños entre 16 y 256 píxeles.
+
+Preferencias incorpora un switch accesible para alternar entre tema claro y oscuro. El cambio se aplica al instante y se conserva en el perfil local de Electron, incluso al cerrar y volver a abrir la app. El tema oscuro adapta superficies, textos, campos, tarjetas, estados y controles, conserva el contraste del modo de colores forzados y actualiza el color de la barra del sistema.
+
+La compilación de 0.4.145 pasa typecheck, lint, 98 pruebas y el empaquetado NSIS x64. La captura de la guía valida ambos temas y la persistencia tras reiniciar la aplicación.
+
+El smoke NSIS x64 instaló 0.4.145 en una carpeta aislada, confirmó que la barra lateral carga el icono, que el switch accesible cambia entre claro y oscuro y que la preferencia queda guardada. También recorrió seis pantallas en colores forzados, comprobó SQLite (integrity_check = ok), verificó 176 enlaces Markdown y desinstaló con código 0 conservando los datos sintéticos. El chequeo dentro de la app respondió que 0.4.145 estaba al día porque la versión publicada aún era 0.4.144; la descarga entre versiones se verificará tras publicar 0.4.145. El instalador y el ejecutable no tienen firma Authenticode.
+
+La versión 0.4.144 todavía usaba el icono naranja de cámara en la barra lateral, la bandeja, la ventana, el instalador, el desinstalador y el README. La versión 0.4.145 lo reemplaza por el símbolo propio descrito arriba.
 
 El smoke NSIS x64 de 0.4.144 instaló la app en una carpeta aislada, confirmó que el logo de la barra lateral carga y que **Buscar actualizaciones** consulta GitHub y muestra **Radar Laboral está actualizado**. SQLite devolvió `integrity_check = ok`; la desinstalación terminó con código 0 y conservó los datos sintéticos. El manifiesto de actualización está firmado con Ed25519; el instalador y el ejecutable aún no tienen firma Authenticode. Evidencia: [QA-PACKAGE.json](../package-evidence/0.4.144/QA-PACKAGE.json), [SHA256SUMS.txt](../package-evidence/0.4.144/SHA256SUMS.txt) y [captura del smoke](../package-evidence/0.4.144/QA-FORCED-COLORS.png).
 

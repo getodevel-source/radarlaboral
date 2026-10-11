@@ -104,6 +104,11 @@ function cdp(url) {
   socket.addEventListener('message', (event) => {
     let message
     try { message = JSON.parse(event.data.toString()) } catch { return }
+    if (!message.id) {
+      if (message.method === 'Runtime.exceptionThrown') console.error('Renderer exception:', message.params.exceptionDetails.text, message.params.exceptionDetails.exception?.description ?? '')
+      if (message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error') console.error('Renderer console error:', message.params.args.map((argument) => argument.value ?? argument.description ?? '').join(' '))
+      return
+    }
     const request = pending.get(message.id)
     if (!request) return
     pending.delete(message.id)
@@ -165,6 +170,7 @@ try {
   const target = await waitTarget(remotePort, app)
   const session = cdp(target.webSocketDebuggerUrl)
   await session.open
+  await session.command('Runtime.enable')
   assert.equal(await session.eval('document.title'), 'Radar Laboral')
   await session.command('Emulation.setDeviceMetricsOverride', { width: 1400, height: 900, deviceScaleFactor: 1, mobile: false })
 
@@ -177,7 +183,7 @@ try {
       await session.eval("Array.from(document.querySelectorAll('button')).find((b) => b.textContent.trim() === 'Todas')?.click()")
       await delay(400)
     }
-    await session.eval("document.querySelector('.toast-message')?.closest('.toast, [role]')?.remove() ?? document.querySelector('.toast-message')?.remove()")
+    await session.eval("if (document.querySelector('.toast-message')) document.querySelector('.toast-message').style.display = 'none'")
     await delay(200)
     const heading = await session.eval("document.querySelector('.page-head h1')?.innerText ?? document.querySelector('h1')?.innerText ?? ''")
     const shot = await session.command('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false })
@@ -190,8 +196,15 @@ try {
   await capture('Resumen', 'resumen.png')
   await capture('Vacantes', 'vacantes.png')
   await capture('Búsquedas', 'busquedas.png')
+  await capture('Preferencias', 'preferencias.png')
+  assert.ok(await session.eval("Boolean(document.querySelector('.theme-switch'))"), 'Appearance switch is missing from Preferences')
+  await session.eval("document.querySelector('.theme-switch')?.click()")
+  await delay(350)
+  assert.equal(await session.eval("document.documentElement.dataset.theme"), 'dark', 'Appearance switch did not apply the dark theme')
+  assert.equal(await session.eval("localStorage.getItem('radar-laboral-theme')"), 'dark', 'Dark theme was not saved for this profile')
+  await capture('Preferencias', 'tema-oscuro.png')
 
-  // Sanity: las tres capturas existen y no son imágenes vacías
+  // Sanity: all five captures have real content.
   for (const shot of shots) {
     assert.ok(shot.bytes > 20_000, `Shot too small, page may not have rendered: ${shot.file}`)
   }
@@ -199,4 +212,17 @@ try {
 } finally {
   app.kill()
   await waitExit(app).catch(() => {})
+}
+
+const reopenedApp = spawn(exe, [`--radar-user-data-dir=${userDataDir}`, `--remote-debugging-port=${remotePort}`], { stdio: 'ignore', windowsHide: true })
+try {
+  const target = await waitTarget(remotePort, reopenedApp)
+  const session = cdp(target.webSocketDebuggerUrl)
+  await session.open
+  assert.equal(await session.eval("document.documentElement.dataset.theme"), 'dark', 'Dark theme did not persist after restarting the app')
+  assert.equal(await session.eval("localStorage.getItem('radar-laboral-theme')"), 'dark', 'Dark theme preference was lost after restarting the app')
+  console.log('Appearance theme persisted after a full app restart.')
+} finally {
+  reopenedApp.kill()
+  await waitExit(reopenedApp).catch(() => {})
 }

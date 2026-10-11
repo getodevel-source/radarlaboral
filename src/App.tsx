@@ -40,6 +40,15 @@ import './App.css'
 
 type PageKey = 'resumen' | 'busquedas' | 'vacantes' | 'cv' | 'fuentes' | 'ajustes'
 type ModalKey = 'profile' | 'opportunity' | 'source' | 'draft' | 'tracking' | 'csv-import' | 'json-import' | null
+type AppearanceTheme = 'light' | 'dark'
+
+const savedAppearanceTheme = (): AppearanceTheme => {
+  try {
+    return window.localStorage.getItem('radar-laboral-theme') === 'dark' ? 'dark' : 'light'
+  } catch {
+    return 'light'
+  }
+}
 
 const salaryCurrencyLabels: Record<typeof SALARY_CURRENCIES[number], string> = {
   ARS: 'Pesos argentinos',
@@ -358,12 +367,15 @@ function Icon({ name, size = 18 }: { name: string; size?: number }) {
     trash: <><path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3" /></>,
     clock: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7v5l3.2 2" /></>,
     spark: <><path d="m12 3 1.6 6.1L20 11l-6.4 1.7L12 19l-1.6-6.3L4 11l6.4-1.9L12 3Z" /><path d="m19 16 .7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16Z" /></>,
+    sun: <><circle cx="12" cy="12" r="3.4" /><path d="M12 2.5v2M12 19.5v2M4.4 4.4l1.4 1.4m12.4 12.4 1.4 1.4M2.5 12h2m15 0h2M4.4 19.6l1.4-1.4M18.2 5.8l1.4-1.4" /></>,
+    moon: <path d="M20.2 15.3A8.8 8.8 0 0 1 8.7 3.8 8.8 8.8 0 1 0 20.2 15.3Z" />,
   }
   if (import.meta.env.DEV && !Object.hasOwn(paths, name)) console.warn(`Icono desconocido: ${name}`)
   return <svg {...common}>{paths[name] ?? paths.overview}</svg>
 }
 
 function App() {
+  const [theme, setTheme] = useState<AppearanceTheme>(savedAppearanceTheme)
   const [page, setPage] = useState<PageKey>('resumen')
   const [profiles, setProfiles] = useState<SearchProfile[]>([])
   const [opportunities, setOpportunities] = useState<Opportunity[]>([])
@@ -420,6 +432,17 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [testingSource, setTestingSource] = useState(false)
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    document.documentElement.style.colorScheme = theme
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#17201b' : '#f4f3ef')
+    try {
+      window.localStorage.setItem('radar-laboral-theme', theme)
+    } catch {
+      showToast('No se pudo guardar el tema en este perfil de Windows.')
+    }
+  }, [theme])
 
   function invalidateJsonImportPreview() {
     jsonImportPreviewSequence.current += 1
@@ -1652,7 +1675,7 @@ function App() {
               />}
               {page === 'cv' && <ResumesPage resumes={resumes} busy={busy} onUpload={importResumes} onDelete={removeResume} />}
               {page === 'fuentes' && <SourcesPage sources={sources} profiles={profiles} onAdd={openSource} onAddRecommended={addFindjobitFeed} onAddDespegar={addDespegarJobs} onAddLeverSources={addAdditionalLeverSources} onAddSmartRecruitersSources={addSmartRecruitersArgentinaSources} onAddWorkableSur={addWorkableSurJobs} onAddGreenhouseSources={addGreenhouseArgentinaSources} onAddAshbySources={addAshbyArgentinaSources} onToggle={toggleSource} onCustomAutomationApproval={updateCustomAutomationApproval} onDelete={removeSource} onSearch={runSearch} onOpen={(url) => void window.radar.app.openExternal(url)} busy={busy} />}
-              {page === 'ajustes' && <SettingsPage settings={settings} setSettings={setSettings} candidate={candidateProfile} setCandidate={setCandidateProfile} onSaveCandidate={saveCandidateProfile} aiApiKeyDraft={aiApiKeyDraft} setAiApiKeyDraft={setAiApiKeyDraft} onClearAiApiKey={clearAiApiKey} onCreateBackup={createBackup} onRestoreBackup={restoreBackup} onRefreshSalaryExchangeRates={refreshSalaryExchangeRates} onSave={saveSettings} busy={busy} appVersion={appVersion} updateState={updateState} checkingUpdates={checkingUpdates} onCheckForUpdates={() => void checkForAppUpdates()} onQuitAndInstallUpdate={() => void quitAndInstallUpdate()} />}
+              {page === 'ajustes' && <SettingsPage settings={settings} setSettings={setSettings} theme={theme} onThemeChange={setTheme} candidate={candidateProfile} setCandidate={setCandidateProfile} onSaveCandidate={saveCandidateProfile} aiApiKeyDraft={aiApiKeyDraft} setAiApiKeyDraft={setAiApiKeyDraft} onClearAiApiKey={clearAiApiKey} onCreateBackup={createBackup} onRestoreBackup={restoreBackup} onRefreshSalaryExchangeRates={refreshSalaryExchangeRates} onSave={saveSettings} busy={busy} appVersion={appVersion} updateState={updateState} checkingUpdates={checkingUpdates} onCheckForUpdates={() => void checkForAppUpdates()} onQuitAndInstallUpdate={() => void quitAndInstallUpdate()} />}
             </>
           )}
         </div>
@@ -2044,9 +2067,11 @@ function SourceHealth({ source, onOpen, onCustomAutomationApproval }: { source: 
   </>
 }
 
-function SettingsPage({ settings, setSettings, candidate, setCandidate, onSaveCandidate, aiApiKeyDraft, setAiApiKeyDraft, onClearAiApiKey, onCreateBackup, onRestoreBackup, onRefreshSalaryExchangeRates, onSave, busy, appVersion, updateState, checkingUpdates, onCheckForUpdates, onQuitAndInstallUpdate }: {
+function SettingsPage({ settings, setSettings, theme, onThemeChange, candidate, setCandidate, onSaveCandidate, aiApiKeyDraft, setAiApiKeyDraft, onClearAiApiKey, onCreateBackup, onRestoreBackup, onRefreshSalaryExchangeRates, onSave, busy, appVersion, updateState, checkingUpdates, onCheckForUpdates, onQuitAndInstallUpdate }: {
   settings: AppSettings
   setSettings: (settings: AppSettings) => void
+  theme: AppearanceTheme
+  onThemeChange: (theme: AppearanceTheme) => void
   candidate: CandidateProfile
   setCandidate: (profile: CandidateProfile) => void
   onSaveCandidate: () => void
@@ -2068,6 +2093,9 @@ function SettingsPage({ settings, setSettings, candidate, setCandidate, onSaveCa
     ? Object.keys(settings.salaryExchangeRates.arsPerUnit).filter((currency) => currency !== 'ARS').length
     : 0
   return <form className="settings-layout" onSubmit={onSave}>
+    <section className="content-card settings-card appearance-card"><div className="section-heading"><div><div className="eyebrow">APARIENCIA</div><h2>Un espacio a tu gusto</h2></div><span className="settings-section-icon"><Icon name="spark" /></span></div><p className="settings-lead">Elegí el tema que te resulte más cómodo. El cambio se aplica al instante y queda guardado en esta computadora.</p>
+      <div className="setting-row appearance-row"><span><strong>Tema de la aplicación</strong><small>Podés cambiarlo cuando quieras; no afecta tus datos.</small></span><button type="button" className={`theme-switch ${theme === 'dark' ? 'is-dark' : ''}`} role="switch" aria-checked={theme === 'dark'} aria-label="Tema oscuro" onClick={() => onThemeChange(theme === 'dark' ? 'light' : 'dark')}><span className="theme-switch-label">{theme === 'dark' ? 'Oscuro' : 'Claro'}</span><span className="theme-switch-track"><span className="theme-switch-thumb"><Icon name={theme === 'dark' ? 'moon' : 'sun'} size={13} /></span></span></button></div>
+    </section>
     <section className="content-card settings-card"><div className="section-heading"><div><div className="eyebrow">AUTOMATIZACIÓN</div><h2>Cuándo buscar</h2></div><span className="settings-section-icon"><Icon name="clock" /></span></div><p className="settings-lead">La app revisa tus fuentes automáticas mientras está abierta o minimizada en la bandeja de Windows.</p>
       <label className="setting-row"><span><strong>Frecuencia de búsqueda</strong><small>Si la computadora está apagada, se retoma al abrir la app.</small></span><select value={settings.searchIntervalHours} onChange={(event) => setSettings({ ...settings, searchIntervalHours: Number(event.target.value) })}><option value={4}>Cada 4 horas</option><option value={8}>Cada 8 horas</option><option value={12}>Cada 12 horas</option><option value={24}>Una vez al día</option></select></label>
       <label className="setting-row"><span><strong>Buscar aunque Radar esté cerrado</strong><small>Windows abrirá Radar minimizado al iniciar sesión y lo reactivará según el intervalo. Usa esta cuenta, sin contraseña ni privilegios de administrador; requiere instalar la app.</small></span><input className="toggle-input" type="checkbox" checked={settings.backgroundSearchEnabled} onChange={(event) => setSettings({ ...settings, backgroundSearchEnabled: event.target.checked })} /></label>

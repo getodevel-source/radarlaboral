@@ -2,6 +2,10 @@
 
 Radar Laboral reúne vacantes y ayuda a preparar postulaciones. La persona revisa cada aviso y envía la postulación en el sitio de empleo.
 
+## Apariencia
+
+Desde **Preferencias → Apariencia** podés alternar entre el tema claro y el oscuro. El cambio es inmediato y Radar recuerda la elección en esta computadora.
+
 ## Filtro salarial
 
 El sueldo mínimo es informativo cuando el aviso no publica un importe comparable, falta una cotización vigente o el rango salarial cruza el mínimo: por defecto, Radar conserva el aviso y explica qué dato falta. Si activás **Exigir que el sueldo publicado alcance el mínimo**, Radar omite esos casos y solo muestra sueldos comparables cuyo límite inferior alcanza el mínimo. La opción requiere completar **Sueldo mínimo mensual** y está desactivada por defecto, incluso en perfiles existentes. Para comparar importes diarios u horarios también hace falta configurar los días u horas remunerados por semana.
