@@ -18,7 +18,7 @@ import { RadarDatabase } from '../electron/database.ts'
 
 const root = process.cwd()
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'))
-const fromVersion = process.argv[2] ?? '0.4.144'
+const fromVersion = process.argv[2] ?? '0.4.146'
 const toVersion = process.argv[3] ?? manifest.version
 assert.equal(toVersion, manifest.version, 'Target version must match the checked-out package')
 assert.notEqual(fromVersion, toVersion, 'Source and target releases must differ')

@@ -1,6 +1,6 @@
 # Auditoría del MVP
 
-Estado revisado el 11 de octubre de 2026 sobre la version 0.4.146. Esta auditoria conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la version actual.
+Estado revisado el 11 de octubre de 2026 sobre la version 0.4.147. Esta auditoria conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la version actual.
 
 ## 0.4.146 - cierre correcto del actualizador
 
@@ -16,7 +16,7 @@ Preferencias incorpora un switch accesible para alternar entre tema claro y oscu
 
 La compilación de 0.4.145 pasa typecheck, lint, 98 pruebas y el empaquetado NSIS x64. La captura de la guía valida ambos temas y la persistencia tras reiniciar la aplicación.
 
-El smoke NSIS x64 instaló 0.4.145 en una carpeta aislada, confirmó que la barra lateral carga el icono, que el switch accesible cambia entre claro y oscuro y que la preferencia queda guardada. También recorrió seis pantallas en colores forzados, comprobó SQLite (integrity_check = ok), verificó 176 enlaces Markdown y desinstaló con código 0 conservando los datos sintéticos. El chequeo dentro de la app respondió que 0.4.145 estaba al día porque la versión publicada aún era 0.4.144; la descarga entre versiones se verificará tras publicar 0.4.145. El instalador y el ejecutable no tienen firma Authenticode.
+El smoke NSIS x64 instaló 0.4.145 en una carpeta aislada, confirmó que la barra lateral carga el icono, que el switch accesible cambia entre claro y oscuro y que la preferencia queda guardada. También recorrió seis pantallas en colores forzados, comprobó SQLite (integrity_check = ok), verificó 176 enlaces Markdown y desinstaló con código 0 conservando los datos sintéticos. La prueba real de actualización 0.4.144 → 0.4.145 confirmó que el manifiesto firmado se acepta y que NSIS reemplaza el paquete; también mostró que el setup interactivo vuelve a abrir la app. La versión 0.4.146 cambia la instalación a modo silencioso y la comprobación entre versiones queda documentada en `QA-INAPP-UPDATE.json`. El instalador y el ejecutable no tienen firma Authenticode.
 
 La versión 0.4.144 todavía usaba el icono naranja de cámara en la barra lateral, la bandeja, la ventana, el instalador, el desinstalador y el README. La versión 0.4.145 lo reemplaza por el símbolo propio descrito arriba.
 
