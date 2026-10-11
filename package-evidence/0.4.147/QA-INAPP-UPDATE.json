@@ -1,0 +1,15 @@
+{
+  "fromVersion": "0.4.146",
+  "toVersion": "0.4.147",
+  "releaseManifestSigned": true,
+  "sourceInstallerSha256": "b71c60ee96468b85b665a81f01a173f96ff0ec4bd3e68b97878cd5b1cdbe96f9",
+  "inAppCheckButtonClicked": true,
+  "downloadedInApp": true,
+  "installedTargetVersion": "0.4.147",
+  "updatedAppStarted": true,
+  "preservedSyntheticProfiles": 1,
+  "syntheticProfilePreserved": true,
+  "isolatedAppDataUsed": true,
+  "temporaryProfileUsed": true,
+  "completedAt": "2026-10-11T17:34:52.284Z"
+}
