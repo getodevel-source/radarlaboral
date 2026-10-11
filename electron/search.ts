@@ -697,9 +697,11 @@ export async function runSearch(
 
   for (const source of activeSources) {
     if (source.kind === 'website') continue
+    if (!database.enabledSources().some((activeSource) => activeSource.id === source.id)) continue
     checkedSources += 1
     try {
       const items = await fetchSource(source)
+      if (!database.enabledSources().some((activeSource) => activeSource.id === source.id)) continue
       const policy = source.kind === 'json' ? findVerifiedSourcePolicy('json', source.url) : null
       const itemLimit = policy?.connector === 'lever-public-jobs'
         ? policy.leverArgentinaMaxPostings ?? LEVER_MAX_ARGENTINA_POSTINGS
@@ -718,6 +720,7 @@ export async function runSearch(
       }
       database.markSourceChecked(source.id, new Date().toISOString())
     } catch (error) {
+      if (!database.enabledSources().some((activeSource) => activeSource.id === source.id)) continue
       const message = error instanceof Error ? error.message : 'No se pudo consultar la fuente.'
       database.markSourceFailed(source.id, new Date().toISOString(), message)
       errors.push({

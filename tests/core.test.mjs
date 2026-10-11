@@ -3200,6 +3200,62 @@ test('runSearch exposes per-source truncation without counting it as a failure',
   database.close()
 })
 
+test('runSearch does not import results from a source paused while its request is in flight', async (context) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'radar-laboral-paused-source-'))
+  context.after(() => fs.rmSync(directory, { recursive: true, force: true }))
+  const database = new RadarDatabase(directory)
+  const source = database.addSource({
+    name: 'Feed pausado durante la consulta',
+    url: 'https://example.org/paused-jobs.xml',
+    kind: 'rss',
+    profileId: null,
+    enabled: true,
+    customAutomationApproved: true,
+    automationEvidenceUrl: '',
+  })
+  let resolveFetch
+  const pendingFetch = new Promise((resolve) => { resolveFetch = resolve })
+  const searchPromise = runSearch(database, { fetchSource: async () => pendingFetch })
+
+  database.updateSourceEnabled(source.id, false)
+  resolveFetch([{ title: 'Vacante después de pausar', link: 'https://example.org/job/paused' }])
+
+  const result = await searchPromise
+  assert.equal(result.checkedSources, 1)
+  assert.equal(result.added, 0)
+  assert.equal(database.listOpportunities().length, 0)
+  assert.equal(database.listSources().find((item) => item.id === source.id).lastCheckedAt, null)
+  database.close()
+})
+
+test('runSearch does not mark a paused source as failed after its pending request rejects', async (context) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'radar-laboral-paused-source-error-'))
+  context.after(() => fs.rmSync(directory, { recursive: true, force: true }))
+  const database = new RadarDatabase(directory)
+  const source = database.addSource({
+    name: 'Feed pausado durante el error',
+    url: 'https://example.org/paused-error-jobs.xml',
+    kind: 'rss',
+    profileId: null,
+    enabled: true,
+    customAutomationApproved: true,
+    automationEvidenceUrl: '',
+  })
+  let rejectFetch
+  const pendingFetch = new Promise((_, reject) => { rejectFetch = reject })
+  const searchPromise = runSearch(database, { fetchSource: async () => pendingFetch })
+
+  database.updateSourceEnabled(source.id, false)
+  rejectFetch(new Error('fallo después de pausar'))
+
+  const result = await searchPromise
+  assert.deepEqual(result.errors, [])
+  const paused = database.listSources().find((item) => item.id === source.id)
+  assert.equal(paused.lastError, null)
+  assert.equal(paused.lastAttemptAt, null)
+  database.close()
+})
+
 test('keeps multiple profiles and PDF copies locally without changing the selected originals', (context) => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'radar-laboral-multiple-data-'))
   context.after(() => fs.rmSync(directory, { recursive: true, force: true }))
