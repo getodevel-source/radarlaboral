@@ -18,6 +18,14 @@ Elegí el archivo `radarlaboral-Windows-<versión>-Setup.exe` e instalalo como c
 4. **Revisá los avisos.** En *Vacantes*, cada aviso muestra por qué coincide con tu perfil y qué datos le faltan. Cambiá su estado a medida que avances: nueva, revisada, guardada, postulada o descartada.
 5. **No pierdas el hilo.** En *Seguimiento*, anotá cuándo te postulaste y cuándo retomar el contacto: la app te avisa cuando llega la fecha.
 
+Así se ve con datos de ejemplo:
+
+![Resumen: tus perfiles y últimos avisos en un solo lugar](docs/images/resumen.png)
+
+![Tus perfiles de búsqueda con puestos, localidad y sueldo](docs/images/busquedas.png)
+
+![Vacantes con estado, porcentaje de coincidencia y seguimiento](docs/images/vacantes.png)
+
 ## Tus datos quedan en tu PC
 
 Perfiles, avisos, CV, borradores y notas se guardan solo en tu computadora. Nada se sube a ningún servidor. Desde *Preferencias → Copias de seguridad* podés guardar una copia y restaurarla cuando quieras.

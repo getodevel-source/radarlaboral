@@ -17,6 +17,7 @@
     "pack:dir": "npm run typecheck && npm run lint && npm run test && npm run stage:package-evidence && vite build && electron-builder --dir --win",
     "stage:package-evidence": "node scripts/stage-package-evidence.mjs",
     "smoke:package": "node --experimental-strip-types scripts/smoke-package.mjs",
+    "shots:readme": "node --experimental-strip-types scripts/capture-readme-shots.mjs",
     "refresh:geography": "node scripts/refresh-georef-localities.mjs",
     "smoke:sources": "node --experimental-strip-types scripts/smoke-live-sources.mjs",
     "smoke:sources:all": "node --experimental-strip-types scripts/smoke-all-sources.mjs",
