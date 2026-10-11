@@ -163,6 +163,7 @@ export const APP_UPDATE_DISABLED_MESSAGE =
 type UpdaterLike = {
   autoDownload: boolean
   autoInstallOnAppQuit: boolean
+  autoRunAppAfterInstall: boolean
   checkForUpdates(): Promise<unknown>
   downloadUpdate(): Promise<unknown>
   quitAndInstall(isSilent?: boolean, isForceRunAfter?: boolean): void
@@ -248,6 +249,7 @@ export function createAppUpdateService(options: AppUpdateServiceOptions): AppUpd
 
   updater.autoDownload = true
   updater.autoInstallOnAppQuit = true
+  updater.autoRunAppAfterInstall = false
 
   updater.on('checking-for-update', () => {
     apply({ type: 'check-started' })
@@ -274,6 +276,27 @@ export function createAppUpdateService(options: AppUpdateServiceOptions): AppUpd
     apply({ type: 'error', detail: describe(error) })
   })
 
+  const checkForUpdates = async (manual = false) => {
+    if (state.status === 'disabled') return state
+    if (checking) return state
+    if (state.status === 'downloaded') return state
+    if (state.status === 'downloading' && !manual) return state
+    if (!manual && state.status === 'error' && now() - lastErrorRetryAt < ERROR_RETRY_MS) return state
+    checking = true
+    try {
+      apply({ type: 'check-started' })
+      await updater.checkForUpdates()
+      if (state.status === 'error') lastErrorRetryAt = now()
+      return state
+    } catch (error) {
+      log('El chequeo de actualización falló.', error)
+      lastErrorRetryAt = now()
+      return apply({ type: 'error', detail: describe(error) })
+    } finally {
+      checking = false
+    }
+  }
+
   return {
     get state() {
       return state
@@ -284,33 +307,12 @@ export function createAppUpdateService(options: AppUpdateServiceOptions): AppUpd
       started = true
       // Chequeo inicial suave: no bloquea el arranque; si falla, queda `error`
       // recuperable con reintento manual desde Preferencias.
-      void options.updater.checkForUpdates().catch((error: unknown) => {
-        log('Falló el chequeo inicial de actualización.', error)
-      })
+      void checkForUpdates(false)
     },
-    async checkForUpdates(manual = false) {
-      if (state.status === 'disabled') return state
-      if (checking) return state
-      if (state.status === 'downloaded') return state
-      if (state.status === 'downloading' && !manual) return state
-      if (!manual && state.status === 'error' && now() - lastErrorRetryAt < ERROR_RETRY_MS) return state
-      checking = true
-      try {
-        apply({ type: 'check-started' })
-        await updater.checkForUpdates()
-        if (manual && state.status === 'error') lastErrorRetryAt = now()
-        return state
-      } catch (error) {
-        log('El chequeo manual de actualización falló.', error)
-        lastErrorRetryAt = now()
-        return apply({ type: 'error', detail: describe(error) })
-      } finally {
-        checking = false
-      }
-    },
+    checkForUpdates,
     quitAndInstall() {
       if (state.status !== 'downloaded') throw new Error('Todavía no hay una actualización descargada para instalar.')
-      updater.quitAndInstall(false, true)
+      updater.quitAndInstall(false, false)
     },
   }
 }

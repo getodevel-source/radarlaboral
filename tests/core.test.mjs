@@ -3665,17 +3665,21 @@ test('app update reducer reports up-to-date and recoverable errors', () => {
 function createUpdateTestHarness({ packaged = true, feed = true, checkBehavior = 'available' } = {}) {
   const listeners = new Map()
   const sent = []
-  const calls = { checks: 0, quits: 0 }
+  const calls = { checks: 0, quits: 0, quitArguments: null }
   const updater = {
     autoDownload: false,
     autoInstallOnAppQuit: false,
+    autoRunAppAfterInstall: true,
     async checkForUpdates() {
       calls.checks += 1
       if (checkBehavior === 'throw') throw new Error('offline')
       return null
     },
     async downloadUpdate() { return null },
-    quitAndInstall() { calls.quits += 1 },
+    quitAndInstall(isSilent, isForceRunAfter) {
+      calls.quits += 1
+      calls.quitArguments = [isSilent, isForceRunAfter]
+    },
     on(event, listener) {
       listeners.set(event, [...(listeners.get(event) ?? []), listener])
       return undefined
@@ -3728,6 +3732,56 @@ test('app update service broadcasts states and installs only when downloaded', a
   // checkForUpdates manual con descarga lista no regresa el estado.
   await service.checkForUpdates(true)
   assert.equal(service.state.status, 'downloaded')
+})
+
+test('app update service reports a rejected startup check as recoverable', async () => {
+  const { service, updater, calls } = createUpdateTestHarness({ feed: true, checkBehavior: 'throw' })
+  service.start()
+  // electron-updater emits this before the network request can reject.
+  updater.emit('checking-for-update')
+  await new Promise((resolve) => setImmediate(resolve))
+  assert.equal(service.state.status, 'error')
+  assert.equal(service.state.detail, 'offline')
+  assert.equal(calls.checks, 1)
+
+  await service.checkForUpdates(false)
+  assert.equal(calls.checks, 1)
+  await service.checkForUpdates(true)
+  assert.equal(calls.checks, 2)
+})
+
+test('keeps update checks recoverable when electron-updater cannot load', () => {
+  const mainSource = fs.readFileSync(new URL('../electron/main.ts', import.meta.url), 'utf8')
+  const unavailableStart = mainSource.indexOf('function unavailableUpdater()')
+  assert.ok(unavailableStart >= 0)
+  assert.match(mainSource.slice(unavailableStart, unavailableStart + 400), /async checkForUpdates\(\)[\s\S]*throw new Error/u)
+  assert.ok((mainSource.match(/updater = unavailableUpdater\(\)/gu) ?? []).length >= 2)
+})
+
+test('quits on Windows when the tray is unavailable and the last window closes', () => {
+  const mainSource = fs.readFileSync(new URL('../electron/main.ts', import.meta.url), 'utf8')
+  const handlerStart = mainSource.indexOf("app.on('window-all-closed'")
+  assert.ok(handlerStart >= 0)
+  assert.match(mainSource.slice(handlerStart, handlerStart + 350), /process\.platform === 'win32'[\s\S]*if \(!tray\) app\.quit\(\)/u)
+  assert.match(mainSource.slice(handlerStart, handlerStart + 350), /process\.platform !== 'darwin'\) app\.quit\(\)/u)
+})
+
+test('keeps startup usable when creating the tray icon fails', () => {
+  const mainSource = fs.readFileSync(new URL('../electron/main.ts', import.meta.url), 'utf8')
+  const trayStart = mainSource.indexOf('function createTray()')
+  const trayEnd = mainSource.indexOf('\nasync function updateBackgroundSchedule', trayStart)
+  assert.ok(trayStart >= 0 && trayEnd > trayStart)
+  const trayFactory = mainSource.slice(trayStart, trayEnd)
+  assert.match(trayFactory, /catch \(error\)[\s\S]*tray = null[\s\S]*return false/u)
+  assert.match(trayFactory, /la ventana seguir[aá] disponible/u)
+})
+
+test('app update leaves the user closed after choosing install and exit', () => {
+  const { service, updater, calls } = createUpdateTestHarness({ feed: true })
+  updater.emit('update-downloaded', { version: '0.5.0' })
+  service.quitAndInstall()
+  assert.equal(updater.autoRunAppAfterInstall, false)
+  assert.deepEqual(calls.quitArguments, [false, false])
 })
 
 test('app update service guards quitAndInstall and throttles error retries', async () => {

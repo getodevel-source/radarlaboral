@@ -138,9 +138,13 @@ async function startAppUpdateService(): Promise<AppUpdateService> {
         | import('electron-updater').AppUpdater
         | undefined
       if (candidate && typeof (candidate as { on?: unknown }).on === 'function') updater = candidate as typeof updater
-      else console.error('Actualizaciones automáticas desactivadas: electron-updater no expuso autoUpdater en este build.')
+      else {
+        updater = unavailableUpdater()
+        console.error('electron-updater no expuso autoUpdater en este build; los chequeos quedarán en estado de error recuperable.')
+      }
     } catch (error) {
-      console.error('Actualizaciones automáticas desactivadas: no se pudo cargar electron-updater.', error)
+      updater = unavailableUpdater()
+      console.error('No se pudo cargar electron-updater; los chequeos quedarán en estado de error recuperable.', error)
     }
   }
   const service = createAppUpdateService({
@@ -175,6 +179,7 @@ function nullUpdater() {
   return {
     autoDownload: true,
     autoInstallOnAppQuit: true,
+    autoRunAppAfterInstall: false,
     async checkForUpdates(): Promise<null> { return null },
     async downloadUpdate(): Promise<null> { return null },
     quitAndInstall(): void {},
@@ -183,6 +188,15 @@ function nullUpdater() {
       current.push(listener)
       listeners.set(event, current)
       return undefined
+    },
+  }
+}
+
+function unavailableUpdater(): ReturnType<typeof nullUpdater> {
+  return {
+    ...nullUpdater(),
+    async checkForUpdates(): Promise<null> {
+      throw new Error('No se pudo cargar electron-updater en este build.')
     },
   }
 }
@@ -309,25 +323,37 @@ async function openHttpLink(rawUrl: string) {
 }
 
 function createTray() {
-  if (!existsSync(trayIconPath)) return false
-  const icon = nativeImage.createFromPath(trayIconPath)
-  if (icon.isEmpty()) return false
-  tray = new Tray(icon)
-  tray.setToolTip('Radar Laboral · búsqueda en segundo plano')
-  tray.setContextMenu(Menu.buildFromTemplate([
-    { label: 'Abrir Radar Laboral', click: () => { mainWindow?.show(); mainWindow?.focus() } },
-    { label: 'Buscar vacantes ahora', click: () => { void runSearchNow().catch(() => {}) } },
-    { type: 'separator' },
-    {
-      label: 'Salir',
-      click: () => {
-        quitting = true
-        app.quit()
+  try {
+    if (!existsSync(trayIconPath)) return false
+    const icon = nativeImage.createFromPath(trayIconPath)
+    if (icon.isEmpty()) return false
+    tray = new Tray(icon)
+    tray.setToolTip('Radar Laboral · búsqueda en segundo plano')
+    tray.setContextMenu(Menu.buildFromTemplate([
+      { label: 'Abrir Radar Laboral', click: () => { mainWindow?.show(); mainWindow?.focus() } },
+      { label: 'Buscar vacantes ahora', click: () => { void runSearchNow().catch(() => {}) } },
+      { type: 'separator' },
+      {
+        label: 'Salir',
+        click: () => {
+          quitting = true
+          app.quit()
+        },
       },
-    },
-  ]))
-  tray.on('double-click', () => mainWindow?.show())
-  return true
+    ]))
+    tray.on('double-click', () => mainWindow?.show())
+    return true
+  } catch (error) {
+    const failedTray = tray
+    tray = null
+    try {
+      failedTray?.destroy()
+    } catch {
+      // The tray implementation may have failed before it became usable.
+    }
+    console.error('No se pudo crear el icono de Radar Laboral en la bandeja; la ventana seguirá disponible.', error)
+    return false
+  }
 }
 
 async function updateBackgroundSchedule(enabled: boolean, intervalHours: number) {
@@ -596,8 +622,12 @@ function cancelDataRestore() {
 }
 
 app.on('window-all-closed', () => {
-  // On Windows, the tray keeps the scheduler available until the user selects Salir.
-  if (process.platform !== 'win32' && process.platform !== 'darwin') app.quit()
+  // Keep Windows running only when the tray can reopen the hidden window.
+  if (process.platform === 'win32') {
+    if (!tray) app.quit()
+    return
+  }
+  if (process.platform !== 'darwin') app.quit()
 })
 
 app.on('before-quit', () => {
