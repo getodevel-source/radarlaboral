@@ -1,4 +1,4 @@
-# Logs
+# Registros
 logs
 *.log
 npm-debug.log*
@@ -7,19 +7,22 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencias y archivos generados
 node_modules
 dist
 dist-ssr
 dist-electron
 release
-.qa-*
-*.local
 *.tsbuildinfo
-.smoke-*
 vite.config.js
 vite.config.d.ts
 
-# Editor directories and files
+# Datos locales de QA y pruebas aisladas
+.qa-*
+.smoke-*
+*.local
+
+# Editores y sistema operativo
 .vscode/*
 !.vscode/extensions.json
 .idea
