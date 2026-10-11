@@ -6,7 +6,11 @@ Estado revisado el 11 de octubre de 2026 sobre la version 0.4.148. Esta auditori
 
 Se reemplazó la marca anterior por el PNG entregado para el proyecto, sin editar ni recomprimir el archivo original. `resources/brand-icon.png` conserva el SHA-256 `89386200574C725E1C8F55213F75355B16971AEF73539693F7762CE7591931B8`, igual al de la imagen fuente; la interfaz, el favicon, el README y el paquete parten de ese archivo. Windows usa versiones redimensionadas para la ventana, la bandeja, el ejecutable y las pantallas del instalador y desinstalador. El ICO mantiene siete tamaños, de 16 a 256 píxeles.
 
-El empaquetado comprueba que el PNG incorporado a la aplicación sea byte por byte igual al original, que el renderer cargue la marca y que los iconos de Windows incluyan sus tamaños requeridos. El typecheck, lint, las 98 pruebas, el build y el smoke de instalación y desinstalación NSIS x64 pasaron. La validación de la actualización desde 0.4.147 se ejecuta contra el release publicado y se añadirá a esta evidencia después de probarla desde la app.
+El empaquetado comprueba que el PNG incorporado a la aplicación sea byte por byte igual al original, que el renderer cargue la marca y que los iconos de Windows incluyan sus tamaños requeridos. El typecheck, lint, las 98 pruebas, el build y el smoke de instalación y desinstalación NSIS x64 pasaron.
+
+La prueba real actualizó Radar Laboral 0.4.147 a 0.4.148 desde **Preferencias → Versión de la app → Buscar actualizaciones**. El manifiesto firmado se aceptó, se descargó el setup y **Instalar y salir** cerró 0.4.147 con código 0. NSIS reemplazó la instalación; SQLite conservó el perfil sintético aislado y, al abrir 0.4.148, Preferencias mostró la nueva versión y el actualizador indicó que estaba al día. El PNG incluido en la instalación es byte por byte igual al archivo maestro. Evidencia: [QA-INAPP-UPDATE.json](../package-evidence/0.4.148/QA-INAPP-UPDATE.json).
+
+El manifiesto de actualización lleva firma Ed25519; el instalador y el ejecutable publicados no tienen firma Authenticode. Los hashes del smoke local y de los archivos publicados se distinguen en [QA-PACKAGE.json](../package-evidence/0.4.148/QA-PACKAGE.json) y [SHA256SUMS.txt](../package-evidence/0.4.148/SHA256SUMS.txt).
 
 ## 0.4.147 - actualización comprobada desde la app
 

@@ -1,0 +1,27 @@
+{
+  "fromVersion": "0.4.147",
+  "toVersion": "0.4.148",
+  "releaseManifestSigned": true,
+  "sourceInstallerSha256": "df54c98b8c1567188b5000fc8f1a21f0072dab8f94162f711bad5f34fccbc504",
+  "inAppCheckButtonClicked": true,
+  "downloadedInApp": true,
+  "installedTargetVersion": "0.4.148",
+  "updatedAppStarted": true,
+  "preferencesVersionAfterRestart": "0.4.148",
+  "updaterStatusAfterRestart": "Radar Laboral está actualizado.",
+  "preservedSyntheticProfiles": 1,
+  "syntheticProfilePreserved": true,
+  "isolatedAppDataUsed": true,
+  "temporaryProfileUsed": true,
+  "installationMode": "existing Windows install; isolated test profile; normal Windows LOCALAPPDATA retained for NSIS path resolution",
+  "updaterAction": "Instalar y salir",
+  "oldAppExitCode": 0,
+  "windowsInstallerArguments": [
+    "--updated",
+    "/S"
+  ],
+  "installedBrandArtworkMatchesMaster": true,
+  "installedBrandArtworkSha256": "89386200574c725e1c8f55213f75355b16971aef73539693f7762ce7591931b8",
+  "qaProfileRoot": "radarlaboral-update-0.4.147-to-0.4.148-XJzWyC",
+  "completedAt": "2026-10-11T18:20:47.273Z"
+}
