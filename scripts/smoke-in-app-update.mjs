@@ -3,7 +3,8 @@
  * botón de Preferencias. Instala la versión anterior en una carpeta temporal,
  * conserva una base SQLite sintética y confirma que la nueva app arranca.
  *
- * Uso: `node --experimental-strip-types scripts/smoke-in-app-update.mjs [from-version] [to-version]`
+ * Uso: `node --experimental-strip-types scripts/smoke-in-app-update.mjs [from-version] [to-version] [install-dir]`
+ * Si se pasa `install-dir`, actualiza esa instalación con un perfil de prueba aislado.
  */
 import assert from 'node:assert/strict'
 import crypto from 'node:crypto'
@@ -11,15 +12,16 @@ import fs from 'node:fs'
 import net from 'node:net'
 import os from 'node:os'
 import path from 'node:path'
-import { spawn, spawnSync } from 'node:child_process'
+import { spawn } from 'node:child_process'
 import { setTimeout as delay } from 'node:timers/promises'
-import { extractFile } from '@electron/asar'
+import { extractFile, uncache as uncacheArchive } from '@electron/asar'
 import { RadarDatabase } from '../electron/database.ts'
 
 const root = process.cwd()
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'))
 const fromVersion = process.argv[2] ?? '0.4.146'
 const toVersion = process.argv[3] ?? manifest.version
+const existingInstallDir = process.argv[4] ? path.resolve(root, process.argv[4]) : null
 assert.equal(toVersion, manifest.version, 'Target version must match the checked-out package')
 assert.notEqual(fromVersion, toVersion, 'Source and target releases must differ')
 
@@ -28,14 +30,14 @@ const latestManifest = path.join(root, 'release', toVersion, 'latest.yml')
 const reportPath = path.join(root, 'release', toVersion, 'QA-INAPP-UPDATE.json')
 assert.ok(fs.existsSync(installer), `Missing source release installer: ${installer}`)
 assert.ok(fs.existsSync(latestManifest), `Missing published target manifest: ${latestManifest}`)
+if (existingInstallDir) assert.ok(fs.existsSync(path.join(existingInstallDir, 'Radar Laboral.exe')), `Missing installed app: ${existingInstallDir}`)
 const latestText = fs.readFileSync(latestManifest, 'utf8')
 assert.match(latestText, new RegExp(`^version: ${toVersion.replaceAll('.', '\\.')}\\s*$`, 'mu'))
 assert.match(latestText, /signature:\s*[A-Za-z0-9+/=]+/u, 'Target update manifest must be signed')
 
 const qaRoot = fs.mkdtempSync(path.join(os.tmpdir(), `radarlaboral-update-${fromVersion}-to-${toVersion}-`))
-const installDir = path.join(qaRoot, 'installed-app')
+const installDir = existingInstallDir ?? path.join(qaRoot, 'installed-app')
 const appDataRoot = path.join(qaRoot, 'appdata')
-const localAppDataRoot = path.join(qaRoot, 'local-app-data')
 const userDataDir = path.join(appDataRoot, 'radarlaboral')
 const installedExe = path.join(installDir, 'Radar Laboral.exe')
 const profileId = 'qa-update-profile-preserved'
@@ -128,10 +130,20 @@ async function waitTarget(port, child) {
 
 async function openApp(exe, port) {
   activeApp = spawn(exe, [`--radar-user-data-dir=${userDataDir}`, `--remote-debugging-port=${port}`], {
-    stdio: 'ignore',
+    stdio: ['ignore', 'pipe', 'pipe'],
     windowsHide: true,
-    env: { ...process.env, APPDATA: appDataRoot, LOCALAPPDATA: localAppDataRoot },
+    // Keep LOCALAPPDATA intact so NSIS resolves the already installed app and
+    // uses the normal updater cache. The app database stays in the QA profile.
+    env: { ...process.env, APPDATA: appDataRoot },
   })
+  for (const stream of [activeApp.stdout, activeApp.stderr]) {
+    stream?.setEncoding('utf8')
+    stream?.on('data', (chunk) => {
+      for (const line of chunk.split(/\r?\n/u)) {
+        if (/update|install|NSIS|error|quitandinstall/iu.test(line)) console.log(`App log: ${line}`)
+      }
+    })
+  }
   const target = await waitTarget(port, activeApp)
   const session = connectCdp(target.webSocketDebuggerUrl)
   await session.open
@@ -148,22 +160,15 @@ async function closeApp(session) {
   activeApp = null
 }
 
-function stopIsolatedAppProcesses() {
-  const command = 'Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -eq $env:RADAR_QA_ISOLATED_EXE } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }'
-  const result = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', command], {
-    encoding: 'utf8',
-    windowsHide: true,
-    env: { ...process.env, RADAR_QA_ISOLATED_EXE: installedExe },
-  })
-  if (result.error) throw result.error
-  assert.equal(result.status, 0, `Could not stop the isolated app after its updater relaunch: ${result.stderr}`)
-}
-
 try {
-  console.log(`Installing ${fromVersion} into an isolated temporary directory…`)
-  const setup = spawn(installer, ['/S', `/D=${installDir}`], { stdio: 'ignore', windowsHide: true })
-  const setupResult = await waitExit(setup, 240_000, 'Source release installation')
-  assert.equal(setupResult.code, 0, `Source installer failed: ${JSON.stringify(setupResult)}`)
+  if (existingInstallDir) {
+    console.log(`Using the existing ${fromVersion} installation with an isolated profile: ${installDir}`)
+  } else {
+    console.log(`Installing ${fromVersion} into an isolated temporary directory…`)
+    const setup = spawn(installer, ['/S', `/D=${installDir}`], { stdio: 'ignore', windowsHide: true })
+    const setupResult = await waitExit(setup, 240_000, 'Source release installation')
+    assert.equal(setupResult.code, 0, `Source installer failed: ${JSON.stringify(setupResult)}`)
+  }
   assert.ok(fs.existsSync(installedExe), 'Source installer did not place Radar Laboral.exe in the isolated directory')
 
   const appArchive = path.join(installDir, 'resources', 'app.asar')
@@ -245,28 +250,34 @@ try {
   session = null
 
   console.log('The old app exited through “Instalar y salir”; waiting for NSIS to replace the installed version…')
-  const installDeadline = Date.now() + 240_000
+  const installDeadline = Date.now() + 120_000
+  let lastInstallLog = 0
   let upgradedPackage = null
   while (Date.now() < installDeadline) {
     try {
+      // @electron/asar caches the first archive header per path. NSIS replaces
+      // app.asar in place, so drop that cache before checking the new package.
+      uncacheArchive(appArchive)
       upgradedPackage = JSON.parse(extractFile(appArchive, 'package.json').toString('utf8'))
       if (upgradedPackage.version === toVersion) break
     } catch {}
+    if (Date.now() - lastInstallLog >= 5_000) {
+      console.log(`Waiting for NSIS to finish; installed package is ${upgradedPackage?.version ?? 'not readable yet'}.`)
+      lastInstallLog = Date.now()
+    }
     await delay(1_000)
   }
   assert.equal(upgradedPackage?.version, toVersion, 'The in-app installer did not replace the isolated app with the target version')
-
-  // NSIS can start the updated app with --updated and omit the custom test flag.
-  // Its inherited APPDATA points into this throwaway profile so the relaunch
-  // remains isolated; stop only processes launched from this test install path.
-  stopIsolatedAppProcesses()
+  console.log(`NSIS replaced the installed package with ${upgradedPackage.version}.`)
 
   const upgradedDatabase = new RadarDatabase(userDataDir)
   const preservedProfiles = upgradedDatabase.listProfiles()
   upgradedDatabase.close()
   assert.ok(preservedProfiles.some((profile) => profile.id === profileId && profile.name === 'Perfil de prueba de actualización'), 'The app update did not preserve the isolated user database')
+  console.log(`SQLite preserved the synthetic profile (${preservedProfiles.length} profile(s)).`)
 
   port = await choosePort()
+  console.log(`Starting ${toVersion} again with the same isolated profile.`)
   session = await openApp(installedExe, port)
   await session.eval("Array.from(document.querySelectorAll('button.nav-item')).find(button => button.querySelector('span')?.innerText.trim() === 'Preferencias')?.click()")
   const versionDeadline = Date.now() + 10_000
@@ -277,6 +288,17 @@ try {
     await delay(200)
   }
   assert.ok(versionLine.includes(toVersion), `Updated app did not start as ${toVersion}: ${versionLine}`)
+  console.log(`Updated Preferences reports ${versionLine}.`)
+  const installedBrandImage = extractFile(appArchive, 'resources/brand-icon.png')
+  assert.deepEqual(installedBrandImage, fs.readFileSync(path.join(root, 'resources', 'brand-icon.png')), 'The updated package does not contain the exact transparent master icon')
+  const updateStatusDeadline = Date.now() + 30_000
+  let updateStatus = ''
+  while (Date.now() < updateStatusDeadline) {
+    updateStatus = await session.eval("document.querySelector('.settings-card p[role=\"status\"]')?.innerText.trim() ?? ''")
+    if (updateStatus.includes('actualizado')) break
+    await delay(250)
+  }
+  assert.match(updateStatus, /actualizado/u, `Updated app did not report its current status: ${updateStatus}`)
   await closeApp(session)
   session = null
 
@@ -284,6 +306,7 @@ try {
     fromVersion,
     toVersion,
     releaseManifestSigned: true,
+    installationMode: existingInstallDir ? 'existing-install-with-isolated-profile' : 'isolated-install',
     sourceInstallerSha256: sha256(installer),
     inAppCheckButtonClicked: manualCheckClicked,
     downloadedInApp: downloaded,
@@ -291,6 +314,9 @@ try {
     updatedAppStarted: true,
     preservedSyntheticProfiles: preservedProfiles.length,
     syntheticProfilePreserved: true,
+    installedBrandArtworkMatchesMaster: true,
+    installedBrandArtworkSha256: sha256(path.join(root, 'resources', 'brand-icon.png')),
+    updaterStatusAfterRestart: updateStatus,
     isolatedAppDataUsed: true,
     temporaryProfileUsed: true,
     completedAt: new Date().toISOString(),

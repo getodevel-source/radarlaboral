@@ -1,6 +1,22 @@
 # Auditoría del MVP
 
-Estado revisado el 11 de octubre de 2026 sobre la version 0.4.148. Esta auditoria conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la version actual.
+Estado revisado el 11 de octubre de 2026 sobre la versión 0.4.150. Esta auditoría conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la versión actual.
+
+## 0.4.150 - recorte fiel del icono original
+
+La captura de la versión 0.4.148 mostró un bloque blanco alrededor del icono. La versión 0.4.149 quitó ese fondo, pero el proceso también reinterpretó detalles del dibujo. En 0.4.150 el recorte se rehízo desde el PNG original entregado para el proyecto: mantiene el diseño, los colores y la composición, y deja transparente el exterior del cuadrado redondeado. `resources/brand-icon.png` tiene canal alfa y SHA-256 `21E1BAC0094DBCDB4C889B6BE26839905ED9AABA39F29BE24E05B8F1C2492038`.
+
+La interfaz, el favicon, el README, el ejecutable, la bandeja y los instaladores usan el mismo arte maestro, con tamaños adecuados para cada plataforma. El PNG incluido dentro de la app se comprueba byte por byte contra ese maestro. Las cinco capturas del README se regeneraron desde la aplicación empaquetada y muestran el icono recortado en los temas claro y oscuro.
+
+El build de producción pasó typecheck, lint y las 98 pruebas. El smoke de NSIS x64 verificó instalación y desinstalación, SQLite íntegro, seis pantallas de colores forzados y 184 enlaces Markdown. El recorrido `0.4.149 → 0.4.150` usó el botón **Buscar actualizaciones**, descargó el manifiesto firmado, instaló la versión nueva al salir, conservó un perfil SQLite de prueba y volvió a iniciar en 0.4.150. La app quedó en estado actualizado y el PNG instalado coincide byte por byte con el maestro. Evidencia: [QA-PACKAGE.json](https://github.com/getodevel-source/radarlaboral/blob/main/package-evidence/0.4.150/QA-PACKAGE.json), [QA-INAPP-UPDATE.json](https://github.com/getodevel-source/radarlaboral/blob/main/package-evidence/0.4.150/QA-INAPP-UPDATE.json), [SHA256SUMS.txt](https://github.com/getodevel-source/radarlaboral/blob/main/package-evidence/0.4.150/SHA256SUMS.txt) y [captura de colores forzados](https://github.com/getodevel-source/radarlaboral/blob/main/package-evidence/0.4.150/QA-FORCED-COLORS.png). Windows tiene las notificaciones nativas deshabilitadas en este entorno; se comprobó el aviso interno alternativo. El instalador y el ejecutable no tienen firma Authenticode.
+
+## 0.4.149 - icono recortado para producción
+
+La primera revisión quitó el margen blanco de la versión 0.4.148. El PNG de 0.4.149 tenía transparencia, pero su proceso de preparación alteró algunos detalles del original; 0.4.150 reemplaza ese archivo por el recorte fiel descrito arriba.
+
+La interfaz, el favicon y el README usan el PNG maestro. La ventana, la bandeja, el ejecutable y las pantallas del instalador y desinstalador usan tamaños generados desde ese mismo maestro; el ICO contiene 16, 24, 32, 48, 64, 128 y 256 píxeles. Las cinco capturas del README se regeneraron desde la app empaquetada; el icono se ve sin el cuadro blanco en tema claro y oscuro.
+
+El build NSIS x64 pasó typecheck, lint, las 98 pruebas, instalación y desinstalación, integridad SQLite, seis pantallas de colores forzados y 184 enlaces Markdown. Windows tiene las notificaciones nativas deshabilitadas en este entorno; el smoke confirmó el aviso interno alternativo y dejó la comprobación del activador nativo como no observable. Evidencia: [QA-PACKAGE.json](https://github.com/getodevel-source/radarlaboral/blob/main/package-evidence/0.4.149/QA-PACKAGE.json), [SHA256SUMS.txt](https://github.com/getodevel-source/radarlaboral/blob/main/package-evidence/0.4.149/SHA256SUMS.txt) y [captura de colores forzados](https://github.com/getodevel-source/radarlaboral/blob/main/package-evidence/0.4.149/QA-FORCED-COLORS.png). El instalador y el ejecutable no tienen firma Authenticode.
 
 ## 0.4.148 - icono exacto en toda la aplicación
 
