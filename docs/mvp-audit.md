@@ -1,6 +1,10 @@
 # Auditoría del MVP
 
-Estado revisado el 12 de octubre de 2026 sobre la versión 0.4.152. Esta auditoría conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la versión actual.
+Estado revisado el 12 de octubre de 2026 sobre la versión 0.4.153. Esta auditoría conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la versión actual.
+
+## 0.4.153 - márgenes equilibrados en Vacantes
+
+El estado vacío de Vacantes conserva márgenes laterales de 18 px en escritorio y 13 px en móvil, alineados con los filtros y los controles de la tarjeta. El icono, el mensaje y la acción para agregar una vacante quedan dentro del mismo margen visual.
 
 ## 0.4.152 - interfaz renovada y controles accesibles
 

@@ -250,6 +250,7 @@
 .table-search input:focus-visible { outline: none; }
 .table-search input::placeholder, .field input::placeholder, .field textarea::placeholder, .provider-field input::placeholder { color: var(--text-muted); opacity: .85; }
 .jobs-list { display: grid; }
+.jobs-card > .empty-inline { padding-right: 18px; padding-left: 18px; }
 .job-row { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: start; gap: 13px; padding: 17px 18px; border-bottom: 1px solid var(--surface-border); transition: background 150ms ease; }
 .job-row:last-child { border-bottom: 0; }
 .job-row:hover { background: var(--surface-soft); }
@@ -506,6 +507,7 @@
   .empty-inline > div { flex-basis: calc(100% - 58px); }
   .empty-inline .small-action { margin-left: 54px; }
   .jobs-toolbar { padding: 13px; }
+  .jobs-card > .empty-inline { padding-right: 13px; padding-left: 13px; }
   .jobs-filters { align-items: stretch; flex-direction: column; }
   .jobs-profile-filter { width: 100%; max-width: none; }
   .table-search { min-height: 41px; }
