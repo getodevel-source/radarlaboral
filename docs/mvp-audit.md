@@ -1,6 +1,10 @@
 # Auditoría del MVP
 
-Estado revisado el 11 de octubre de 2026 sobre la versión 0.4.151. Esta auditoría conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la versión actual.
+Estado revisado el 12 de octubre de 2026 sobre la versión 0.4.152. Esta auditoría conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la versión actual.
+
+## 0.4.152 - interfaz renovada y controles accesibles
+
+Se pulió la nueva interfaz completa: engranajes de Preferencias, contraste del tema claro y oscuro, desbordes en ventanas angostas, controles de alto contraste de Windows y navegación por teclado de las localidades. La ilustración del resumen se marca como decorativa para evitar anuncios duplicados en lectores de pantalla. La compilación pasó typecheck, lint y las 98 pruebas automatizadas. El instalador NSIS x64 y la actualización desde la versión anterior se verifican como parte de esta publicación.
 
 ## 0.4.151 - superficies oscuras y reinicio después de actualizar
 

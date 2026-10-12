@@ -414,7 +414,14 @@ if (nativeNotification.globalToastEnabled === 0) {
   assert.equal(searchCompletionFallbackAccessibility.visualToastAriaHidden, 'true', 'The visual search toast may duplicate the status-region announcement')
 }
 await session.eval("Array.from(document.querySelectorAll('button.nav-item')).find(button => button.querySelector('span')?.innerText.trim() === 'Preferencias')?.click()")
-await delay(300)
+const preferencesDeadline = Date.now() + 15_000
+let preferencesReady = false
+while (Date.now() < preferencesDeadline) {
+  preferencesReady = await session.eval("Boolean(document.querySelector('.settings-card'))")
+  if (preferencesReady) break
+  await delay(100)
+}
+assert.ok(preferencesReady, 'The installed app did not finish rendering Preferences')
 const updateButton = await session.eval("Array.from(document.querySelectorAll('.settings-card button')).find(button => button.innerText.trim() === 'Buscar actualizaciones')?.innerText.trim() ?? null")
 assert.equal(updateButton, 'Buscar actualizaciones', 'The installed app is missing its update check button')
 const sidebarBrandIcon = await session.eval("(() => { const image = document.querySelector('.brand-mark'); return { loaded: Boolean(image?.complete && image.naturalWidth > 0), naturalWidth: image?.naturalWidth ?? 0 }; })()")

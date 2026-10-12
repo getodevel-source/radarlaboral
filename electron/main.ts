@@ -251,7 +251,7 @@ function createWindow(showWhenReady = true) {
     show: false,
     title: 'Radar Laboral',
     icon: appIconPath,
-    backgroundColor: '#f4f3ef',
+    backgroundColor: '#f3f1e9',
     webPreferences: {
       preload: path.join(electronDirectory, 'preload.mjs'),
       contextIsolation: true,

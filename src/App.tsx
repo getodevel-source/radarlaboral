@@ -357,7 +357,7 @@ function Icon({ name, size = 18 }: { name: string; size?: number }) {
     briefcase: <><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2" /></>,
     file: <><path d="M7 3.5h7l4 4v13H7a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2Z" /><path d="M14 3.5v5h5M8.5 13h7M8.5 16.5h7" /></>,
     link: <><path d="M10 13.8a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.7 1.7" /><path d="M14 10.2a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.9l1.7-1.7" /></>,
-    settings: <><circle cx="12" cy="12" r="3" /><path d="m19.4 15 .1.1a1.8 1.8 0 0 1-2.5 2.5l-.1-.1a1.8 1.8 0 0 0-3 .9v.2a1.8 1.8 0 0 1-3.6 0v-.2a1.8 1.8 0 0 0-3-.9l-.1.1a1.8 1.8 0 0 1-2.5-2.5l.1-.1a1.8 1.8 0 0 0-.9-3h-.2a1.8 1.8 0 0 1 0-3.6h.2a1.8 1.8 0 0 0 .9-3l-.1-.1a1.8 1.8 0 0 1 2.5-2.5l.1.1a1.8 1.8 0 0 0 3-.9v-.2a1.8 1.8 0 0 1 3.6 0v.2a1.8 1.8 0 0 0 3 .9l.1-.1a1.8 1.8 0 0 1 2.5 2.5l-.1.1a1.8 1.8 0 0 0 .9 3h.2a1.8 1.8 0 0 1 0 3.6h-.2a1.8 1.8 0 0 0-.9 3Z" /></>,
+    settings: <><path d="M9.46 3.68 9.73 1.34h4.54l.27 2.34 1.54.64 1.86-1.46 3.2 3.2-1.46 1.86.64 1.54 2.34.27v4.54l-2.34.27-.64 1.54 1.46 1.86-3.2 3.2-1.86-1.46-1.54.64-.27 2.34H9.73l-.27-2.34-1.54-.64-1.86 1.46-3.2-3.2 1.46-1.86-.64-1.54-2.34-.27V9.73l2.34-.27.64-1.54-1.46-1.86 3.2-3.2 1.86 1.46 1.54-.64Z" /><circle cx="12" cy="12" r="2.8" /></>,
     arrow: <><path d="M5 12h14M13 6l6 6-6 6" /></>,
     plus: <><path d="M12 5v14M5 12h14" /></>,
     external: <><path d="M14 4h6v6M20 4l-9 9" /><path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5" /></>,
@@ -436,7 +436,7 @@ function App() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     document.documentElement.style.colorScheme = theme
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#121813' : '#f4f3ef')
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#101713' : '#f3f1e9')
     try {
       window.localStorage.setItem('radar-laboral-theme', theme)
     } catch {
@@ -501,6 +501,19 @@ function App() {
       window.clearTimeout(timer)
     }
   }, [localityQuery, modal])
+
+  useEffect(() => {
+    if (localityActiveIndex < 0) return
+    const activeLocality = localitySuggestions[localityActiveIndex]
+    if (!activeLocality) return
+    const list = document.getElementById('profile-locality-suggestions')
+    const option = document.getElementById(`profile-locality-option-${activeLocality.id}`)
+    if (!list || !option) return
+    const listBox = list.getBoundingClientRect()
+    const itemBox = option.getBoundingClientRect()
+    if (itemBox.top < listBox.top) list.scrollTop -= listBox.top - itemBox.top
+    else if (itemBox.bottom > listBox.bottom) list.scrollTop += itemBox.bottom - listBox.bottom
+  }, [localityActiveIndex, localitySuggestions])
 
   useEffect(() => {
     const off = window.radar.app.onSearchCompleted(() => {
@@ -1576,7 +1589,7 @@ function App() {
   }
 
   const pageTitle: Record<PageKey, { title: string; eyebrow: string; description: string }> = {
-    resumen: { title: 'Tu búsqueda, en marcha.', eyebrow: 'PANEL DE CONTROL', description: 'Encontrá avisos, prepará postulaciones y seguí cada paso desde un solo lugar.' },
+    resumen: { title: 'Resumen', eyebrow: 'TU ESPACIO', description: 'Perfiles, vacantes y seguimiento, en un solo lugar.' },
     busquedas: { title: 'Perfiles de búsqueda', eyebrow: 'TUS CRITERIOS', description: 'Guardá objetivos distintos y usá un CV adecuado para cada tipo de puesto.' },
     vacantes: { title: 'Vacantes', eyebrow: 'SEGUIMIENTO', description: 'Revisá los avisos, prepará el mensaje y llevá el estado de cada postulación.' },
     cv: { title: 'Tus CV', eyebrow: 'ARCHIVOS LOCALES', description: 'Cargá varias versiones. Se procesan y guardan en esta computadora.' },
@@ -1622,7 +1635,8 @@ function App() {
           <div className="breadcrumb"><span>Radar Laboral</span><span className="breadcrumb-divider">/</span><strong>{current.title}</strong></div>
           <div className="topbar-actions">
             <div className="search-status"><span className="status-pulse" />{settings.searchIntervalHours} h <span className="status-label">· búsqueda automática</span></div>
-            <button className="top-avatar" aria-label="Preferencias" onClick={() => setPage('ajustes')}>RL</button>
+            <button className="top-icon-button" aria-label={theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'} title={theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'} aria-pressed={theme === 'dark'} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}><Icon name={theme === 'dark' ? 'moon' : 'sun'} size={18} /></button>
+            <button className="top-icon-button" aria-label="Abrir preferencias" title="Preferencias" onClick={() => setPage('ajustes')}><Icon name="settings" size={19} /></button>
           </div>
         </header>
 
@@ -1902,16 +1916,16 @@ function Dashboard({
   return <div className="dashboard-stack">
     <section className="hero-panel">
       <div className="hero-copy">
-        <div className="hero-kicker"><span className="hero-kicker-dot" /> RADAR PERSONAL</div>
-        <h2>Una búsqueda más<br /><em>ordenada.</em></h2>
-        <p>Reuní avisos de distintas fuentes, prepará cada postulación con calma y no pierdas de vista lo que ya enviaste.</p>
+        <div className="hero-kicker"><span className="hero-kicker-dot" /> TU PRÓXIMO PASO</div>
+        <h2>Tu búsqueda laboral,<br /><em>bajo control.</em></h2>
+        <p>Reuní oportunidades, organizá tus postulaciones y seguí cada avance desde un mismo lugar.</p>
         <div className="hero-buttons"><button className="button button-light" onClick={profiles.length ? onRunSearch : onCreateProfile} disabled={busy}>{busy ? 'Buscando…' : profiles.length ? 'Buscar ahora' : 'Crear mi primera búsqueda'} <span className="button-end"><Icon name="arrow" size={16} /></span></button><button className="text-button text-button-light" onClick={onCreateOpportunity}>Agregar un aviso manualmente</button></div>
       </div>
       <div className="hero-art" aria-hidden="true">
-        <div className="orbit orbit-one" /><div className="orbit orbit-two" /><div className="orbit orbit-three" />
-        <div className="orbit-core"><span /><i /></div>
-        <div className="floating-note note-top"><span className="note-spark"><Icon name="spark" size={14} /></span><div><strong>Una fuente nueva</strong><small>apareció en el radar</small></div></div>
-        <div className="floating-note note-bottom"><span className="note-check"><Icon name="check" size={14} /></span><div><strong>Todo en un lugar</strong><small>CV · avisos · seguimiento</small></div></div>
+        <div className="orbit orbit-one" aria-hidden="true" /><div className="orbit orbit-two" aria-hidden="true" /><div className="orbit orbit-three" aria-hidden="true" />
+        <div className="orbit-core" aria-hidden="true"><span /><i /></div>
+        <div className="floating-note note-top"><span className="note-spark"><Icon name="search" size={14} /></span><div><strong>{summary.activeProfiles} {summary.activeProfiles === 1 ? 'perfil activo' : 'perfiles activos'}</strong><small>Listos para buscar</small></div></div>
+        <div className="floating-note note-bottom"><span className="note-check"><Icon name="briefcase" size={14} /></span><div><strong>{summary.newOpportunities} {summary.newOpportunities === 1 ? 'aviso nuevo' : 'avisos nuevos'}</strong><small>Para revisar</small></div></div>
       </div>
       <div className="hero-foot"><span><Icon name="clock" size={15} /> Revisión automática cada {searchIntervalHours} horas</span><span className="hero-foot-separator" /><span>{sources.filter((source) => source.enabled && isAutomaticSourceKind(source.kind)).length} fuentes automáticas activas</span><button className="hero-foot-source" onClick={onOpenSources}>Administrar fuentes <Icon name="arrow" size={12} /></button></div>
     </section>
@@ -1940,7 +1954,7 @@ function Dashboard({
 }
 
 function StatCard({ label, value, note, accent, icon }: { label: string; value: number; note: string; accent: string; icon: string }) {
-  return <article className="stat-card"><div className={`stat-icon stat-${accent}`}><Icon name={icon} size={18} /></div><div className="stat-label">{label}</div><div className="stat-value">{value.toString().padStart(2, '0')}</div><div className="stat-note">{note}</div></article>
+  return <article className="stat-card"><div className={`stat-icon stat-${accent}`}><Icon name={icon} size={18} /></div><div className="stat-label">{label}</div><div className="stat-value">{value}</div><div className="stat-note">{note}</div></article>
 }
 
 function ProfilesPage({ profiles, onCreate, onEdit, onDelete }: { profiles: SearchProfile[]; onCreate: () => void; onEdit: (profile: SearchProfile) => void; onDelete: (id: string) => void }) {
@@ -2004,7 +2018,7 @@ function ResumesPage({ resumes, busy, onUpload, onDelete }: { resumes: ResumeRec
       <label className="button button-dark file-cta"><Icon name="upload" /> Elegir archivos <span className="button-end"><Icon name="arrow" size={16} /></span><input type="file" accept="application/pdf,.pdf" multiple disabled={busy} onChange={(event) => { onUpload(event.currentTarget.files); event.currentTarget.value = '' }} /></label>
       <div className="upload-foot"><span>PDF · hasta 20 MB por archivo</span><span>El original se conserva sin cambios</span></div>
     </section>
-    <section className="content-card resume-list-card"><div className="section-heading"><div><div className="eyebrow">BIBLIOTECA PERSONAL</div><h2>CV cargados <span className="heading-count">{resumes.length.toString().padStart(2, '0')}</span></h2></div></div>
+    <section className="content-card resume-list-card"><div className="section-heading"><div><div className="eyebrow">BIBLIOTECA PERSONAL</div><h2>CV cargados <span className="heading-count">{resumes.length}</span></h2></div></div>
       {resumes.length ? <div className="resume-list">{resumes.map((resume) => <article className="resume-row" key={resume.id}><span className="resume-file-icon"><Icon name="file" /></span><div className="resume-info"><strong>{resume.name}</strong><span>{resume.originalName} · {resume.pageCount} {resume.pageCount === 1 ? 'página' : 'páginas'} · agregado {formatDate(resume.createdAt)}</span><details><summary>Ver texto reconocido</summary><p>{resume.extractedText || 'No se reconoció texto en este archivo. Revisá que las páginas sean legibles.'}</p></details></div><button className="icon-button danger-icon" onClick={() => onDelete(resume)} aria-label={`Eliminar ${resume.name}`}><Icon name="trash" size={16} /></button></article>)}</div> : <EmptyInline icon="file" title="Todavía no cargaste ningún CV" detail="Radar lee PDFs con texto y aplica OCR local a páginas escaneadas. Podés revisar el texto reconocido." action="Elegir archivos" onClick={() => document.getElementById('resume-upload-hidden')?.click()} />}
     </section>
     <input id="resume-upload-hidden" className="visually-hidden" type="file" accept="application/pdf,.pdf" multiple tabIndex={-1} onChange={(event) => { onUpload(event.currentTarget.files); event.currentTarget.value = '' }} />

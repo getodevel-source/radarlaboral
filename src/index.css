@@ -1,115 +1,122 @@
 :root {
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  color: #273d32;
-  background: #f4f3ef;
+  font-family: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  color: #1c2a22;
+  background: #f3f1e9;
   color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  --paper: #f4f3ef;
-  --forest: #18382f;
-  --moss: #668b70;
-  --clay: #e77b57;
-  --ink: #273d32;
-  --surface-card: #fbfaf6;
-  --surface-raised: #f2f3ed;
-  --surface-recessed: #fffefa;
-  --surface-border: #e4e3da;
-  --surface-border-strong: #d5ddd4;
-  --text-primary: #203b30;
-  --text-secondary: #627066;
-  --text-muted: #858d82;
-  --focus-ring: #83a486;
+
+  --canvas: #f3f1e9;
+  --sidebar: #172d24;
+  --surface: #fcfbf7;
+  --surface-raised: #fffefa;
+  --surface-soft: #eeefe8;
+  --surface-sunken: #e7e9e1;
+  --surface-border: #dfe2d9;
+  --surface-border-strong: #cbd2c7;
+  --ink: #1c2a22;
+  --text-primary: #25382d;
+  --text-secondary: #4d6154;
+  --text-muted: #65756a;
+  --green: #244b39;
+  --green-strong: #183b2d;
+  --green-soft: #e4ece2;
+  --primary-action-bg: #244b39;
+  --primary-action-ink: #fffdf7;
+  --primary-action-hover: #1b3f2e;
+  --peach: #a94a2c;
+  --peach-soft: #f4e2d7;
+  --blue-soft: #e3eaf0;
+  --amber-soft: #f3ead9;
+  --rose-soft: #f2e3dc;
+  --danger: #a54536;
+  --danger-soft: #f6e7e3;
+  --green-ink: #426b4a;
+  --amber-ink: #77571f;
+  --blue-ink: #45647a;
+  --rose-ink: #8c5144;
+  --warm-ink: #855638;
+  --gold-ink: #8c6537;
+  --focus-ring: #4e8964;
+  --shadow-card: 0 1px 2px rgb(31 46 36 / 5%), 0 12px 28px rgb(31 46 36 / 5%);
+  --shadow-float: 0 18px 46px rgb(19 36 27 / 16%);
 }
 
 :root[data-theme='dark'] {
-  color: #edf2ec;
-  background: #121813;
+  color: #edf1e9;
+  background: #101713;
   color-scheme: dark;
-  --paper: #121813;
-  --forest: #13271f;
-  --moss: #a4cd9a;
-  --clay: #ee9673;
-  --ink: #edf2ec;
-  --surface-card: #1e2821;
-  --surface-raised: #263129;
-  --surface-recessed: #161f19;
-  --surface-border: #344138;
-  --surface-border-strong: #46554b;
-  --text-primary: #edf2ec;
-  --text-secondary: #c8d3ca;
-  --text-muted: #a2afa4;
-  --focus-ring: #a4cd9a;
+
+  --canvas: #101713;
+  --sidebar: #0c1410;
+  --surface: #19221c;
+  --surface-raised: #222d25;
+  --surface-soft: #1c2820;
+  --surface-sunken: #121a15;
+  --surface-border: #303d34;
+  --surface-border-strong: #46554a;
+  --ink: #edf1e9;
+  --text-primary: #e6ece2;
+  --text-secondary: #c3cec2;
+  --text-muted: #a3b0a5;
+  --green: #b5d3b4;
+  --green-strong: #a5c99e;
+  --green-soft: #27372c;
+  --primary-action-bg: #b5d3b4;
+  --primary-action-ink: #142018;
+  --primary-action-hover: #c8dfc2;
+  --peach: #f0a17d;
+  --peach-soft: #3d2b23;
+  --blue-soft: #263740;
+  --amber-soft: #3b3323;
+  --rose-soft: #3d2b27;
+  --danger: #f0aa9e;
+  --danger-soft: #402a27;
+  --green-ink: #c4ddbd;
+  --amber-ink: #ecd69e;
+  --blue-ink: #c4d9e5;
+  --rose-ink: #e8c2b8;
+  --warm-ink: #f0bc9c;
+  --gold-ink: #e6bd8b;
+  --focus-ring: #a6cd97;
+  --shadow-card: 0 1px 1px rgb(0 0 0 / 20%), 0 14px 34px rgb(0 0 0 / 16%);
+  --shadow-float: 0 18px 48px rgb(0 0 0 / 42%);
 }
 
 * { box-sizing: border-box; }
 
-html { min-width: 320px; min-height: 100%; background: var(--paper); }
+html { min-width: 320px; min-height: 100%; background: var(--canvas); }
 
-body { min-width: 320px; min-height: 100vh; margin: 0; }
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  background: var(--canvas);
+  font-size: 15px;
+  line-height: 1.5;
+}
 
-button, input, textarea, select { font: inherit; }
+button, input, textarea, select { color: inherit; font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
 
-button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid color-mix(in srgb, var(--focus-ring) 38%, transparent); outline-offset: 2px; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--focus-ring) 55%, transparent);
+  outline-offset: 2px;
+}
 
-:root[data-theme='dark'] button:focus-visible,
-:root[data-theme='dark'] input:focus-visible,
-:root[data-theme='dark'] textarea:focus-visible,
-:root[data-theme='dark'] select:focus-visible { outline-color: color-mix(in srgb, var(--focus-ring) 70%, transparent); }
-
-::selection { color: #fffaf1; background: #527a60; }
+::selection { color: #fffdf8; background: #3e7453; }
 
 @media (forced-colors: active) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
-  }
-
-  :focus-visible {
-    outline: 2px solid Highlight !important;
-    outline-offset: 3px;
-  }
-
-  .nav-item.active,
-  .filter-tabs button.selected {
-    color: HighlightText;
-    background: Highlight;
-    box-shadow: none;
-  }
-
-  .nav-item.active {
-    border: 1px solid Highlight;
-  }
-
-  .button-dark,
-  .button-light {
-    color: ButtonText;
-    background: ButtonFace;
-    border: 1px solid ButtonText;
-    box-shadow: none;
-  }
-
-  .modal-backdrop {
-    background: Canvas;
-    backdrop-filter: none;
-  }
-
-  .modal-card {
-    color: CanvasText;
-    background: Canvas;
-    border-color: CanvasText;
-    box-shadow: none;
-  }
-
-  a {
-    color: LinkText;
-  }
-
-  ::selection {
-    color: HighlightText;
-    background: Highlight;
-  }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  :focus-visible { outline: 2px solid Highlight !important; outline-offset: 3px; }
+  .nav-item.active, .filter-tabs button.selected { color: HighlightText; background: Highlight; box-shadow: none; }
+  .button-dark, .button-light { color: ButtonText; background: ButtonFace; border: 1px solid ButtonText; box-shadow: none; }
+  .toggle-switch, .theme-switch-track, .top-icon-button, .stat-icon { color: ButtonText; border: 1px solid ButtonText; background: ButtonFace; }
+  .toggle-switch.on { color: HighlightText; background: Highlight; }
+  .toggle-switch span, .theme-switch-thumb { color: ButtonText; border: 1px solid ButtonText; background: Canvas; box-shadow: none; }
+  .modal-backdrop { background: Canvas; }
+  .modal-card { color: CanvasText; background: Canvas; border-color: CanvasText; box-shadow: none; }
+  a { color: LinkText; }
+  ::selection { color: HighlightText; background: Highlight; }
 }

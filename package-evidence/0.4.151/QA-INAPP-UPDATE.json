@@ -2,7 +2,7 @@
   "fromVersion": "0.4.150",
   "toVersion": "0.4.151",
   "releaseManifestSigned": true,
-  "installationMode": "isolated-install",
+  "installationMode": "existing-install-with-isolated-profile",
   "sourceInstallerSha256": "70ee67cfca2e3f04235dcb49f9c0dee7413c6291d62b34b2a31b04ad09905fc9",
   "targetInstallerSha256": "47ecf820c7b823a93f4d1e8f22503d69609317722cf1d8fb7ad62affda5e8826",
   "inAppCheckButtonClicked": true,
@@ -20,5 +20,5 @@
   "updaterStatusAfterRestart": "Radar Laboral está actualizado.",
   "isolatedAppDataUsed": true,
   "temporaryProfileUsed": true,
-  "completedAt": "2026-10-12T01:55:25.746Z"
+  "completedAt": "2026-10-12T02:15:06.064Z"
 }
