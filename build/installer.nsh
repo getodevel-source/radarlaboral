@@ -20,6 +20,18 @@
     ${EndIf}
   ${EndIf}
 !macroend
+
+!macro customInstall
+  ; Older releases start silent NSIS updates without --force-run. Reopen those
+  ; updates here; newer releases request --force-run and are launched once by
+  ; electron-builder's normal install section.
+  ${If} ${isUpdated}
+  ${AndIf} ${Silent}
+  ${AndIfNot} ${isForceRun}
+    HideWindow
+    ${StdUtils.ExecShellAsUser} $0 "$launchLink" "open" "--updated"
+  ${EndIf}
+!macroend
 !endif
 
 !macro customUnInstall

@@ -3837,4 +3837,5 @@ test('NSIS prevents protected per-user install paths and migrates old Program Fi
   assert.match(builderConfig, /"allowElevation": true/u)
   assert.doesNotMatch(builderConfig, /"allowToChangeInstallationDirectory": true/u)
   assert.match(installerConfig, /!macro customInstallMode[\s\S]*\$hasPerUserInstallation == "1"[\s\S]*\$PROGRAMFILES64[\s\S]*\$PROGRAMFILES32[\s\S]*\$isForceMachineInstall "1"[\s\S]*!macroend/u)
+  assert.match(installerConfig, /\$\{If\} \$\{isUpdated\}\s+\$\{AndIf\} \$\{Silent\}\s+\$\{AndIfNot\} \$\{isForceRun\}[\s\S]*HideWindow\s+\$\{StdUtils\.ExecShellAsUser\} \$0 "\$launchLink" "open" "--updated"/u)
 })

@@ -277,9 +277,10 @@ try {
 
   let lastMessage = ''
   let downloaded = false
+  let installButtonLabel = ''
   const downloadDeadline = Date.now() + 12 * 60_000
   while (Date.now() < downloadDeadline) {
-    const status = await session.eval("(() => ({ message: document.querySelector('.settings-card p[role=\"status\"]')?.innerText.trim() ?? '', installVisible: Array.from(document.querySelectorAll('.settings-card button')).some(button => button.innerText.trim().startsWith('Instalar y reiniciar')), progress: document.querySelector('[role=progressbar]')?.getAttribute('aria-valuenow') ?? null }))()")
+    const status = await session.eval("(() => { const button = Array.from(document.querySelectorAll('.settings-card button')).find(button => /^(Instalar y reiniciar|Instalar y salir)/u.test(button.innerText.trim())); return { message: document.querySelector('.settings-card p[role=\"status\"]')?.innerText.trim() ?? '', installButtonLabel: button?.innerText.trim() ?? '', progress: document.querySelector('[role=progressbar]')?.getAttribute('aria-valuenow') ?? null }; })()")
     if (status.message !== lastMessage) {
       console.log(`Update status: ${status.message}${status.progress !== null ? ` (${status.progress}%)` : ''}`)
       lastMessage = status.message
@@ -287,8 +288,9 @@ try {
     if (/No se pudo buscar la actualizaciÃ³n|No se pudo buscar la actualización/u.test(status.message)) {
       throw new Error(`The in-app updater failed: ${status.message}`)
     }
-    if (status.message.includes(toVersion) && status.installVisible) {
+    if (status.message.includes(toVersion) && status.installButtonLabel) {
       downloaded = true
+      installButtonLabel = status.installButtonLabel
       break
     }
     if (status.message.includes('está actualizado') || status.message.includes('esta actualizado')) {
@@ -298,7 +300,7 @@ try {
   }
   assert.ok(downloaded, `The in-app updater did not finish downloading ${toVersion} within 12 minutes`)
 
-  await session.eval("Array.from(document.querySelectorAll('.settings-card button')).find(button => button.innerText.trim().startsWith('Instalar y reiniciar'))?.click()")
+  await session.eval("Array.from(document.querySelectorAll('.settings-card button')).find(button => /^(Instalar y reiniciar|Instalar y salir)/u.test(button.innerText.trim()))?.click()")
   const oldApp = activeApp
   const appExit = await waitExit(oldApp, 90_000, 'In-app quit-and-install')
   assert.equal(appExit.code, 0, `The old app did not exit cleanly for installation: ${JSON.stringify(appExit)}`)
@@ -306,8 +308,10 @@ try {
   session.close()
   session = null
 
-  assert.ok(appLogs.some((line) => /Install: isSilent: true, isForceRunAfter: true/u.test(line)), 'The updater did not request the updated app to reopen after NSIS finishes')
-  console.log('The old app exited through “Instalar y reiniciar”; waiting for NSIS to replace the installed version…')
+  const updaterInstallLog = appLogs.find((line) => /Install: isSilent: true, isForceRunAfter: (?:true|false)/u.test(line))
+  assert.ok(updaterInstallLog, 'The updater did not launch NSIS in silent mode')
+  const updaterRequestedRestart = /isForceRunAfter: true/u.test(updaterInstallLog)
+  console.log(`The old app exited through “${installButtonLabel}” (force-run requested: ${updaterRequestedRestart}); waiting for NSIS to replace the installed version…`)
   const installDeadline = Date.now() + 120_000
   let lastInstallLog = 0
   let upgradedPackage = null
@@ -374,6 +378,8 @@ try {
     sourceInstallerSha256: sha256(installer),
     inAppCheckButtonClicked: manualCheckClicked,
     downloadedInApp: downloaded,
+    sourceInstallButton: installButtonLabel,
+    updaterRequestedForceRun: updaterRequestedRestart,
     installedTargetVersion: upgradedPackage.version,
     updatedAppStarted: true,
     automaticRelaunchWindowDetected: true,
