@@ -12,17 +12,35 @@
   --moss: #668b70;
   --clay: #e77b57;
   --ink: #273d32;
+  --surface-card: #fbfaf6;
+  --surface-raised: #f2f3ed;
+  --surface-recessed: #fffefa;
+  --surface-border: #e4e3da;
+  --surface-border-strong: #d5ddd4;
+  --text-primary: #203b30;
+  --text-secondary: #627066;
+  --text-muted: #858d82;
+  --focus-ring: #83a486;
 }
 
 :root[data-theme='dark'] {
-  color: #e5ebe5;
-  background: #171d19;
+  color: #edf2ec;
+  background: #121813;
   color-scheme: dark;
-  --paper: #171d19;
-  --forest: #142e27;
-  --moss: #8bb895;
-  --clay: #f09a72;
-  --ink: #e5ebe5;
+  --paper: #121813;
+  --forest: #13271f;
+  --moss: #a4cd9a;
+  --clay: #ee9673;
+  --ink: #edf2ec;
+  --surface-card: #1e2821;
+  --surface-raised: #263129;
+  --surface-recessed: #161f19;
+  --surface-border: #344138;
+  --surface-border-strong: #46554b;
+  --text-primary: #edf2ec;
+  --text-secondary: #c8d3ca;
+  --text-muted: #a2afa4;
+  --focus-ring: #a4cd9a;
 }
 
 * { box-sizing: border-box; }
@@ -33,12 +51,12 @@ body { min-width: 320px; min-height: 100vh; margin: 0; }
 
 button, input, textarea, select { font: inherit; }
 
-button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid #7ba0825c; outline-offset: 2px; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid color-mix(in srgb, var(--focus-ring) 38%, transparent); outline-offset: 2px; }
 
 :root[data-theme='dark'] button:focus-visible,
 :root[data-theme='dark'] input:focus-visible,
 :root[data-theme='dark'] textarea:focus-visible,
-:root[data-theme='dark'] select:focus-visible { outline-color: #9bcba777; }
+:root[data-theme='dark'] select:focus-visible { outline-color: color-mix(in srgb, var(--focus-ring) 70%, transparent); }
 
 ::selection { color: #fffaf1; background: #527a60; }
 

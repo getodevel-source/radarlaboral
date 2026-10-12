@@ -56,7 +56,7 @@ export const APP_UPDATE_MESSAGES: Record<AppUpdateStatus, string> = {
   checking: 'Buscando una actualización…',
   available: 'Hay una actualización disponible. Descargando…',
   downloading: 'Descargando la actualización…',
-  downloaded: 'Actualización lista. Se instalará al salir de Radar Laboral.',
+  downloaded: 'Actualización lista. Al instalarla, Radar Laboral se volverá a abrir.',
   'up-to-date': 'Radar Laboral está actualizado.',
   error: 'No se pudo buscar la actualización. Revisá tu conexión e intentá de nuevo.',
 }
@@ -126,7 +126,7 @@ export function reduceAppUpdateEvent(current: AppUpdateState, event: AppUpdateEv
     case 'update-downloaded': {
       if (current.status === 'disabled') return current
       const version = cleanVersion(event.version) ?? current.version
-      return { status: 'downloaded', version, percent: 100, message: version ? `Actualización ${version} lista. Se instalará al salir de Radar Laboral.` : APP_UPDATE_MESSAGES.downloaded, detail: null }
+      return { status: 'downloaded', version, percent: 100, message: version ? `Actualización ${version} lista. Al instalarla, Radar Laboral se volverá a abrir.` : APP_UPDATE_MESSAGES.downloaded, detail: null }
     }
     case 'up-to-date': {
       if (current.status === 'disabled' || current.status === 'downloaded' || current.status === 'downloading' || current.status === 'available') return current
@@ -313,9 +313,8 @@ export function createAppUpdateService(options: AppUpdateServiceOptions): AppUpd
     checkForUpdates,
     quitAndInstall() {
       if (state.status !== 'downloaded') throw new Error('Todavía no hay una actualización descargada para instalar.')
-      // Use NSIS silent mode so its finish page does not relaunch the app after
-      // the user explicitly chose “Instalar y salir”.
-      updater.quitAndInstall(true, false)
+      // Use NSIS silent mode and force the updated app to reopen after install.
+      updater.quitAndInstall(true, true)
     },
   }
 }

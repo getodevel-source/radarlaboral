@@ -436,7 +436,7 @@ function App() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     document.documentElement.style.colorScheme = theme
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#17201b' : '#f4f3ef')
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#121813' : '#f4f3ef')
     try {
       window.localStorage.setItem('radar-laboral-theme', theme)
     } catch {
@@ -2129,8 +2129,8 @@ function SettingsPage({ settings, setSettings, theme, onThemeChange, candidate, 
       </div>}
       <div className="privacy-banner"><span className="privacy-banner-dot" /><p><strong>La clave se cifra en Windows.</strong> Al generar un mensaje, el aviso, el CV elegido y los datos confirmados de Mi perfil se envían al proveedor. Puede haber cargos según tu cuenta; revisá el resultado antes de usarlo.</p></div>
     </section>
-    <section className="content-card settings-card"><div className="section-heading"><div><div className="eyebrow">ACTUALIZACIÓN</div><h2>Versión de la app</h2></div><span className="settings-section-icon"><Icon name="arrow" /></span></div><p className="settings-lead">Radar Laboral busca actualizaciones publicadas en GitHub Releases. Si hay una nueva versión, la descarga y la instala al salir, sin interrumpir tu trabajo.</p>
-      <div className="form-row"><button type="button" className="button button-soft" disabled={busy || checkingUpdates || updateState?.status === "downloading"} onClick={onCheckForUpdates}>{checkingUpdates || updateState?.status === "checking" ? "Buscando…" : "Buscar actualizaciones"}</button>{updateState?.status === "downloaded" && <button type="button" className="button button-dark" disabled={busy} onClick={onQuitAndInstallUpdate}>Instalar y salir <span className="button-end"><Icon name="check" size={16} /></span></button>}</div>
+    <section className="content-card settings-card"><div className="section-heading"><div><div className="eyebrow">ACTUALIZACIÓN</div><h2>Versión de la app</h2></div><span className="settings-section-icon"><Icon name="arrow" /></span></div><p className="settings-lead">Radar Laboral busca actualizaciones publicadas en GitHub Releases. La descarga no interrumpe tu trabajo; al instalar, la app se cierra un momento y vuelve a abrirse.</p>
+      <div className="form-row"><button type="button" className="button button-soft" disabled={busy || checkingUpdates || updateState?.status === "downloading"} onClick={onCheckForUpdates}>{checkingUpdates || updateState?.status === "checking" ? "Buscando…" : "Buscar actualizaciones"}</button>{updateState?.status === "downloaded" && <button type="button" className="button button-dark" disabled={busy} onClick={onQuitAndInstallUpdate}>Instalar y reiniciar <span className="button-end"><Icon name="check" size={16} /></span></button>}</div>
       <p className="settings-lead" role="status">{updateState ? updateState.message : "Consultando el estado de actualización…"}</p>
       {updateState?.status === "downloading" && <div className="update-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={updateState.percent ?? 0}><div className="update-progress-bar" style={{ width: `${updateState.percent ?? 0}%` }} /></div>}
     </section>

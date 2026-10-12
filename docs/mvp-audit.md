@@ -1,6 +1,12 @@
 # Auditoría del MVP
 
-Estado revisado el 11 de octubre de 2026 sobre la versión 0.4.150. Esta auditoría conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la versión actual.
+Estado revisado el 11 de octubre de 2026 sobre la versión 0.4.151. Esta auditoría conserva la evidencia funcional reunida desde 0.4.139 y registra los cambios y verificaciones de la versión actual.
+
+## 0.4.151 - superficies oscuras y reinicio después de actualizar
+
+El tema oscuro separa ahora el fondo principal, la navegación, las tarjetas y los controles con una paleta de carbón y verde bosque. Las tarjetas tienen borde y relieve sutiles, los campos usan una superficie más profunda, y los textos, estados y foco usan tonos adecuados para el tema. Se regeneraron las cinco capturas del README desde la aplicación empaquetada; el switch oscuro se comprobó también después de cerrar y volver a abrir la app.
+
+En Preferencias, la acción ahora se llama **Instalar y reiniciar** y avisa que Radar Laboral volverá a abrirse. Al confirmar, el actualizador pide a NSIS que inicie la versión instalada al terminar. La prueba unitaria confirma los argumentos de relanzamiento. El build local pasó typecheck, lint y las 98 pruebas. El smoke del instalador NSIS x64 instaló y desinstaló el paquete, comprobó la base SQLite, el icono, los seis escenarios de colores forzados, la estructura del tema oscuro y 184 enlaces Markdown. La consulta de actualización en el paquete también informó que la app estaba al día. La actualización real `0.4.150 → 0.4.151` se probará desde Preferencias una vez publicada la versión y se agregará su evidencia a esta auditoría.
 
 ## 0.4.150 - recorte fiel del icono original
 

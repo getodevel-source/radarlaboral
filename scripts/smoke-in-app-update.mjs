@@ -19,15 +19,31 @@ import { RadarDatabase } from '../electron/database.ts'
 
 const root = process.cwd()
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'))
-const fromVersion = process.argv[2] ?? '0.4.146'
 const toVersion = process.argv[3] ?? manifest.version
+const releaseRoot = path.join(root, 'release')
+const compareVersions = (left, right) => {
+  const leftParts = left.split('.').map(Number)
+  const rightParts = right.split('.').map(Number)
+  for (let index = 0; index < leftParts.length; index++) {
+    if (leftParts[index] !== rightParts[index]) return leftParts[index] - rightParts[index]
+  }
+  return 0
+}
+const latestPreviousVersion = fs.readdirSync(releaseRoot, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory() && /^\d+\.\d+\.\d+$/u.test(entry.name))
+  .map((entry) => entry.name)
+  .filter((version) => compareVersions(version, toVersion) < 0)
+  .filter((version) => fs.existsSync(path.join(releaseRoot, version, `radarlaboral-Windows-${version}-Setup.exe`)))
+  .sort(compareVersions)
+  .at(-1)
+const fromVersion = process.argv[2] ?? latestPreviousVersion ?? '0.4.146'
 const existingInstallDir = process.argv[4] ? path.resolve(root, process.argv[4]) : null
 assert.equal(toVersion, manifest.version, 'Target version must match the checked-out package')
 assert.notEqual(fromVersion, toVersion, 'Source and target releases must differ')
 
-const installer = path.join(root, 'release', fromVersion, `radarlaboral-Windows-${fromVersion}-Setup.exe`)
-const latestManifest = path.join(root, 'release', toVersion, 'latest.yml')
-const reportPath = path.join(root, 'release', toVersion, 'QA-INAPP-UPDATE.json')
+const installer = path.join(releaseRoot, fromVersion, `radarlaboral-Windows-${fromVersion}-Setup.exe`)
+const latestManifest = path.join(releaseRoot, toVersion, 'latest.yml')
+const reportPath = path.join(releaseRoot, toVersion, 'QA-INAPP-UPDATE.json')
 assert.ok(fs.existsSync(installer), `Missing source release installer: ${installer}`)
 assert.ok(fs.existsSync(latestManifest), `Missing published target manifest: ${latestManifest}`)
 if (existingInstallDir) assert.ok(fs.existsSync(path.join(existingInstallDir, 'Radar Laboral.exe')), `Missing installed app: ${existingInstallDir}`)
@@ -42,6 +58,7 @@ const userDataDir = path.join(appDataRoot, 'radarlaboral')
 const installedExe = path.join(installDir, 'Radar Laboral.exe')
 const profileId = 'qa-update-profile-preserved'
 let activeApp = null
+const appLogs = []
 let success = false
 
 function sha256(file) {
@@ -140,7 +157,10 @@ async function openApp(exe, port) {
     stream?.setEncoding('utf8')
     stream?.on('data', (chunk) => {
       for (const line of chunk.split(/\r?\n/u)) {
-        if (/update|install|NSIS|error|quitandinstall/iu.test(line)) console.log(`App log: ${line}`)
+        if (/update|install|NSIS|error|quitandinstall/iu.test(line)) {
+          appLogs.push(line)
+          console.log(`App log: ${line}`)
+        }
       }
     })
   }
@@ -158,6 +178,43 @@ async function closeApp(session) {
   activeApp.kill()
   await waitExit(activeApp, 20_000, 'Radar Laboral shutdown').catch(() => {})
   activeApp = null
+}
+
+async function findReopenedAppWindow(exe) {
+  const command = '$target = [System.IO.Path]::GetFullPath($env:RADAR_QA_INSTALLED_EXE); $items = @(Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -ieq $target } | ForEach-Object { $process = Get-Process -Id $_.ProcessId -ErrorAction SilentlyContinue; [PSCustomObject]@{ processId = $_.ProcessId; executablePath = $_.ExecutablePath; windowTitle = $process.MainWindowTitle } }); ConvertTo-Json -InputObject $items -Compress'
+  const query = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', command], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    windowsHide: true,
+    env: { ...process.env, RADAR_QA_INSTALLED_EXE: exe },
+  })
+  let stdout = ''
+  let stderr = ''
+  query.stdout.setEncoding('utf8')
+  query.stderr.setEncoding('utf8')
+  query.stdout.on('data', (chunk) => { stdout += chunk })
+  query.stderr.on('data', (chunk) => { stderr += chunk })
+  const result = await waitExit(query, 15_000, 'Updated app relaunch detection')
+  if (result.code !== 0) throw new Error(`Could not inspect the updated app window: ${stderr}`)
+  if (!stdout.trim()) return []
+  const parsed = JSON.parse(stdout)
+  return Array.isArray(parsed) ? parsed : [parsed]
+}
+
+async function waitForReopenedAppWindow(exe, timeoutMs = 60_000) {
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline) {
+    const processes = await findReopenedAppWindow(exe)
+    const window = processes.find((item) => item.windowTitle?.includes('Radar Laboral'))
+    if (window) return window
+    await delay(750)
+  }
+  return null
+}
+
+async function closeReopenedApp(processId) {
+  const child = spawn('taskkill.exe', ['/PID', String(processId), '/T', '/F'], { stdio: 'ignore', windowsHide: true })
+  const result = await waitExit(child, 15_000, 'Updated QA app shutdown')
+  assert.equal(result.code, 0, `Could not close the reopened QA app process ${processId}`)
 }
 
 try {
@@ -222,7 +279,7 @@ try {
   let downloaded = false
   const downloadDeadline = Date.now() + 12 * 60_000
   while (Date.now() < downloadDeadline) {
-    const status = await session.eval("(() => ({ message: document.querySelector('.settings-card p[role=\"status\"]')?.innerText.trim() ?? '', installVisible: Array.from(document.querySelectorAll('.settings-card button')).some(button => button.innerText.trim().startsWith('Instalar y salir')), progress: document.querySelector('[role=progressbar]')?.getAttribute('aria-valuenow') ?? null }))()")
+    const status = await session.eval("(() => ({ message: document.querySelector('.settings-card p[role=\"status\"]')?.innerText.trim() ?? '', installVisible: Array.from(document.querySelectorAll('.settings-card button')).some(button => button.innerText.trim().startsWith('Instalar y reiniciar')), progress: document.querySelector('[role=progressbar]')?.getAttribute('aria-valuenow') ?? null }))()")
     if (status.message !== lastMessage) {
       console.log(`Update status: ${status.message}${status.progress !== null ? ` (${status.progress}%)` : ''}`)
       lastMessage = status.message
@@ -241,7 +298,7 @@ try {
   }
   assert.ok(downloaded, `The in-app updater did not finish downloading ${toVersion} within 12 minutes`)
 
-  await session.eval("Array.from(document.querySelectorAll('.settings-card button')).find(button => button.innerText.trim().startsWith('Instalar y salir'))?.click()")
+  await session.eval("Array.from(document.querySelectorAll('.settings-card button')).find(button => button.innerText.trim().startsWith('Instalar y reiniciar'))?.click()")
   const oldApp = activeApp
   const appExit = await waitExit(oldApp, 90_000, 'In-app quit-and-install')
   assert.equal(appExit.code, 0, `The old app did not exit cleanly for installation: ${JSON.stringify(appExit)}`)
@@ -249,7 +306,8 @@ try {
   session.close()
   session = null
 
-  console.log('The old app exited through “Instalar y salir”; waiting for NSIS to replace the installed version…')
+  assert.ok(appLogs.some((line) => /Install: isSilent: true, isForceRunAfter: true/u.test(line)), 'The updater did not request the updated app to reopen after NSIS finishes')
+  console.log('The old app exited through “Instalar y reiniciar”; waiting for NSIS to replace the installed version…')
   const installDeadline = Date.now() + 120_000
   let lastInstallLog = 0
   let upgradedPackage = null
@@ -269,6 +327,12 @@ try {
   }
   assert.equal(upgradedPackage?.version, toVersion, 'The in-app installer did not replace the isolated app with the target version')
   console.log(`NSIS replaced the installed package with ${upgradedPackage.version}.`)
+
+  const reopenedAppWindow = await waitForReopenedAppWindow(installedExe)
+  assert.ok(reopenedAppWindow, 'The updated app did not reopen in a visible window after NSIS completed')
+  assert.equal(path.resolve(reopenedAppWindow.executablePath).toLowerCase(), path.resolve(installedExe).toLowerCase(), 'A different Radar Laboral installation reopened after the update')
+  console.log(`The updated app reopened automatically in window “${reopenedAppWindow.windowTitle}”.`)
+  await closeReopenedApp(reopenedAppWindow.processId)
 
   const upgradedDatabase = new RadarDatabase(userDataDir)
   const preservedProfiles = upgradedDatabase.listProfiles()
@@ -312,6 +376,8 @@ try {
     downloadedInApp: downloaded,
     installedTargetVersion: upgradedPackage.version,
     updatedAppStarted: true,
+    automaticRelaunchWindowDetected: true,
+    automaticRelaunchWindowTitle: reopenedAppWindow.windowTitle,
     preservedSyntheticProfiles: preservedProfiles.length,
     syntheticProfilePreserved: true,
     installedBrandArtworkMatchesMaster: true,

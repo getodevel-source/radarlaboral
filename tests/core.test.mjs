@@ -3624,7 +3624,7 @@ test('app update reducer walks the download lifecycle in Spanish', () => {
   state = reduceAppUpdateEvent(state, { type: 'update-downloaded', version: '0.5.0' })
   assert.equal(state.status, 'downloaded')
   assert.equal(state.percent, 100)
-  assert.match(state.message, /al salir/u)
+  assert.match(state.message, /volver[aá] a abrir/u)
 
   // La descarga ganada se conserva: ni checking ni up-to-date la pisan.
   assert.equal(reduceAppUpdateEvent(state, { type: 'check-started' }).status, 'downloaded')
@@ -3728,6 +3728,7 @@ test('app update service broadcasts states and installs only when downloaded', a
 
   service.quitAndInstall()
   assert.equal(calls.quits, 1)
+  assert.deepEqual(calls.quitArguments, [true, true])
 
   // checkForUpdates manual con descarga lista no regresa el estado.
   await service.checkForUpdates(true)
@@ -3776,12 +3777,12 @@ test('keeps startup usable when creating the tray icon fails', () => {
   assert.match(trayFactory, /la ventana seguir[aá] disponible/u)
 })
 
-test('app update installs silently and leaves the user closed after choosing install and exit', () => {
+test('app update installs silently and reopens after the user chooses install and restart', () => {
   const { service, updater, calls } = createUpdateTestHarness({ feed: true })
   updater.emit('update-downloaded', { version: '0.5.0' })
   service.quitAndInstall()
   assert.equal(updater.autoRunAppAfterInstall, false)
-  assert.deepEqual(calls.quitArguments, [true, false])
+  assert.deepEqual(calls.quitArguments, [true, true])
 })
 
 test('app update service guards quitAndInstall and throttles error retries', async () => {

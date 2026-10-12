@@ -425,10 +425,13 @@ assert.equal(appearanceBefore.checked, 'false', 'A fresh profile did not start i
 assert.equal(appearanceBefore.theme, 'light', 'The light theme was not applied on startup')
 await session.eval("document.querySelector('.theme-switch')?.click()")
 await delay(250)
-const appearanceDark = await session.eval("(() => { const control = document.querySelector('.theme-switch'); return { checked: control?.getAttribute('aria-checked') ?? null, theme: document.documentElement.dataset.theme ?? '', background: getComputedStyle(document.querySelector('.app-shell')).backgroundColor, stored: localStorage.getItem('radar-laboral-theme') }; })()")
+const appearanceDark = await session.eval("(() => { const control = document.querySelector('.theme-switch'); return { checked: control?.getAttribute('aria-checked') ?? null, theme: document.documentElement.dataset.theme ?? '', background: getComputedStyle(document.querySelector('.main-panel')).backgroundColor, card: getComputedStyle(document.querySelector('.settings-card')).backgroundColor, nestedControl: getComputedStyle(document.querySelector('.setting-row select')).backgroundColor, sidebar: getComputedStyle(document.querySelector('.sidebar')).backgroundColor, stored: localStorage.getItem('radar-laboral-theme') }; })()")
 assert.equal(appearanceDark.checked, 'true', 'The appearance switch did not announce dark mode')
 assert.equal(appearanceDark.theme, 'dark', 'The installed app did not apply dark mode')
 assert.notEqual(appearanceDark.background, appearanceBefore.background, 'Dark mode did not change the app surface color')
+assert.notEqual(appearanceDark.card, appearanceDark.background, 'Dark mode does not distinguish cards from the main canvas')
+assert.notEqual(appearanceDark.nestedControl, appearanceDark.card, 'Dark mode does not distinguish inputs from cards')
+assert.notEqual(appearanceDark.sidebar, appearanceDark.background, 'Dark mode does not distinguish navigation from the main canvas')
 assert.equal(appearanceDark.stored, 'dark', 'The installed app did not persist dark mode')
 await session.eval("document.querySelector('.theme-switch')?.click()")
 await delay(250)
@@ -642,7 +645,7 @@ const report = {
   installedApp: {
     inAppUpdateCheck: { button: updateButton, status: updateStatusText, latestReleaseIsOlderThanPackage: true },
     sidebarBrandIcon,
-    appearance: { role: appearanceBefore.role, initialTheme: appearanceBefore.theme, lightBackground: appearanceBefore.background, darkTheme: appearanceDark.theme, darkBackground: appearanceDark.background, preferenceStored: appearanceDark.stored === 'dark' },
+    appearance: { role: appearanceBefore.role, initialTheme: appearanceBefore.theme, lightBackground: appearanceBefore.background, darkTheme: appearanceDark.theme, darkCanvas: appearanceDark.background, darkCard: appearanceDark.card, darkNestedControl: appearanceDark.nestedControl, darkSidebar: appearanceDark.sidebar, preferenceStored: appearanceDark.stored === 'dark' },
     title: 'Radar Laboral',
     recommendedSourceCards: sourceCards.length,
     greenhouseButton: 'Agregar 27 tableros',
