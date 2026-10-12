@@ -169,6 +169,14 @@ async function openApp(exe, port) {
   await session.open
   await session.command('Runtime.enable')
   assert.equal(await session.eval('document.title'), 'Radar Laboral')
+  const rendererDeadline = Date.now() + 20_000
+  let rendererReady = false
+  while (Date.now() < rendererDeadline) {
+    rendererReady = await session.eval("Boolean(document.querySelector('button.nav-item span'))")
+    if (rendererReady) break
+    await delay(150)
+  }
+  assert.ok(rendererReady, 'Radar Laboral window opened before its navigation rendered')
   return session
 }
 
@@ -347,7 +355,8 @@ try {
   port = await choosePort()
   console.log(`Starting ${toVersion} again with the same isolated profile.`)
   session = await openApp(installedExe, port)
-  await session.eval("Array.from(document.querySelectorAll('button.nav-item')).find(button => button.querySelector('span')?.innerText.trim() === 'Preferencias')?.click()")
+  const preferencesOpened = await session.eval("(() => { const button = Array.from(document.querySelectorAll('button.nav-item')).find(item => item.querySelector('span')?.innerText.trim() === 'Preferencias'); if (!button) return false; button.click(); return true; })()")
+  assert.ok(preferencesOpened, 'Updated app did not render the Preferences navigation button')
   const versionDeadline = Date.now() + 10_000
   let versionLine = ''
   while (Date.now() < versionDeadline) {
@@ -376,6 +385,7 @@ try {
     releaseManifestSigned: true,
     installationMode: existingInstallDir ? 'existing-install-with-isolated-profile' : 'isolated-install',
     sourceInstallerSha256: sha256(installer),
+    targetInstallerSha256: sha256(path.join(releaseRoot, toVersion, `radarlaboral-Windows-${toVersion}-Setup.exe`)),
     inAppCheckButtonClicked: manualCheckClicked,
     downloadedInApp: downloaded,
     sourceInstallButton: installButtonLabel,

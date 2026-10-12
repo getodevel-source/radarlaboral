@@ -1,0 +1,23 @@
+{
+  "fromVersion": "0.4.150",
+  "toVersion": "0.4.151",
+  "releaseManifestSigned": true,
+  "installationMode": "isolated-install",
+  "sourceInstallerSha256": "70ee67cfca2e3f04235dcb49f9c0dee7413c6291d62b34b2a31b04ad09905fc9",
+  "inAppCheckButtonClicked": true,
+  "downloadedInApp": true,
+  "sourceInstallButton": "Instalar y salir",
+  "updaterRequestedForceRun": false,
+  "installedTargetVersion": "0.4.151",
+  "updatedAppStarted": true,
+  "automaticRelaunchWindowDetected": true,
+  "automaticRelaunchWindowTitle": "Radar Laboral",
+  "preservedSyntheticProfiles": 1,
+  "syntheticProfilePreserved": true,
+  "installedBrandArtworkMatchesMaster": true,
+  "installedBrandArtworkSha256": "21e1bac0094dbcdb4c889b6be26839905ed9aaba39f29be24e05b8f1c2492038",
+  "updaterStatusAfterRestart": "Radar Laboral está actualizado.",
+  "isolatedAppDataUsed": true,
+  "temporaryProfileUsed": true,
+  "completedAt": "2026-10-12T01:47:33.544Z"
+}
