@@ -4,7 +4,9 @@ Estado revisado el 12 de octubre de 2026 sobre la versión 0.4.153. Esta auditor
 
 ## 0.4.153 - márgenes equilibrados en Vacantes
 
-El estado vacío de Vacantes conserva márgenes laterales de 18 px en escritorio y 13 px en móvil, alineados con los filtros y los controles de la tarjeta. El icono, el mensaje y la acción para agregar una vacante quedan dentro del mismo margen visual.
+El estado vacío de Vacantes conserva márgenes laterales de 18 px en escritorio y 13 px en móvil, alineados con los filtros y los controles de la tarjeta. El icono, el mensaje y la acción para agregar una vacante quedan dentro del mismo margen visual. Open Code Review (OCR) revisó el cambio con cero hallazgos.
+
+El build pasó typecheck, lint y las 98 pruebas automatizadas. El smoke del instalador NSIS x64 comprobó instalación y desinstalación, integridad SQLite, seis escenarios emulados de colores forzados y 188 enlaces Markdown. La prueba desde Preferencias actualizó Radar Laboral 0.4.152 a 0.4.153, volvió a abrir la aplicación automáticamente y conservó el perfil sintético local. Evidencia: [paquete](../package-evidence/0.4.153/QA-PACKAGE.json), [actualización dentro de la app](../package-evidence/0.4.153/QA-INAPP-UPDATE.json), [hashes](../package-evidence/0.4.153/SHA256SUMS.txt) y [colores forzados](../package-evidence/0.4.153/QA-FORCED-COLORS.png). El manifiesto de actualización está firmado con Ed25519; el instalador y el ejecutable no tienen firma Authenticode.
 
 ## 0.4.152 - interfaz renovada y controles accesibles
 
